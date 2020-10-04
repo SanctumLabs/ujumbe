@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: sms-worker
+    namespace: comms
+    labels: &SmsLabels
+        app: sms
+        tier: backend
+        role: communication
+        component: sms     
+spec:
+    selector:
+        matchLabels: *SmsLabels
+    replicas: 1
+    template:
+        metadata:
+            labels: *SmsLabels
+        spec:
+            securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                runAsGroup: 3000
+                fsGroup: 2000
+
+            containers:
+                -   name: sms-worker
+                    image: garihublimited/sms-gateway:latest
+                    imagePullPolicy: Always
+                    command: ["celery", '-A', "worker", "app.celery_worker.celery_app", "-E", "-l", "info",
+                              "-n sms-worker@%n",
+                              "--concurrency=5"
+                    ]
+                    env:
+                        -   name: FLASK_ENV
+                            value: "staging"
+                        -   name: PORT
+                            value: "4000"
+
+                        -   name: SMS_TOKEN
+                            valueFrom:
+                                secretKeyRef:
+                                    name: sms-config
+                                    key: token
+
+                        -   name: SMS_API_URL
+                            valueFrom:
+                                secretKeyRef:
+                                    name: sms-config
+                                    key: apiUrl
+
+                        -   name: BROKER_USER
+                            valueFrom:
+                                secretKeyRef:
+                                    name: sms-amqp-credentials
+                                    key: user
+
+                        -   name: BROKER_PASSWORD
+                            valueFrom:
+                                secretKeyRef:
+                                    name: sms-amqp-credentials
+                                    key: password
+
+                        -   name: BROKER_HOST
+                            value: 'rabbitmq-discovery'
+
+                        -   name: BROKER_URL
+                            value: 'amqp://$(AMQP_USER):$(AMQP_PASSWORD)@$(BROKER_HOST):5672//'
+
+                        -   name: RESULT_BACKEND
+                            value: 'redis://redis:6379'
+

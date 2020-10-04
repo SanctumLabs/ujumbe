@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  flower:
+    image: mher/flower:latest
+    container_name: sms-flower-dashboard
+    hostname: flower
+    environment:
+        - CELERY_BROKER_URL=amqp://
+    ports:
+        - 5555:5555

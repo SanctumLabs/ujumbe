@@ -1,0 +1,288 @@
+version: 2.1
+executors:
+    python-executor:
+        docker:
+            - image: circleci/python:3.8
+    docker-executor:
+        docker:
+            - image: docker:17.05.0-ce-git
+        working_directory: ~/sms-gateway
+    node-executor:
+        docker:
+            - image: circleci/node:10
+        working_directory: ~/sms-gateway
+    gcloud-executor:
+        docker:
+            -   image: google/cloud-sdk
+        working_directory: ~/sms-gateway
+
+jobs:
+    dependencies:
+        executor: python-executor
+        steps:
+            - checkout
+            - restore_cache:
+                key: smsgateway-{{ checksum "Pipfile.lock" }}-{{ .Branch }}
+                keys:
+                    - E-{{ checksum "Pipfile.lock" }}
+
+            - run:
+                name: Upgrade pip
+                command: sudo pip install --upgrade pip
+
+            - run:
+                name: Download pipenv
+                command: pip install pipenv
+
+            - run:
+                name: lock dependencies
+                command: pipenv lock -r > requirements.txt
+
+            - run:
+                name: lock dev dependencies
+                command: pipenv lock -r -d > requirements_dev.txt
+
+            - run:
+                name: Install dependencies
+                command: sudo pip install -r requirements.txt
+
+            - save_cache:
+                key: smsgateway-{{ checksum "Pipfile.lock" }}-{{ .Branch }}
+                paths: ~/.venv/
+                keys:
+                    - E-{{ checksum "Pipfile.lock" }}
+
+            - persist_to_workspace:
+                root: .
+                paths: .
+
+    test:
+        executor: python-executor
+        steps:
+            - attach_workspace:
+                at: .
+
+            - restore_cache:
+                key: smsgateway-{{ checksum "Pipfile.lock" }}-{{ .Branch }}
+                keys:
+                    - E-{{ checksum "Pipfile.lock" }}
+
+            - run:
+                name: Install dependencies
+                command: |
+                    sudo pip install -r requirements.txt
+                    sudo pip install -r requirements_dev.txt
+                    pipenv install
+
+            - run:
+                name: Run unit tests and coverage
+                command: |
+                    export FLASK_ENV=testing
+                    pytest --cov=app tests/
+                    coverage html
+
+            - persist_to_workspace:
+                root: .
+                paths: .
+
+    build_docker_image:
+        executor: docker-executor
+        steps:
+            - setup_remote_docker
+            - attach_workspace:
+                at: .
+
+            - run:
+                name: Build application Docker image
+                command: |
+                    docker build -t garihublimited/sms-gateway:$CIRCLE_SHA1 .
+            - run:
+                name: Save application Docker image
+                command: |
+                    docker save -o sms-gateway-image.tar garihublimited/sms-gateway:$CIRCLE_SHA1
+
+            - persist_to_workspace:
+                root: .
+                paths: .
+
+    push_latest:
+        executor: docker-executor
+        steps:
+            - setup_remote_docker
+            - attach_workspace:
+                at: .
+
+            - run:
+                name: Load application Docker image
+                command: |
+                    docker load --input sms-gateway-image.tar
+
+            - run:
+               name: Tag $CIRCLE_SHA1 docker image
+               command: |
+                   docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:latest
+                   docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:latest-v$CIRCLE_BUILD_NUM
+            - run:
+                name: Push application Docker image
+                command: |
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                    docker push garihublimited/sms-gateway:$CIRCLE_SHA1
+                    docker push garihublimited/sms-gateway:latest
+                    docker push garihublimited/sms-gateway:latest-v$CIRCLE_BUILD_NUM
+
+    push_preproduction:
+        executor: docker-executor
+        steps:
+            - setup_remote_docker
+            - attach_workspace:
+                at: .
+
+            - run:
+                name: Load application Docker image
+                command: |
+                    docker load --input sms-gateway-image.tar
+
+            - run:
+                name: Tag production docker image
+                command: |
+                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:preproduction
+                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:preproduction-v$CIRCLE_BUILD_NUM
+
+            - run:
+                name: Push application Docker image
+                command: |
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                    docker push garihublimited/sms-gateway:$CIRCLE_SHA1
+                    docker push garihublimited/sms-gateway:preproduction
+                    docker push garihublimited/sms-gateway:preproduction-v$CIRCLE_BUILD_NUM
+
+    push_production:
+        executor: docker-executor
+        steps:
+            - setup_remote_docker
+            - attach_workspace:
+                at: .
+
+            - run:
+                name: Load application Docker image
+                command: |
+                    docker load --input sms-gateway-image.tar
+
+            - run:
+                name: Tag production docker image
+                command: |
+                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:production
+                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:production-v$CIRCLE_BUILD_NUM
+
+            - run:
+                name: Push application Docker image
+                command: |
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                    docker push garihublimited/sms-gateway:$CIRCLE_SHA1
+                    docker push garihublimited/sms-gateway:production
+                    docker push garihublimited/sms-gateway:production-v$CIRCLE_BUILD_NUM
+
+    publish_release:
+        executor: node-executor
+        steps:
+            - attach_workspace:
+                  at: .
+
+            - run:
+                name: Publish release
+                command: npx semantic-release
+
+    publish_prerelease:
+        executor: node-executor
+        steps:
+            - attach_workspace:
+                  at: .
+
+            - run:
+                name: Publish release
+                command: npx semantic-release
+
+    # rollout_release:
+    #     executor: gcloud-executor
+    #     steps:
+    #         - run:
+    #             name: Rollout Production release
+    #             command: |
+    #                 echo $GKE_WEBSITE_SERVICE_KEY >> /tmp/${GKE_WEBSITE_CLUSTER_NAME}.json
+    #                 gcloud auth activate-service-account --key-file=/tmp/${GKE_WEBSITE_CLUSTER_NAME}.json
+    #                 gcloud container clusters get-credentials ${GKE_WEBSITE_CLUSTER_NAME} --region ${GKE_WEBSITE_COMPUTE_ZONE} --project ${GKE_WEBSITE_PROJECT_ID}
+    #                 kubectl set image deployment sms-api sms-api=garihublimited/sms-gateway:production-v$CIRCLE_PREVIOUS_BUILD_NUM -n website-prod
+    #                 kubectl set image deployment sms-worker sms-worker=garihublimited/sms-gateway:production-v$CIRCLE_PREVIOUS_BUILD_NUM -n website-prod
+
+workflows:
+  version: 2
+  test_build_push_tag:
+    jobs:
+    - dependencies
+
+    - test:
+        requires:
+        - dependencies
+
+    - build_docker_image:
+        filters:
+          branches:
+            only:
+            - master
+            - develop
+        requires:
+        - test
+
+    - push_latest:
+        context: garihub-context
+        filters:
+          branches:
+            only:
+            - develop
+        requires:
+        - build_docker_image
+
+    - push_preproduction:
+        context: garihub-context
+        filters:
+          branches:
+            only:
+            - master
+        requires:
+        - build_docker_image
+
+    - push_production:
+        context: garihub-context
+        filters:
+          branches:
+            only:
+            - production
+        requires:
+        - build_docker_image
+
+    # - rollout_release:
+    #       context: garihub-context
+    #       filters:
+    #           branches:
+    #               only:
+    #                   - production
+    #       requires:
+    #           - push_production
+
+    - publish_prerelease:
+          context: garihub-context
+          filters:
+              branches:
+                  only:
+                      - master
+          requires:
+              - push_preproduction
+
+    - publish_release:
+          context: garihub-context
+          filters:
+              branches:
+                  only:
+                      - production
+        #   requires:
+        #       - rollout_release
