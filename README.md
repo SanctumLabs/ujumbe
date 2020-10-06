@@ -32,17 +32,9 @@ Any editor of your choice can be used for this application.
    This will be used when containerizing the application for running in a SOA(Service Oriented Architecture). This is
    used especially when deployment. Allows this application to run in any environment with minimal configuration.
 
-First of, create a `.env` file which will contain environment variables for SMTP configurations. This file is not checked into VCS(Version Control System). The format will look something like this:
+First of, create a `.env` file from [.env.example](.env.example) which will contain environment variables for configurations. This file is not checked into VCS(Version Control System).
 
-```plain
-USERNAME=<USERNAME>
-PASSWORD=<PASSWORD>
-PORT=<APPLICATION PORT>
-FLASK_ENV=development
-TOKEN=<SENDGRID_TOKEN>
-```
-
-> Typically Application port will be set to a default of 4000, but if you prefer a different port to use, you can set that in the environment variable
+> Typically Application port will be set to a default of 5000, but if you prefer a different port to use, you can set that in the environment variable
 
 ## Installing
 

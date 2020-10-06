@@ -9,8 +9,8 @@ metadata:
     role: communication
     component: sms
 spec:
-  ports:
-  - port: 4000
-    name: http
-    targetPort: 4000
   selector: *SmsLabels
+  ports:
+  - port: 5000
+    name: http
+    targetPort: http

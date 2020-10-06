@@ -42,7 +42,8 @@ class Config(object):
     CSRF_ENABLED = True
     CSRF_SESSION_KEY = os.environ.get("CSRF_SESSION_KEY")
 
-    SMS_TOKEN = os.environ.get("SMS_TOKEN", "")
+    SMS_API_USERNAME = os.environ.get("SMS_API_USERNAME", "")
+    SMS_API_TOKEN = os.environ.get("SMS_API_TOKEN", "")
     SMS_API_URL = os.environ.get("SMS_API_URL", "")
     RESULT_BACKEND = os.environ.get("RESULT_BACKEND", "rpc://")
 
@@ -76,8 +77,9 @@ class TestingConfig(Config):
     WTF_CSRF_ENABLED = False
     CSRF_ENABLED = False
     PRESERVE_CONTEXT_ON_EXCEPTION = False
-    DEFAULT_SENDER = "test@example.com"
-    SMS_TOKEN = "sms-token"
+    DEFAULT_SENDER = "254000000"
+    SMS_API_USERNAME = "username"
+    SMS_API_TOKEN = "sms-token"
     SMS_API_URL = "https://api.sms.test.com"
 
 

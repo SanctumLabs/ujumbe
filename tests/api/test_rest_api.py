@@ -6,7 +6,7 @@ import os
 
 base_url = "/api/v1/sms/"
 
-os.environ.update(BROKER_URL="memory://", RESULT_BACKEND="rpc")
+os.environ.update(BROKER_URL="memory://", RESULT_BACKEND="rpc://")
 
 class TestSmsApi(BaseTestCase):
     """

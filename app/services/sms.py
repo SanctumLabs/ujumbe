@@ -8,7 +8,7 @@ the current application context
 from app.logger import log as logger
 from flask import current_app
 from .exceptions import SmsSendingException, ServiceIntegrationException
-import requests
+import africastalking
 
 
 @logger.catch
@@ -24,68 +24,16 @@ def send_sms(to: list, message: str, from_: dict = None):
     try:
         logger.info(f"Sending sms to {to}")
 
-        # Set the message sender it it exists else default it
-        sender = from_ if from_ else current_app.config.get("DEFAULT_SENDER")
+        username = current_app.config.get("SMS_API_USERNAME")
+        api_key = current_app.config.get("SMS_API_TOKEN")
 
-        msg = Message(
-            sender=sender,
-            subject=subject,
-            recipients=to,
-            cc=cc,
-            bcc=bcc)
+        africastalking.initialize(username, api_key)
+        sms = africastalking.SMS
 
-        if "<html" in message:
-            msg.html = message
-        else:
-            msg.body = message
-
-        mail.send(msg)
-        return dict(success=True, message="Message successfully sent")
+        # synchronous request to send out an SMS
+        response = sms.send(message, to)
+        return dict(message="Message successfully sent", response=response)
     except Exception as e:
-        # this should only happen if there is a fallback and we fail to send sms with the default setting
-        # if in that event, then the application should try sending an sms using Sendgrid
-
         logger.error(f"Failed to send sms with error {e}")
-        logger.warning(f"Using alternative to send sms")
 
-        # get the token and base url
-        token = current_app.config.get("SMS_TOKEN")
-        base_url = current_app.config.get("SMS_API_URL")
-
-        recipients_to = [{"email": email} for email in to]
-
-        # this will be used to construct the recipients of the sms
-        recipients = dict(to=recipients_to)
-
-        sender = {"email": from_.get("email") if from_ else current_app.config.get("DEFAULT_SENDER"),
-                  "name": from_.get("name") if from_ else current_app.config.get("DEFAULT_SENDER")}
-
-        request_body = {
-            "personalizations": [
-                recipients
-            ],
-            "from": sender,
-            "content": [
-                {
-                    "type": "text/html",
-                    "value": message
-                }
-            ]
-        }
-
-        try:
-
-            headers = {"Authorization": f"Bearer {token}"}
-            response = requests.post(url=base_url, json=request_body, headers=headers)
-
-            if not response.ok:
-                raise ServiceIntegrationException(f"Sending sms failed with status code: {response.status_code}")
-            else:
-                return dict(
-                    success=True,
-                    message="Message successfully sent",
-                )
-
-        except Exception as e:
-            logger.error(f"Failed to send message with alternative with error {e}")
-            raise SmsSendingException(f"Failed to send sms message with error {e}")
+        raise SmsSendingException(f"Failed to send sms message with error {e}")

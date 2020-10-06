@@ -8,9 +8,7 @@ class SmsTestCases(BaseTestCase):
     SMS test cases
     """
 
-    # test values to use
-    from_ = "ninja@example.com"
-    to = ["johndoe@example.com", "janedoe@example.com"]
+    to = ["254700000000", "254711111111"]
     message = "We need to start setting up the rocket ship plans"
     
     def setUp(self):

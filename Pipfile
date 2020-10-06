@@ -20,8 +20,11 @@ loguru = "*"
 python-dotenv = "*"
 requests = "*"
 marshmallow = "*"
-celery = {extras = ["redis"],version = "*"}
-pika = "*"
+africastalking = "*"
 
 [requires]
 python_version = "3.8"
+
+[packages.celery]
+extras = [ "redis",]
+version = "*"

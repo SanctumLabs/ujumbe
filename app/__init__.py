@@ -12,7 +12,7 @@ from .constants import SMS_DEFAULT_EXCHANGE, SMS_DEFAULT_QUEUE_NAME, SMS_DEFAULT
 broker = os.environ.get("BROKER_URL", "amqp://")
 result_backend = os.environ.get("RESULT_BACKEND", "rpc://")
 
-celery_app = Celery("SmsGatewayCelery", broker=broker, backend=result_backend, include=["app.tasks"])
+celery_app = Celery("SmsGateway", broker=broker, backend=result_backend, include=["app.tasks"])
 
 
 class SmsGateway(Flask):

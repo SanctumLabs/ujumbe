@@ -26,15 +26,13 @@ spec:
                 -   name: sms-worker
                     image: garihublimited/sms-gateway:latest
                     imagePullPolicy: Always
-                    command: ["celery", '-A', "worker", "app.celery_worker.celery_app", "-E", "-l", "info",
+                    command: ["celery", '-A', "app.celery_worker.celery_app", "worker", "--events", "--loglevel=INFO",
                               "-n sms-worker@%n",
                               "--concurrency=5"
                     ]
                     env:
                         -   name: FLASK_ENV
                             value: "staging"
-                        -   name: PORT
-                            value: "4000"
 
                         -   name: SMS_TOKEN
                             valueFrom:
@@ -51,21 +49,23 @@ spec:
                         -   name: BROKER_USER
                             valueFrom:
                                 secretKeyRef:
-                                    name: sms-amqp-credentials
+                                    name: sms-broker-credentials
                                     key: user
 
                         -   name: BROKER_PASSWORD
                             valueFrom:
                                 secretKeyRef:
-                                    name: sms-amqp-credentials
+                                    name: sms-broker-credentials
                                     key: password
 
                         -   name: BROKER_HOST
-                            value: 'rabbitmq-discovery'
+                            value: 'rabbitmq-svc-headless'
 
                         -   name: BROKER_URL
-                            value: 'amqp://$(AMQP_USER):$(AMQP_PASSWORD)@$(BROKER_HOST):5672//'
+                            value: 'amqp://$(BROKER_USER):$(BROKER_PASSWORD)@$(BROKER_HOST):5672//'
+                        
+                        - name: RESULT_BACKEND_HOST
+                          value: redis-svc-headless
 
                         -   name: RESULT_BACKEND
-                            value: 'redis://redis:6379'
-
+                            value: 'redis://$(RESULT_BACKEND_HOST):6379'

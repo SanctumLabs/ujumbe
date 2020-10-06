@@ -29,10 +29,6 @@ class TestConfigurationsCases(BaseTestCase):
         """Test the application preserves context on exception"""
         self.assertTrue(current_app.config.get("PRESERVE_CONTEXT_ON_EXCEPTION") is False)
 
-    def test_app_has_sms_default_sender_set_to_test_sms(self):
-        """Test the application has set the DEFAULT_SENDER to test@example.com"""
-        self.assertEqual(current_app.config.get("DEFAULT_SENDER"), "test@example.com")
-
     def test_app_has_set_sms_token_and_url_to_test_values(self):
         """Test the application has set the SMS_TOKEN and SMS_API_URL to test values"""
         token = current_app.config.get("SMS_TOKEN")

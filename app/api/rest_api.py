@@ -23,9 +23,6 @@ def send_sms():
     if not payload:
         return jsonify(dict(message="No data provided")), 400
 
-    if payload.get("from"):
-        payload.update({"from_": payload.get("from")})
-
     try:
         # validate JSON body
         data = sms_message_schema.load(payload)
@@ -33,9 +30,7 @@ def send_sms():
         try:
             sms_sending_task.apply_async(
                 kwargs=dict(
-                    from_=data.get("from_"),
                     to=data.get("to"),
-                    subject=data.get("subject"),
                     message=data.get("message"),
                 ))            
 
