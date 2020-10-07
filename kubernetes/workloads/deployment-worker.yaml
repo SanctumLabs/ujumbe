@@ -6,7 +6,7 @@ metadata:
     labels: &SmsLabels
         app: sms
         tier: backend
-        role: communication
+        role: worker
         component: sms     
 spec:
     selector:
@@ -22,6 +22,9 @@ spec:
                 runAsGroup: 3000
                 fsGroup: 2000
 
+            imagePullSecrets:
+                - name: docker-hub-registry
+
             containers:
                 -   name: sms-worker
                     image: garihublimited/sms-gateway:latest
@@ -34,7 +37,13 @@ spec:
                         -   name: FLASK_ENV
                             value: "staging"
 
-                        -   name: SMS_TOKEN
+                        -   name: SMS_API_USERNAME
+                            valueFrom:
+                                secretKeyRef:
+                                    name: sms-config
+                                    key: username
+
+                        -   name: SMS_API_TOKEN
                             valueFrom:
                                 secretKeyRef:
                                     name: sms-config
@@ -59,13 +68,22 @@ spec:
                                     key: password
 
                         -   name: BROKER_HOST
-                            value: 'rabbitmq-svc-headless'
+                            value: 'rabbitmq-svc-headless.broker.svc.cluster.local'
+
+                        -   name: BROKER_PORT
+                            value: '5672'
 
                         -   name: BROKER_URL
-                            value: 'amqp://$(BROKER_USER):$(BROKER_PASSWORD)@$(BROKER_HOST):5672//'
+                            value: 'amqp://$(BROKER_USER):$(BROKER_PASSWORD)@$(BROKER_HOST):$(BROKER_PORT)//'
                         
                         - name: RESULT_BACKEND_HOST
-                          value: redis-svc-headless
+                          value: redis-svc-headless.cache.svc.cluster.local
+
+                        -   name: RESULT_BACKEND_PORT
+                            value: '6379'
 
                         -   name: RESULT_BACKEND
                             value: 'redis://$(RESULT_BACKEND_HOST):6379'
+
+                        -   name: RESULT_BACKEND_LEADER
+                            value: 'redismaster'

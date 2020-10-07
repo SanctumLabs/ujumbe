@@ -6,7 +6,7 @@ metadata:
   labels: &SmsLabels
     app: sms
     tier: backend
-    role: communication
+    role: api
     component: sms
 spec:
   selector: *SmsLabels
