@@ -1,5 +1,5 @@
 {
-    "branches": ["production", {"name": "master", "prerelease": true}],
+    "branches": ["production", {"name": "beta", "prerelease": true}],
     "repositoryUrl": "https://github.com/GariHubLtd/sms-gateway.git",
     "tagFormat": "v${version}",
     "plugins": [

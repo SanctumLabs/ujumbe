@@ -31,7 +31,7 @@ class TestConfigurationsCases(BaseTestCase):
 
     def test_app_has_set_sms_token_and_url_to_test_values(self):
         """Test the application has set the SMS_TOKEN and SMS_API_URL to test values"""
-        token = current_app.config.get("SMS_TOKEN")
+        token = current_app.config.get("SMS_API_TOKEN")
         base_url = current_app.config.get("SMS_API_URL")
         self.assertEqual(token, "sms-token")
         self.assertEqual(base_url, "https://api.sms.test.com")

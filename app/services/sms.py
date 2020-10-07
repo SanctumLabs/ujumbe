@@ -12,10 +12,9 @@ import africastalking
 
 
 @logger.catch
-def send_sms(to: list, message: str, from_: dict = None):
+def send_sms(to: list, message: str):
     """
     Sends a plain text message to a list of recipients with 
-    :param dict from_: sender of sms (Optional), will default to value set in DEFAULT_SENDER config
     :param str message: Message to send in body of sms
     :param list to: List of recipients of this sms
     :param str subject: The subject of the sms

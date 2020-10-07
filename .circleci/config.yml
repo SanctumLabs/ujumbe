@@ -11,10 +11,6 @@ executors:
         docker:
             - image: circleci/node:10
         working_directory: ~/sms-gateway
-    gcloud-executor:
-        docker:
-            -   image: google/cloud-sdk
-        working_directory: ~/sms-gateway
 
 jobs:
     dependencies:
@@ -145,16 +141,16 @@ jobs:
             - run:
                 name: Tag production docker image
                 command: |
-                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:preproduction
-                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:preproduction-v$CIRCLE_BUILD_NUM
+                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:beta
+                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:beta-v$CIRCLE_BUILD_NUM
 
             - run:
                 name: Push application Docker image
                 command: |
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
                     docker push garihublimited/sms-gateway:$CIRCLE_SHA1
-                    docker push garihublimited/sms-gateway:preproduction
-                    docker push garihublimited/sms-gateway:preproduction-v$CIRCLE_BUILD_NUM
+                    docker push garihublimited/sms-gateway:beta
+                    docker push garihublimited/sms-gateway:beta-v$CIRCLE_BUILD_NUM
 
     push_production:
         executor: docker-executor
@@ -202,18 +198,6 @@ jobs:
                 name: Publish release
                 command: npx semantic-release
 
-    # rollout_release:
-    #     executor: gcloud-executor
-    #     steps:
-    #         - run:
-    #             name: Rollout Production release
-    #             command: |
-    #                 echo $GKE_WEBSITE_SERVICE_KEY >> /tmp/${GKE_WEBSITE_CLUSTER_NAME}.json
-    #                 gcloud auth activate-service-account --key-file=/tmp/${GKE_WEBSITE_CLUSTER_NAME}.json
-    #                 gcloud container clusters get-credentials ${GKE_WEBSITE_CLUSTER_NAME} --region ${GKE_WEBSITE_COMPUTE_ZONE} --project ${GKE_WEBSITE_PROJECT_ID}
-    #                 kubectl set image deployment sms-api sms-api=garihublimited/sms-gateway:production-v$CIRCLE_PREVIOUS_BUILD_NUM -n website-prod
-    #                 kubectl set image deployment sms-worker sms-worker=garihublimited/sms-gateway:production-v$CIRCLE_PREVIOUS_BUILD_NUM -n website-prod
-
 workflows:
   version: 2
   test_build_push_tag:
@@ -228,7 +212,8 @@ workflows:
         filters:
           branches:
             only:
-            - master
+            - beta
+            - production
             - develop
         requires:
         - test
@@ -247,7 +232,7 @@ workflows:
         filters:
           branches:
             only:
-            - master
+            - beta
         requires:
         - build_docker_image
 
@@ -260,21 +245,12 @@ workflows:
         requires:
         - build_docker_image
 
-    # - rollout_release:
-    #       context: garihub-context
-    #       filters:
-    #           branches:
-    #               only:
-    #                   - production
-    #       requires:
-    #           - push_production
-
     - publish_prerelease:
           context: garihub-context
           filters:
               branches:
                   only:
-                      - master
+                      - beta
           requires:
               - push_preproduction
 
@@ -284,5 +260,3 @@ workflows:
               branches:
                   only:
                       - production
-        #   requires:
-        #       - rollout_release
