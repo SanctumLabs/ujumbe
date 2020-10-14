@@ -40,6 +40,9 @@ spec:
                         -   name: FLASK_ENV
                             value: "staging"
 
+                        - name: BETTER_EXCEPTIONS
+                          value: '0'
+
                         -   name: PORT
                             value: "5000"
 
