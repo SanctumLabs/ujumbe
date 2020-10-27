@@ -91,11 +91,11 @@ jobs:
             - run:
                 name: Build application Docker image
                 command: |
-                    docker build -t garihublimited/sms-gateway:$CIRCLE_SHA1 .
+                    docker build -t garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) .
             - run:
                 name: Save application Docker image
                 command: |
-                    docker save -o sms-gateway-image.tar garihublimited/sms-gateway:$CIRCLE_SHA1
+                    docker save -o sms-gateway-image.tar garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7)
 
             - persist_to_workspace:
                 root: .
@@ -114,19 +114,18 @@ jobs:
                     docker load --input sms-gateway-image.tar
 
             - run:
-               name: Tag $CIRCLE_SHA1 docker image
+               name: Tag Latest docker image
                command: |
-                   docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:latest
-                   docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:latest-v$CIRCLE_BUILD_NUM
+                   docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:latest
+                   docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:latest-$(echo $CIRCLE_SHA1 | cut -c0-7)
             - run:
                 name: Push application Docker image
                 command: |
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
-                    docker push garihublimited/sms-gateway:$CIRCLE_SHA1
                     docker push garihublimited/sms-gateway:latest
-                    docker push garihublimited/sms-gateway:latest-v$CIRCLE_BUILD_NUM
+                    docker push garihublimited/sms-gateway:latest-$(echo $CIRCLE_SHA1 | cut -c0-7)
 
-    push_preproduction:
+    push_alpha:
         executor: docker-executor
         steps:
             - setup_remote_docker
@@ -139,18 +138,67 @@ jobs:
                     docker load --input sms-gateway-image.tar
 
             - run:
-                name: Tag production docker image
-                command: |
-                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:beta
-                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:beta-v$CIRCLE_BUILD_NUM
+               name: Tag Alpha docker image
+               command: |
+                   docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:alpha
+                   docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:alpha-$(echo $CIRCLE_SHA1 | cut -c0-7)
 
             - run:
                 name: Push application Docker image
                 command: |
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
-                    docker push garihublimited/sms-gateway:$CIRCLE_SHA1
+                    docker push garihublimited/sms-gateway:alpha
+                    docker push garihublimited/sms-gateway:alpha-$(echo $CIRCLE_SHA1 | cut -c0-7)
+
+    push_beta:
+        executor: docker-executor
+        steps:
+            - setup_remote_docker
+            - attach_workspace:
+                at: .
+
+            - run:
+                name: Load application Docker image
+                command: |
+                    docker load --input sms-gateway-image.tar
+
+            - run:
+                name: Tag Beta docker image
+                command: |
+                    docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:beta
+                    docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:beta-$(echo $CIRCLE_SHA1 | cut -c0-7)
+
+            - run:
+                name: Push application Docker image
+                command: |
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
                     docker push garihublimited/sms-gateway:beta
-                    docker push garihublimited/sms-gateway:beta-v$CIRCLE_BUILD_NUM
+                    docker push garihublimited/sms-gateway:beta-$(echo $CIRCLE_SHA1 | cut -c0-7)
+
+    push_rc:
+        executor: docker-executor
+        steps:
+            - setup_remote_docker
+            - attach_workspace:
+                at: .
+
+            - run:
+                name: Load application Docker image
+                command: |
+                    docker load --input sms-gateway-image.tar
+
+            - run:
+                name: Tag RC docker image
+                command: |
+                    docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:rc
+                    docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:rc-$(echo $CIRCLE_SHA1 | cut -c0-7)
+
+            - run:
+                name: Push application Docker image
+                command: |
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
+                    docker push garihublimited/sms-gateway:rc
+                    docker push garihublimited/sms-gateway:rc-$(echo $CIRCLE_SHA1 | cut -c0-7)
 
     push_production:
         executor: docker-executor
@@ -167,28 +215,17 @@ jobs:
             - run:
                 name: Tag production docker image
                 command: |
-                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:production
-                    docker tag garihublimited/sms-gateway:$CIRCLE_SHA1 garihublimited/sms-gateway:production-v$CIRCLE_BUILD_NUM
+                    docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:production
+                    docker tag garihublimited/sms-gateway:$(echo $CIRCLE_SHA1 | cut -c0-7) garihublimited/sms-gateway:production-$(echo $CIRCLE_SHA1 | cut -c0-7)
 
             - run:
                 name: Push application Docker image
                 command: |
                     docker login -u $DOCKER_USER -p $DOCKER_PASS
-                    docker push garihublimited/sms-gateway:$CIRCLE_SHA1
                     docker push garihublimited/sms-gateway:production
-                    docker push garihublimited/sms-gateway:production-v$CIRCLE_BUILD_NUM
+                    docker push garihublimited/sms-gateway:production-$(echo $CIRCLE_SHA1 | cut -c0-7)
 
     publish_release:
-        executor: node-executor
-        steps:
-            - attach_workspace:
-                  at: .
-
-            - run:
-                name: Publish release
-                command: npx semantic-release
-
-    publish_prerelease:
         executor: node-executor
         steps:
             - attach_workspace:
@@ -212,7 +249,9 @@ workflows:
         filters:
           branches:
             only:
+            - alpha
             - beta
+            - rc
             - production
             - develop
         requires:
@@ -227,12 +266,30 @@ workflows:
         requires:
         - build_docker_image
 
-    - push_preproduction:
+    - push_alpha:
+        context: garihub-context
+        filters:
+          branches:
+            only:
+            - alpha
+        requires:
+        - build_docker_image
+
+    - push_beta:
         context: garihub-context
         filters:
           branches:
             only:
             - beta
+        requires:
+        - build_docker_image
+
+    - push_rc:
+        context: garihub-context
+        filters:
+          branches:
+            only:
+            - rc
         requires:
         - build_docker_image
 
@@ -245,18 +302,17 @@ workflows:
         requires:
         - build_docker_image
 
-    - publish_prerelease:
-          context: garihub-context
-          filters:
-              branches:
-                  only:
-                      - beta
-          requires:
-              - push_preproduction
-
     - publish_release:
           context: garihub-context
+          requires:
+              - push_alpha
+              - push_beta
+              - push_rc
+              - push_production
           filters:
               branches:
                   only:
                       - production
+                      - rc
+                      - beta
+                      - alpha
