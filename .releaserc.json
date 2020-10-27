@@ -1,6 +1,6 @@
 {
     "branches": ["production", {"name": "rc", "prerelease": true}, {"name": "beta", "prerelease": true}, {"name": "alpha", "prerelease": true}],
-    "repositoryUrl": "https://github.com/GariHubLtd/sms-gateway.git",
+    "repositoryUrl": "https://github.com/garihubltd/sms-gateway.git",
     "tagFormat": "v${version}",
     "plugins": [
       "@semantic-release/commit-analyzer",
