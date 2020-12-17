@@ -22,11 +22,11 @@ def send_sms(to: list, message: str):
     """
 
     try:
-        sender_id = "GARIHUB"
-        logger.info(f"Sending sms to {to} using sender {sender_id}")
+        logger.info(f"Sending sms to {to}")
 
         username = current_app.config.get("SMS_API_USERNAME")
         api_key = current_app.config.get("SMS_API_TOKEN")
+        sender_id = current_app.config.get("SMS_SENDER_ID")
 
         africastalking.initialize(username, api_key)
         sms = africastalking.SMS
