@@ -44,6 +44,7 @@ class Config(object):
 
     SMS_API_USERNAME = os.environ.get("SMS_API_USERNAME", "")
     SMS_API_TOKEN = os.environ.get("SMS_API_TOKEN", "")
+    SMS_SENDER_ID = os.environ.get("SMS_SENDER_ID", "GARIHUB")
     SMS_API_URL = os.environ.get("SMS_API_URL", "")
     RESULT_BACKEND = os.environ.get("RESULT_BACKEND", "rpc://")
 
@@ -80,6 +81,7 @@ class TestingConfig(Config):
     DEFAULT_SENDER = "254000000"
     SMS_API_USERNAME = "username"
     SMS_API_TOKEN = "sms-token"
+    SMS_SENDER_ID = "sender-id"
     SMS_API_URL = "https://api.sms.test.com"
 
 

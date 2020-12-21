@@ -14,10 +14,11 @@ import africastalking
 @logger.catch
 def send_sms(to: list, message: str):
     """
-    Sends a plain text message to a list of recipients with 
+    Sends a plain text message to a list of recipients with
     :param str message: Message to send in body of sms
     :param list to: List of recipients of this sms
     :param str subject: The subject of the sms
+    :param sender_id subject: The Registered alphanumeric sender id
     """
 
     try:
@@ -25,12 +26,13 @@ def send_sms(to: list, message: str):
 
         username = current_app.config.get("SMS_API_USERNAME")
         api_key = current_app.config.get("SMS_API_TOKEN")
+        sender_id = current_app.config.get("SMS_SENDER_ID")
 
         africastalking.initialize(username, api_key)
         sms = africastalking.SMS
 
         # synchronous request to send out an SMS
-        response = sms.send(message, to)
+        response = sms.send(message, to, sender_id)
         return dict(message="Message successfully sent", response=response)
     except Exception as e:
         logger.error(f"Failed to send sms with error {e}")
