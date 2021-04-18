@@ -1,6 +1,0 @@
-kind: Namespace
-apiVersion: v1
-metadata:
-  name: comms
-  labels:
-    istio-injection: enabled
