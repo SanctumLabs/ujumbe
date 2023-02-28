@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "ujumbe"
+version = "1.0.0"
+description = ""
+authors = ["BrianLusina <12752833+BrianLusina@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.92.0"
+uvicorn = {extras = ["stadard"], version = "^0.20.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

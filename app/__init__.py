@@ -1,4 +1,5 @@
 import logging
+from fastapi import FastAPI
 from flask import Flask, jsonify
 from .config import config
 import jinja2
@@ -11,6 +12,8 @@ from .constants import SMS_DEFAULT_EXCHANGE, SMS_DEFAULT_QUEUE_NAME, SMS_DEFAULT
 
 broker = os.environ.get("BROKER_URL", "amqp://")
 result_backend = os.environ.get("RESULT_BACKEND", "rpc://")
+
+app = FastAPI(title="Ujumbe")
 
 celery_app = Celery("SmsGateway", broker=broker, backend=result_backend, include=["app.tasks"])
 
@@ -165,6 +168,6 @@ def register_app_blueprints(app_):
     Registers the application blueprints
     :param app_: the current flask app
     """
-    from app.api import sms_api
+    from app.api import sms
 
-    app_.register_blueprint(sms_api)
+    app_.register_blueprint(sms)
