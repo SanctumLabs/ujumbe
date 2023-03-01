@@ -1,42 +1,38 @@
 from fastapi import APIRouter
-from .. import sms
-from flask import jsonify, request
+from starlette import status
 from app.logger import log as logger
-from ..schemas import SmsMessageSchema
-from .dto import SmsRequestDto
-from ..dto import BadRequest
-from app.exceptions import SmsGatewayError
-from app.tasks.sms_sending_task import sms_sending_task
-from marshmallow.exceptions import ValidationError
+from .dto import SmsRequestDto, SmsResponseDto
+from ..dto import BadRequest, ApiResponse
+from app.core.domain.exceptions import AppException
+from app.modules.sms.domain.send_sms import send_sms
+from app.modules.sms.entities.sms_request import SmsRequest
+
 
 router = APIRouter(prefix = "/v1/sms/", tags = ["SMS"])
 
+
 @logger.catch
-@router.post(path="/", summary="Sends SMS", description="Sends an SMS request")
+@router.post(path="/", summary="Sends SMS", description="Sends an SMS request", response_class=SmsResponseDto)
 async def send_sms(payload: SmsRequestDto):
     """
     Send sms API function. This is a POST REST endpoint that accepts requests that meet the criteria defined by the
     schema validation before sending a plain text sms
     :return: JSON response to client
-    :rtype: dict
     """
     if not payload:
         return BadRequest(message="No data provided")
 
     try:
-        # validate JSON body
-        data = sms_message_schema.load(payload)
+        data = dict(
+            phone_number=payload.phone_number,
+            message = payload.message
+        )
 
-        sms_sending_task.apply_async(
-            kwargs=dict(
-                to=data.get("to"),
-                message=data.get("message"),
-            ))            
+        sms_request = SmsRequest(**data)
+        
+        send_sms(sms_request)
 
-        return jsonify(dict(
-            message="Sms sent out successfully"
-        )), 200
-    except ValidationError as ve:
-        logger.error(f"Failed to send sms to {payload.get('to')} with error {e}")
-        logger.error(f"Failed to load schema with error {ve}")
-        return jsonify(dict(errors=[ve.messages])), 422
+        return ApiResponse(status=status.HTTP_200_OK, message="Sms sent out successfully")
+    except AppException as e:
+        logger.error(f"Failed to send sms to {payload} with error {e}")
+        return ApiResponse(status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to send email")

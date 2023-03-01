@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.10"
 fastapi = "^0.92.0"
 uvicorn = {extras = ["stadard"], version = "^0.20.0"}
+celery = {extras = ["redis"], version = "^5.2.7"}
+python-dotenv = "^1.0.0"
+loguru = "^0.6.0"
 
 
 [build-system]

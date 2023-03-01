@@ -1,15 +1,15 @@
-from app import celery_app
+from app.celery_app import celery_app
 from app.logger import log
+from app.modules.sms.entities.sms_request import SmsRequest
 from app.services.sms import send_sms
 from app.constants import SMS_ERROR_EXCHANGE, SMS_ERROR_ROUTING_KEY
 from .exceptions import TaskException
-import os
-import json
 
 
-@celery_app.task(bind=True, default_retry_delay=30, max_retries=3, name="sms_sending_task")
+@celery_app.task(bind=True, default_retry_delay=30, max_retries=3, name="sms_sending_task", acks_late=True)
 @log.catch
-def sms_sending_task(self, to, message):
+def sms_sending_task(self, data: SmsRequest):
+    to, message = data.phone_number, data.message
     try:
         result = send_sms(
             to=to,
@@ -27,4 +27,3 @@ def sms_sending_task(self, to, message):
             # push_to_error_queue(from_, to, message)
 
         raise self.retry(countdown=30 * 2, exc=exc, max_retries=3)
-

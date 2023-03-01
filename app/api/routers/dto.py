@@ -14,7 +14,6 @@ class SmsRequestDto(BaseModel):
     phone_number: str
     message: str
 
-
     @validator("message")
     def message_must_be_valid(cls, m: str):
         """
@@ -23,6 +22,14 @@ class SmsRequestDto(BaseModel):
         if len(m) == 0:
             raise ValueError("must not be empty")
         return m
+
+
+class SmsResponseDto(BaseModel):
+    """
+    SMS Response DTO
+    """
+
+    message: str
 
 
 class BulkSmsRequestDto(BaseModel):
@@ -41,4 +48,4 @@ class BulkSmsRequestDto(BaseModel):
         """
         if len(m) == 0:
             raise ValueError("must not be empty")
-        return m    
+        return m

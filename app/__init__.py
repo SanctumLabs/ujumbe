@@ -1,50 +1,20 @@
-import logging
 from fastapi import FastAPI
-from flask import Flask, jsonify
 from .config import config
-import jinja2
 from .logger import log as app_logger
-from celery import Celery
 from kombu import Queue
-import os
+from app.api.routers.sms import router as sms_router
+from app.infra.middleware.header_middleware import HeaderMiddleware
+from app.infra.middleware.logger_middleware import LoggerRequestMiddleware
 from .constants import SMS_DEFAULT_EXCHANGE, SMS_DEFAULT_QUEUE_NAME, SMS_DEFAULT_ROUTING_KEY, SMS_EXCHANGE, \
     SMS_QUEUE_NAME, SMS_ROUTING_KEY
 
-broker = os.environ.get("BROKER_URL", "amqp://")
-result_backend = os.environ.get("RESULT_BACKEND", "rpc://")
 
 app = FastAPI(title="Ujumbe")
 
-celery_app = Celery("SmsGateway", broker=broker, backend=result_backend, include=["app.tasks"])
+app.add_middleware(HeaderMiddleware)
+app.add_middleware(LoggerRequestMiddleware)
 
-
-class SmsGateway(Flask):
-    """
-     Custom application class subclassing Flask application. This is to ensure more modularity in
-      terms of static files and templates. This way a module will have its own templates and the
-       root template folder will be more modularized and easier to manage
-     """
-
-    def __init__(self):
-        """
-        jinja_loader object (a FileSystemLoader pointing to the global templates folder) is
-        being replaced with a ChoiceLoader object that will first search the normal
-        FileSystemLoader and then check a PrefixLoader that we create
-        """
-        Flask.__init__(self, __name__)
-        self.jinja_loader = jinja2.ChoiceLoader(
-            [self.jinja_loader, jinja2.PrefixLoader({}, delimiter=".")]
-        )
-
-    def register_blueprint(self, blueprint, **options):
-        """
-        Overriding to add the blueprints names to the prefix loader's mapping
-        :param blueprint:
-        :param options:
-        """
-        Flask.register_blueprint(self, blueprint, **options)
-        self.jinja_loader.loaders[1].mapping[blueprint.name] = blueprint.jinja_loader
-
+app.include_router(prefix="/api", router=sms_router)
 
 def create_app(config_name):
     """
@@ -53,15 +23,9 @@ def create_app(config_name):
     :return: a new WSGI Flask app
     :rtype: Flask
     """
-    app = SmsGateway()
-
-    app.config.from_object(config[config_name])
-    config[config_name].init_app(app)
 
     error_handlers(app)
     register_app_blueprints(app)
-    app_logger_handler(app)
-    request_handlers(app)
 
     # Task Queues
     task_queues = (
@@ -85,8 +49,6 @@ def create_app(config_name):
         task_routes=task_routes
     ))
     
-    # Initialize celery application
-    celery_app.conf.update(app.config)
 
     # this will reduce the load time for templates and increase the application performance
     app.jinja_env.cache = {}
@@ -96,38 +58,6 @@ def create_app(config_name):
         return jsonify({"message": "I am healthy :D"}), 200
 
     return app
-
-
-def request_handlers(app_):
-    """
-    Handles before and after the requests handled by the application
-    :param app_: the current application
-    """
-
-    @app_.after_request
-    def after_request(response):
-        """
-        Is handled afer each request and can be used to add headers to the response
-        or handle further processing
-        :param response: Response object that is sent back to client
-        """
-        response.headers["X-Frame-Options"] = "DENY"
-        response.headers["X-Content-Type-Options"] = "nosniff"
-        response.headers["X-XSS-Protection"] = "1; mode=block"
-        return response
-
-
-def app_logger_handler(app):
-    """
-    Will handle error logging for the application and will store the app log files in a file that can
-    later be accessed.
-    :param app: current flask application
-    """
-
-    if app.debug:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
 
 
 def error_handlers(app):
