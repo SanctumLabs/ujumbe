@@ -12,6 +12,7 @@ uvicorn = {extras = ["stadard"], version = "^0.20.0"}
 celery = {extras = ["redis"], version = "^5.2.7"}
 python-dotenv = "^1.0.0"
 loguru = "^0.6.0"
+httpx = "^0.23.3"
 
 
 [tool.poetry.group.dev.dependencies]

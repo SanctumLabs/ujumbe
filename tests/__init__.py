@@ -1,44 +1,32 @@
 import unittest
-from flask_testing import TestCase
-from app import create_app
+import os
+from fastapi.testclient import TestClient
+from app.config import Config, get_config
+from app import app
+from httpx import AsyncClient
 
 
-class ContextTestCase(TestCase):
-    render_templates = False
-
-    def create_app(self):
-        app = create_app("testing")
-        app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
-        return app
-
-    def _pre_setup(self):
-        self.app = create_app('testing')
-        self.client = self.app.test_client()
-
-    def __call__(self, result=None):
-        try:
-            self._pre_setup()
-            super(ContextTestCase, self).__call__(result)
-        finally:
-            self._post_teardown()
-
-    def _post_teardown(self):
-        if getattr(self, '_ctx', None) and self._ctx is not None:
-            self._ctx.pop()
-            del self._ctx
-
-
-class BaseTestCase(ContextTestCase):
+class BaseTestCase(unittest.TestCase):
     """
     Base test case for application
     """
 
+    os.environ.update(SENTRY_ENABLED="False", RESULT_BACKEND="rpc")
+
     def setUp(self):
-        self.app_context = self.app.app_context()
-        self.app_context.push()
+        self.test_client = TestClient(app=app)
+        app.dependency_overrides[get_config] = self._get_settings_override()
+        self.async_client = AsyncClient(app=self.test_client, base_url="http://test")
 
     def tearDown(self):
-        self.app_context.pop()
+        pass
+
+    @staticmethod
+    def _get_settings_override():
+        return Config(environment="test", sentry_debug_enabled=False, sentry_enabled=False, sentry_dsn="")
+
+    def assert_status(self, status_code: int, actual: int):
+        self.assertEqual(status_code, actual)
 
 
 if __name__ == "__main__":
