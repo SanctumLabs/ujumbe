@@ -30,7 +30,7 @@ class SmsRequest(BaseModel):
         """
         pattern = r"^\+\d{1,3}\d{3,}$"
         match = re.match(pattern, phone)
-        
+
         if not match:
             raise ValueError("phone number is not valid")
         return phone

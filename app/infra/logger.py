@@ -20,7 +20,7 @@ log.add(
     format="<green>{time}</green> <level>{message}</level>",
     # format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
     enqueue=True,
-    level="INFO"
+    level="INFO",
 )
 
 # error logs
@@ -33,7 +33,7 @@ log.add(
     format="<green>{time}</green> <level>{message}</level>",
     # format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
     enqueue=True,
-    level="ERROR"
+    level="ERROR",
 )
 
 # debug logs
@@ -46,7 +46,7 @@ log.add(
     format="<green>{time}</green> <level>{message}</level>",
     # format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
     enqueue=True,
-    level="DEBUG"
+    level="DEBUG",
 )
 
 # warning logs
@@ -59,7 +59,7 @@ log.add(
     format="<green>{time}</green> <level>{message}</level>",
     # format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
     enqueue=True,
-    level="WARNING"
+    level="WARNING",
 )
 
 # critical logs
@@ -72,7 +72,7 @@ log.add(
     format="<green>{time}</green> <level>{message}</level>",
     # format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
     enqueue=True,
-    level="CRITICAL"
+    level="CRITICAL",
 )
 
 # trace logs
@@ -85,5 +85,5 @@ log.add(
     format="<green>{time}</green> <level>{message}</level>",
     # format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {message}",
     enqueue=True,
-    level="TRACE"
+    level="TRACE",
 )

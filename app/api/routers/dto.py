@@ -40,7 +40,6 @@ class BulkSmsRequestDto(BaseModel):
     phone_number: List[str]
     message: str
 
-
     @validator("message")
     def message_must_be_valid(cls, m: str):
         """

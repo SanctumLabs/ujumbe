@@ -10,6 +10,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def load_from_file(path: str, mode: str, encoding: str) -> AnyStr:
     """
     Convenience function that reads contents of a file
@@ -32,7 +33,7 @@ class Config(BaseSettings):
     """
 
     server_name: str = "Ujumbe"
-    description: str = "Simple RESTful Email Server"
+    description: str = "Simple RESTful SMS Server"
     base_url: str = "/api/v1/ujumbe"
     environment: str = "development"
     docs_disabled: bool = False

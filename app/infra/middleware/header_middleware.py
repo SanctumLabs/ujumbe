@@ -15,4 +15,4 @@ class HeaderMiddleware(BaseHTTPMiddleware):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["server"] = config.server_name
-        return response        
+        return response

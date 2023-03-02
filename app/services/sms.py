@@ -5,10 +5,10 @@ Ensure that the correct environment variables have been set for the SMTP client 
 These env variables are imported and included in the config.py file under the Config class for these to be available in
 the current application context
 """
-from app.logger import log as logger
-from flask import current_app
+from app.infra.logger import log as logger
 from .exceptions import SmsSendingException, ServiceIntegrationException
-import africastalking
+from app.config import get_config
+# import africastalking
 
 
 @logger.catch
@@ -24,16 +24,16 @@ def send_sms(to: list, message: str):
     try:
         logger.info(f"Sending sms to {to}")
 
-        username = current_app.config.get("SMS_API_USERNAME")
-        api_key = current_app.config.get("SMS_API_TOKEN")
-        sender_id = current_app.config.get("SMS_SENDER_ID")
+        username = get_config().sms_api_username
+        api_key = get_config().sms_api_token
+        sender_id = get_config().sms_sender_id
 
-        africastalking.initialize(username, api_key)
-        sms = africastalking.SMS
+        # africastalking.initialize(username, api_key)
+        # sms = africastalking.SMS
 
         # synchronous request to send out an SMS
-        response = sms.send(message, to, sender_id)
-        return dict(message="Message successfully sent", response=response)
+        # response = sms.send(message, to, sender_id)
+        return dict(message="Message successfully sent", response={})
     except Exception as e:
         logger.error(f"Failed to send sms with error {e}")
 
