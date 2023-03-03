@@ -9,11 +9,11 @@ fake.add_provider(lorem)
 
 class MessageTestCases(unittest.TestCase):
     
-    def test_valid_phone_number_is_allowed(self):
+    def test_valid_message_is_allowed(self):
         valid_message = fake.text()
         Message(value=valid_message)
 
-    def test_invalid_phone_number_is_not_allowed(self):
+    def test_invalid_message_is_not_allowed(self):
         invalid_message = fake.text(5000)
         with self.assertRaises(Exception):
             Message(value=invalid_message)

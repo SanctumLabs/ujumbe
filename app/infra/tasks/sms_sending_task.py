@@ -1,6 +1,6 @@
 from app.celery_app import celery_app
 from app.infra.logger import log
-from app.modules.sms.entities.sms_request import SmsRequest
+from app.modules.sms.entities.sms import Sms
 from app.services.sms import send_sms
 from .exceptions import TaskException
 
@@ -13,7 +13,7 @@ from .exceptions import TaskException
     acks_late=True,
 )
 @log.catch
-def sms_sending_task(self, data: SmsRequest):
+def sms_sending_task(self, data: Sms):
     to, message = data.phone_number, data.message
     try:
         result = send_sms(

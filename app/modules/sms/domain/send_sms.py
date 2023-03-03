@@ -1,12 +1,12 @@
 """
 Use case to send out sms
 """
-from ..entities.sms_request import SmsRequest
+from ..entities.sms import Sms
 from .exceptions import SendSmsException
 from app.infra.tasks.sms_sending_task import sms_sending_task
 
 
-def send_sms(request: SmsRequest):
+def send_sms(request: Sms):
     """
     Use case that sends out an SMS.
     We will first persist the SMS request, before sending it out. This will send an event to a broker

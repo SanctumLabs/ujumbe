@@ -5,7 +5,7 @@ from .dto import SmsRequestDto
 from ..dto import BadRequest, ApiResponse
 from app.core.domain.exceptions import AppException
 from app.modules.sms.domain.send_sms import send_sms as send_sms_service
-from app.modules.sms.entities.sms_request import SmsRequest
+from app.modules.sms.entities.sms import Sms
 
 
 router = APIRouter(prefix="/v1/sms", tags=["SMS"])
@@ -30,7 +30,7 @@ async def send_sms(payload: SmsRequestDto):
     try:
         data = dict(phone_number=payload.phone_number, message=payload.message)
 
-        sms_request = SmsRequest(**data)
+        sms_request = Sms(**data)
 
         send_sms_service(sms_request)
 
