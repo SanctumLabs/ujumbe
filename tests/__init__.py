@@ -27,7 +27,3 @@ class BaseTestCase(unittest.TestCase):
 
     def assert_status(self, status_code: int, actual: int):
         self.assertEqual(status_code, actual)
-
-
-if __name__ == "__main__":
-    unittest.main()

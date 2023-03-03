@@ -15,4 +15,6 @@ def send_sms(request: SmsRequest):
     """
     if not request:
         raise SendSmsException("Invalid sms request provided")
+    # TODO: save sms request in database
+    # TODO: publish SEND_SMS_EVENT
     sms_sending_task.apply_async(kwargs=dict(data=request.dict()))

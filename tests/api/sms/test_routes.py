@@ -1,8 +1,8 @@
 import unittest
 from unittest.mock import patch
 import pytest
-from app.core.domain.exceptions import AppException
 from tests import BaseTestCase
+from app.core.domain.exceptions import AppException
 import os
 
 base_url = "/api/v1/sms/"

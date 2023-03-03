@@ -8,6 +8,7 @@ the current application context
 from app.infra.logger import log as logger
 from .exceptions import SmsSendingException, ServiceIntegrationException
 from app.config import get_config
+
 # import africastalking
 
 

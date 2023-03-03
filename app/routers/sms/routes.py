@@ -16,7 +16,7 @@ router = APIRouter(prefix="/v1/sms", tags=["SMS"])
     path="/",
     summary="Sends SMS",
     description="Sends an SMS request",
-    response_model=ApiResponse
+    response_model=ApiResponse,
 )
 async def send_sms(payload: SmsRequestDto):
     """

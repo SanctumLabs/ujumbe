@@ -24,11 +24,13 @@ run-analytics-worker:
 
 # Runs tests
 test:
-	pytest
+	PYTHONPATH=. pytest
+.PHONY: test
 
 # Runs tests with coverage
 test-cover:
-	pytest --cov=app tests/
+	PYTHONPATH=. pytest --cov=app tests/
+.PHONY: test-cover
 
 format:
 	black app
