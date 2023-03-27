@@ -55,6 +55,13 @@ class Config(BaseSettings):
     username: str = "ujumbe-user"
     password: str = "ujumbe-password"
 
+    # kafka settings
+    kafka_bootstrap_servers = "http://localhost:9091"
+    kafka_security_protocol = "ssl"
+    kafka_sasl_mechanisms = ""
+    kafka_sasl_username = "ujumbe"
+    kafka_sasl_password = "ujumbe"
+
 
 config = Config()
 

@@ -1,5 +1,5 @@
 import unittest
-from app.modules.sms.entities.phone_number import PhoneNumber
+from app.domain.entities.phone_number import PhoneNumber
 
 class PhoneNumberTestCases(unittest.TestCase):
     def test_valid_phone_number_is_allowed(self):

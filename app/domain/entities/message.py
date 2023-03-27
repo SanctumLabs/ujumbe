@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from pydantic import Field
 from app.core.domain.entities.value_object import ValueObject
 
-
 VALID_MESSAGE_LENGTH = 435
+
 
 @dataclass(frozen=True)
 class Message(ValueObject):

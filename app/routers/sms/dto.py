@@ -11,7 +11,8 @@ class SmsRequestDto(BaseModel):
     SMS Request Payload DTO
     """
 
-    phone_number: str
+    sender: str | None
+    recipient: str
     message: str
 
     @validator("message")
@@ -37,7 +38,7 @@ class BulkSmsRequestDto(BaseModel):
     SMS Request Payload DTO
     """
 
-    phone_number: List[str]
+    recipients: List[str]
     message: str
 
     @validator("message")

@@ -4,9 +4,8 @@ from app.infra.logger import log as logger
 from .dto import SmsRequestDto
 from ..dto import BadRequest, ApiResponse
 from app.core.domain.exceptions import AppException
-from app.modules.sms.domain.send_sms import send_sms as send_sms_service
-from app.modules.sms.entities.sms import Sms
-
+from app.domain.sms.send_sms import send_sms as send_sms_service
+from app.domain.entities.sms import Sms
 
 router = APIRouter(prefix="/v1/sms", tags=["SMS"])
 
@@ -28,11 +27,11 @@ async def send_sms(payload: SmsRequestDto):
         return BadRequest(message="No data provided")
 
     try:
-        data = dict(phone_number=payload.phone_number, message=payload.message)
+        data = dict(sender=payload.sender, recipient=payload.recipient, message=payload.message)
 
-        sms_request = Sms(**data)
+        sms = Sms.from_dict(data)
 
-        send_sms_service(sms_request)
+        send_sms_service(sms)
 
         return ApiResponse(
             status=status.HTTP_200_OK, message="Sms sent out successfully"

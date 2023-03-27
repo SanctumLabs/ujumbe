@@ -1,7 +1,7 @@
 """
 Use case to send out sms
 """
-from ..entities.sms import Sms
+from app.domain.entities.sms import Sms
 from .exceptions import SendSmsException
 from app.infra.tasks.sms_sending_task import sms_sending_task
 
@@ -15,6 +15,6 @@ def send_sms(request: Sms):
     """
     if not request:
         raise SendSmsException("Invalid sms request provided")
+    # TODO: publish SEND_SMS_EVENT_RECEIVED
     # TODO: save sms request in database
-    # TODO: publish SEND_SMS_EVENT
     sms_sending_task.apply_async(kwargs=dict(data=request.dict()))

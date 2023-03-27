@@ -1,14 +1,14 @@
 import unittest
 from faker import Faker
 from faker.providers import lorem
-from app.modules.sms.entities.message import Message
+from app.domain.entities.message import Message
 
 
 fake = Faker()
 fake.add_provider(lorem)
 
 class MessageTestCases(unittest.TestCase):
-    
+
     def test_valid_message_is_allowed(self):
         valid_message = fake.text()
         Message(value=valid_message)
