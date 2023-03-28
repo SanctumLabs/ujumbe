@@ -1,17 +1,16 @@
 from confluent_kafka import KafkaError, KafkaException, Producer
-from app.config import config
-
+from app.settings import config
 from .message import ProducerMessage
 
 
 class KafkaProducer:
     def __init__(self):
         self.conf = {
-            'bootstrap.servers': config.kafka_bootstrap_servers,
-            'security.protocol': config.kafka_security_protocol,
-            'sasl.mechanisms': config.kafka_sasl_mechanisms,
-            'sasl.username': config.kafka_sasl_password,
-            'sasl.password': config.kafka_sasl_password,
+            'bootstrap.servers': config.kafka.bootstrap_servers,
+            'security.protocol': config.kafka.security_protocol,
+            'sasl.mechanisms': config.kafka.sasl_mechanisms,
+            'sasl.username': config.kafka.sasl_password,
+            'sasl.password': config.kafka.sasl_password,
         }
         self._producer = Producer(self.conf)
 

@@ -23,13 +23,27 @@ def load_from_file(path: str, mode: str, encoding: str) -> AnyStr:
         return file.read()
 
 
+class KafkaSettings(BaseSettings):
+    """
+    Kafka Settings
+    """
+
+    bootstrap_servers: str = "http://localhost:9091"
+    security_protocol: str = "ssl"
+    sasl_mechanisms: str = ""
+    sasl_username: str = "ujumbe"
+    sasl_password: str = "ujumbe"
+
+    submit_sms_topic: str = "SUBMIT_SMS_TOPIC"
+
+
 # pylint: disable=too-few-public-methods
-class Config(BaseSettings):
+class AppSettings(BaseSettings):
     """
     Application settings
 
     You can overwrite any of these settings by having an environment
-    variable with the upper cased version of the name
+    variable with the upper-cased version of the name
     """
 
     server_name: str = "Ujumbe"
@@ -56,14 +70,10 @@ class Config(BaseSettings):
     password: str = "ujumbe-password"
 
     # kafka settings
-    kafka_bootstrap_servers = "http://localhost:9091"
-    kafka_security_protocol = "ssl"
-    kafka_sasl_mechanisms = ""
-    kafka_sasl_username = "ujumbe"
-    kafka_sasl_password = "ujumbe"
+    kafka: KafkaSettings = KafkaSettings()
 
 
-config = Config()
+config = AppSettings()
 
 
 @lru_cache()
@@ -71,4 +81,4 @@ def get_config():
     """
     Gets configuration This is wrapped with lru_cache to ensure we don't continuously read from .env file on restarts
     """
-    return Config()
+    return AppSettings()

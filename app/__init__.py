@@ -4,7 +4,7 @@ from app.routers.monitoring.routes import router as monitoring_router
 from app.infra.middleware.header_middleware import HeaderMiddleware
 from app.infra.middleware.logger_middleware import LoggerRequestMiddleware
 from app.infra.handlers.exception_handlers import attach_exception_handlers
-from .config import config
+from .settings import config
 
 
 app = FastAPI(

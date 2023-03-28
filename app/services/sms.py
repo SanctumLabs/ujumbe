@@ -2,12 +2,12 @@
 Send sms service wrapper. This handles sending the actual sms to recipients and handles connection to an SMS client
 if provided with the credentials to. If that fails, this will use an alternative to send an sms using Twilio API.
 Ensure that the correct environment variables have been set for the SMTP client and Sendgrid for this method to work.
-These env variables are imported and included in the config.py file under the Config class for these to be available in
+These env variables are imported and included in the settings.py file under the Config class for these to be available in
 the current application context
 """
 from app.infra.logger import log as logger
 from .exceptions import SmsSendingException, ServiceIntegrationException
-from app.config import get_config
+from app.settings import get_config
 
 # import africastalking
 
