@@ -7,7 +7,8 @@ from app.core.domain.exceptions import AppException
 from app.domain.sms.submit_sms import SubmitSmsService
 from app.config.di.dependency import dependency
 from app.domain.entities.sms import Sms
-from app.config.di.container import Container
+from app.config.di.container import ApplicationContainer
+from dependency_injector.wiring import inject
 
 router = APIRouter(prefix="/v1/sms", tags=["SMS"])
 
@@ -19,7 +20,8 @@ router = APIRouter(prefix="/v1/sms", tags=["SMS"])
     description="Sends an SMS request",
     response_model=ApiResponse,
 )
-async def send_sms(payload: SmsRequestDto, submit_sms: SubmitSmsService = dependency(Container.submit_sms)):
+@inject
+async def send_sms(payload: SmsRequestDto, submit_sms: SubmitSmsService = dependency(ApplicationContainer.domain.submit_sms)):
     """
     Send sms API function. This is a POST REST endpoint that accepts requests that meet the criteria defined by the
     schema validation before sending a plain text sms
