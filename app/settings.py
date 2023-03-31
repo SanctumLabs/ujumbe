@@ -23,6 +23,17 @@ def load_from_file(path: str, mode: str, encoding: str) -> AnyStr:
         return file.read()
 
 
+class DatabaseSettings(BaseSettings):
+    """
+    Database Settings
+    """
+
+    username: str = "ujumbe"
+    password: str = "ujumbe"
+    host: str = ""
+    url: str = "ssl"
+
+
 class KafkaSettings(BaseSettings):
     """
     Kafka Settings
@@ -35,6 +46,7 @@ class KafkaSettings(BaseSettings):
     sasl_password: str = "ujumbe"
 
     submit_sms_topic: str = "SUBMIT_SMS_TOPIC"
+    send_sms_topic: str = "SEND_SMS_TOPIC"
 
 
 # pylint: disable=too-few-public-methods
@@ -71,6 +83,7 @@ class AppSettings(BaseSettings):
 
     # kafka settings
     kafka: KafkaSettings = KafkaSettings()
+    database: DatabaseSettings = DatabaseSettings()
 
 
 config = AppSettings()
