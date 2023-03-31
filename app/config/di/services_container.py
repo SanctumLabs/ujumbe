@@ -1,11 +1,12 @@
 from dependency_injector import containers, providers
-from app.services.submit_sms_producer import SubmitSmsProducer
+from app.services.sms_producer import SmsProducer
+from app.services.sms_service import SmsService
 from app.settings import KafkaSettings
 
 
 class ServicesContainer(containers.DeclarativeContainer):
     """
-    Dependency Injector Container
+    Dependency Injector Container for wrapper for 3rd Party services or external services
 
     see https://github.com/ets-labs/python-dependency-injector for more details
     """
@@ -14,7 +15,18 @@ class ServicesContainer(containers.DeclarativeContainer):
     config = providers.Configuration(pydantic_settings=[KafkaSettings()])
 
     submit_sms_producer = providers.Factory(
-        SubmitSmsProducer,
+        SmsProducer,
         kafka_producer=gateways.kafka_producer_client,
         topic=config.submit_sms_topic
+    )
+
+    send_sms_producer = providers.Factory(
+        SmsProducer,
+        kafka_producer=gateways.kafka_producer_client,
+        topic=config.send_sms_topic
+    )
+
+    sms_service = providers.Factory(
+        SmsService,
+        sms_client=gateways.sms_client
     )
