@@ -1,9 +1,10 @@
 """
-Use case to send out sms
+Use case to submit an sms. This handles validation of the sms received, before submitting or emitting a SUBMIT_SMS_EVENT
+which is then picked up by another part of the system to then handle persisting SMS & sending it out
 """
 from app.domain.entities.sms import Sms
 from app.core.infra.producer import Producer
-from .exceptions import SendSmsException
+from .exceptions import SubmitSmsException
 from app.core.domain.services import Service
 
 
@@ -21,7 +22,7 @@ class SubmitSmsService(Service):
         Returns:
         """
         if not sms:
-            raise SendSmsException("Invalid sms request provided")
+            raise SubmitSmsException("Invalid sms request provided")
         try:
             self.producer.publish_message(sms)
         except Exception as e:
