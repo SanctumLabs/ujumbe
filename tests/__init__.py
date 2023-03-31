@@ -1,9 +1,10 @@
 import unittest
 import os
 from fastapi.testclient import TestClient
-from app.config import Config, get_config
-from app import app
 from httpx import AsyncClient
+import pytest
+from app import app
+from app.settings import AppSettings, get_config
 
 
 class BaseTestCase(unittest.TestCase):
@@ -16,14 +17,18 @@ class BaseTestCase(unittest.TestCase):
     def setUp(self):
         self.test_client = TestClient(app=app)
         app.dependency_overrides[get_config] = self._get_settings_override()
-        self.async_client = AsyncClient(app=self.test_client, base_url="http://test")
+
+    @pytest.fixture(scope="class")
+    async def client(self):
+        async with AsyncClient(app=app, base_url="http://test") as client:
+            yield client
 
     def tearDown(self):
         pass
 
     @staticmethod
     def _get_settings_override():
-        return Config(environment="test", sentry_debug_enabled=False, sentry_enabled=False, sentry_dsn="")
+        return AppSettings(environment="test", sentry_debug_enabled=False, sentry_enabled=False, sentry_dsn="")
 
     def assert_status(self, status_code: int, actual: int):
         self.assertEqual(status_code, actual)

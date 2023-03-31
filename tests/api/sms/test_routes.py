@@ -9,6 +9,7 @@ base_url = "/api/v1/sms/"
 os.environ.update(BROKER_URL="memory://", RESULT_BACKEND="rpc")
 
 
+@pytest.mark.usefixtures("client")
 class TestSmsApi(BaseTestCase):
     """
     Test Sms API
@@ -17,10 +18,9 @@ class TestSmsApi(BaseTestCase):
     @pytest.mark.anyio
     async def test_throws_405_with_invalid_get_request(self):
         """Test sms api throws 405 with invalid http get request"""
-        async with self.async_client as ac:
+        async with self.client as ac:
             response = ac.get(base_url)
-
-            self.assert405(response)
+            self.assert_status(400, response.status_code)
 
     @pytest.mark.anyio
     async def test_throws_405_with_invalid_patch_request(self):
