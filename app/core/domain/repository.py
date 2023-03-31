@@ -15,7 +15,7 @@ class Repository(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def get_by_id(id: UUID) -> Entity:
+    def get_by_id(self, id: str) -> Entity:
         raise NotImplementedError()
 
     def __getitem__(self, index) -> Entity:
