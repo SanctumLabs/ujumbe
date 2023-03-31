@@ -1,7 +1,7 @@
 from app.celery_app import celery_app
 from app.infra.logger import log
 from app.domain.entities.sms import Sms
-from app.services.sms import send_sms
+from app.services.sms_service import send_sms
 from .exceptions import TaskException
 
 
