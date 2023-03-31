@@ -4,7 +4,7 @@ from app.infra.broker.producer import KafkaProducer
 from app.infra.broker.message import ProducerMessage
 
 
-class SubmitSmsProducer(Producer):
+class SmsProducer(Producer):
 
     def __init__(self, topic: str, kafka_producer: KafkaProducer):
         self.topic = topic
