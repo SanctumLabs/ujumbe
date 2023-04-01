@@ -1,3 +1,6 @@
+from app.core.domain.exceptions import EntityNotFoundException
+
+
 class SendSmsException(Exception):
     """Send SMS Exception"""
 
@@ -8,3 +11,7 @@ class CreateSmsException(Exception):
 
 class SubmitSmsException(Exception):
     """Submit SMS Exception"""
+
+
+class SmsNotFoundError(EntityNotFoundException):
+    entity_name: str = "Sms"

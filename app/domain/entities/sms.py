@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from app.core.domain.entities.entity import Entity
 from .message import Message
 from .phone_number import PhoneNumber
+from .sms_status import SmsDeliveryStatus
 
 
 class Sms(BaseModel, Entity):
@@ -18,6 +19,7 @@ class Sms(BaseModel, Entity):
     sender: PhoneNumber = None
     recipient: PhoneNumber
     message: Message
+    status: SmsDeliveryStatus = SmsDeliveryStatus.PENDING
 
     @staticmethod
     def from_dict(data: Dict[str, str]) -> 'Sms':
