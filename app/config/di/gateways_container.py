@@ -14,6 +14,6 @@ class GatewaysContainer(containers.DeclarativeContainer):
 
     kafka_producer_client = providers.Singleton(KafkaProducer)
 
-    database_client = providers.Singleton(DatabaseClient, db_config.url)
+    database_client = providers.Singleton(DatabaseClient, db_config.url, db_config.logging_enabled)
 
     sms_client = providers.Singleton(SmsClient)

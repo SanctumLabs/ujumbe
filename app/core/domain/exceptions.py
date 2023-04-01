@@ -20,8 +20,9 @@ class BusinessRuleValidationException(DomainException):
 
 
 class EntityNotFoundException(Exception):
-    def __init__(self, entity_id, repository):
-        message = f"Entity {entity_id} not found"
+    entity_name: str
+
+    def __init__(self, entity_id):
+        message = f"{self.entity_name} {entity_id} not found"
         super().__init__(message)
-        self.repository = repository
         self.entity_id = entity_id

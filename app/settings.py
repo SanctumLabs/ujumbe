@@ -32,6 +32,7 @@ class DatabaseSettings(BaseSettings):
     password: str = "ujumbe"
     host: str = ""
     url: str = "ssl"
+    logging_enabled: bool = False
 
 
 class KafkaSettings(BaseSettings):
