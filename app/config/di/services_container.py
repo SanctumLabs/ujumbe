@@ -1,6 +1,6 @@
 from dependency_injector import containers, providers
 from app.services.sms_producer import SmsProducer
-from app.services.sms_service import SmsService
+from app.services.sms_service import UjumbeSmsService
 from app.settings import KafkaSettings
 
 
@@ -27,6 +27,6 @@ class ServicesContainer(containers.DeclarativeContainer):
     )
 
     sms_service = providers.Factory(
-        SmsService,
+        UjumbeSmsService,
         sms_client=gateways.sms_client
     )

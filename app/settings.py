@@ -23,6 +23,16 @@ def load_from_file(path: str, mode: str, encoding: str) -> AnyStr:
         return file.read()
 
 
+class SmsClientSettings(BaseSettings):
+    """
+    Twilio Sms Client settings
+    """
+    # twilio sms client settings
+    account_sid: str = ""
+    auth_token: str = ""
+    messaging_service_sid: str = ""
+
+
 class DatabaseSettings(BaseSettings):
     """
     Database Settings
@@ -65,11 +75,6 @@ class AppSettings(BaseSettings):
     environment: str = "development"
     docs_disabled: bool = False
 
-    sms_api_username: str = ""
-    sms_api_token: str = ""
-    sms_sender_id: str = "ujumbe"
-    sms_api_url: str = ""
-
     result_backend: Optional[str] = "rpc://"
 
     # sentry settings
@@ -85,6 +90,7 @@ class AppSettings(BaseSettings):
     # kafka settings
     kafka: KafkaSettings = KafkaSettings()
     database: DatabaseSettings = DatabaseSettings()
+    sms: SmsClientSettings = SmsClientSettings()
 
 
 config = AppSettings()
