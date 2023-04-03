@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from .unique_id import UniqueId
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, kw_only=True)
 class Entity:
-    id: UniqueId = UniqueId()
+    id: UniqueId = field(default=UniqueId())
 
     @classmethod
     def next_id(cls) -> UniqueId:

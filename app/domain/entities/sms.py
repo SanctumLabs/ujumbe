@@ -1,13 +1,14 @@
 """
-SMS Entity that represents an SMS in the system
+SMS Entity that represents an SMS in the system.
 """
 
-from typing import Dict
+from typing import Dict, Optional
 from pydantic import BaseModel
 from app.core.domain.entities.entity import Entity
 from .message import Message
 from .phone_number import PhoneNumber
 from .sms_status import SmsDeliveryStatus
+from .sms_response import SmsResponse
 
 
 class Sms(BaseModel, Entity):
@@ -20,6 +21,7 @@ class Sms(BaseModel, Entity):
     recipient: PhoneNumber
     message: Message
     status: SmsDeliveryStatus = SmsDeliveryStatus.PENDING
+    response: Optional[SmsResponse] = None
 
     @staticmethod
     def from_dict(data: Dict[str, str]) -> 'Sms':

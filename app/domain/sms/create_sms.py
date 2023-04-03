@@ -3,7 +3,7 @@ Use case to create an sms
 """
 from app.domain.entities.sms import Sms
 from app.core.infra.producer import Producer
-from .sms_repositoty import SmsRepository
+from .sms_repository import SmsRepository
 from .exceptions import CreateSmsException
 from app.core.domain.services import Service
 

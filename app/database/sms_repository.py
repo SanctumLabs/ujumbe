@@ -4,7 +4,7 @@ SMS Database repository that handles CRUD operations on an SMS entity
 from typing import Iterator
 
 from app.domain.entities.sms import Sms
-from app.domain.sms.sms_repositoty import SmsRepository
+from app.domain.sms.sms_repository import SmsRepository
 from app.domain.sms.exceptions import SmsNotFoundError
 from app.infra.database.database_client import DatabaseClient
 from .models import Sms as SmsModel

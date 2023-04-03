@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-SmsResponse = namedtuple("SmsResponse", [
+SmsResponseDto = namedtuple("SmsResponseDto", [
     "account_sid",
     "api_version",
     "body",
