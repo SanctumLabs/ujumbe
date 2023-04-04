@@ -35,7 +35,7 @@ class UjumbeSmsService(SmsService):
 
             sms_price = SmsPrice(
                 price=response.price,
-                price_unit=response.price_unit
+                currency=response.price_unit
             )
 
             sms_type = SmsType(response.direction)

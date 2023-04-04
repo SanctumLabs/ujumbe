@@ -3,6 +3,7 @@ SMS Response is the response received from a 3rd Party SMS Provider with status 
 delivered.
 """
 from typing import Dict, Optional
+from pydantic import BaseModel
 from app.core.domain.entities.entity import Entity
 from .sms_status import SmsDeliveryStatus
 from .sms_date import SmsDate
@@ -10,7 +11,7 @@ from .sms_price import SmsPrice
 from .sms_type import SmsType
 
 
-class SmsResponse(Entity):
+class SmsResponse(BaseModel, Entity):
     account_sid: str
     sid: str
     sms_date: SmsDate
