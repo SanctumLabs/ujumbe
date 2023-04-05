@@ -12,12 +12,16 @@ from .sms_type import SmsType
 
 
 class SmsResponse(BaseModel, Entity):
+    """
+    Entity denoting the response of an Sms. Contains information about the sms delivery status with information such as
+    price, status, uri, error codes and a couple of IDs to mark the uniqueness of the response
+    """
     account_sid: str
     sid: str
     sms_date: SmsDate
     sms_type: SmsType
-    num_media: str
-    num_segments: str
+    num_media: int
+    num_segments: int
     price: SmsPrice
     status: SmsDeliveryStatus
     subresource_uris: Dict[str, str]

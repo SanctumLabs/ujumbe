@@ -2,7 +2,7 @@ from app.domain.entities.sms import Sms
 from app.domain.entities.message import Message
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.sms_status import SmsDeliveryStatus
-from .models import Sms as SmsModel
+from .sms_model import Sms as SmsModel
 
 
 def sms_model_to_entity(model: SmsModel) -> Sms:
