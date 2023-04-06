@@ -12,7 +12,7 @@ class SmsModelTestCases(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.engine = create_engine("sqlite:///:memory")
+        cls.engine = create_engine("sqlite:///:memory:")
         Base.metadata.create_all(cls.engine)
         cls.session = sessionmaker(bind=cls.engine)
 
