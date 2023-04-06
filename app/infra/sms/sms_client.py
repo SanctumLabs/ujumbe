@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from twilio.rest import Client
 from app.infra.logger import log as logger
 from app.domain.entities.sms import Sms
@@ -5,10 +6,18 @@ from .exceptions import SmsClientException
 from .dto import SmsResponseDto
 
 
+@dataclass
+class SmsClientParams:
+    account_sid: str
+    auth_token: str
+    messaging_service_sid: str
+
+
 class SmsClient:
-    def __init__(self, account_sid: str, auth_token: str, messaging_service_sid: str):
-        self.messaging_service_sid = messaging_service_sid
-        self.twilio_client = Client(account_sid, auth_token)
+    def __init__(self, params: SmsClientParams):
+
+        self.messaging_service_sid = params.messaging_service_sid
+        self.twilio_client = Client(params.account_sid, params.auth_token)
 
     def send(self, sms: Sms) -> SmsResponseDto:
         """

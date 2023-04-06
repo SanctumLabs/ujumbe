@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, func, String
 from sqlalchemy.ext.declarative import declared_attr
+from nanoid import generate
 from app.infra.database.models import Base
 import inflection
 
@@ -12,8 +13,10 @@ NOT_DELETED = datetime(1970, 1, 1, 0, 0, 1, 0, timezone.utc)
 
 class IdPrimaryKeyMixin:
     id = Column(
+        String,
         primary_key=True,
         unique=True,
+        default=generate,
         nullable=False
     )
 

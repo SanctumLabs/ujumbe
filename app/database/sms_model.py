@@ -15,9 +15,9 @@ from .sms_response_model import SmsResponse
 
 
 class Sms(BaseModel):
-    sender = Column(String, nullable=False)
-    recipient = Column(String, nullable=False)
-    message = Column(String, nullable=False)
+    sender = Column(String, name="sender", nullable=False)
+    recipient = Column(String, name="recipient", nullable=False)
+    message = Column(String, name="message", nullable=False)
     status = Column(Enum(SmsDeliveryStatus), name="delivery_status", default=SmsDeliveryStatus.PENDING)
     response: Mapped[Optional["SmsResponse"]] = relationship(back_populates="sms")
 

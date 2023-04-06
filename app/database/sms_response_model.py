@@ -2,7 +2,7 @@
 Sms Response Model represents a record in a database
 """
 from __future__ import annotations
-from typing import Dict, Union
+from typing import Dict, Union, TYPE_CHECKING
 from datetime import datetime
 
 from sqlalchemy import Column, String, Enum, DateTime, Float, Integer, JSON, ForeignKey
@@ -12,7 +12,9 @@ from app.domain.entities.sms_status import SmsDeliveryStatus
 from app.domain.entities.sms_type import SmsType
 
 from .base_model import BaseModel
-from .sms_model import Sms
+
+if TYPE_CHECKING:
+    from .sms_model import Sms
 
 
 class SmsResponse(BaseModel):
@@ -49,7 +51,7 @@ class SmsResponse(BaseModel):
                f"num_segments={self.num_segments}, price={self.price}, currency={self.currency}, " \
                f"subresource_uris={self.subresource_uris}, uri={self.uri}, " \
                f"messaging_service_sid={self.messaging_service_sid}, error_code={self.error_code}, " \
-               f"error_message={self.error_message}, status={self.status}"
+               f"error_message={self.error_message}, status={self.status})"
 
     def to_dict(self) -> Dict[str, Union[str, datetime, float, int, Dict]]:
         return dict(

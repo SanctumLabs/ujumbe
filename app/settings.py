@@ -38,10 +38,12 @@ class DatabaseSettings(BaseSettings):
     Database Settings
     """
 
-    username: str = "ujumbe"
-    password: str = "ujumbe"
-    host: str = ""
-    url: str = "ssl"
+    username: str = "ujumbe-user"
+    password: str = "ujumbe-password"
+    host: str = "localhost"
+    port: int = 5432
+    database: str = "ujumbe"
+    driver: str = "postgresql"
     logging_enabled: bool = False
 
 

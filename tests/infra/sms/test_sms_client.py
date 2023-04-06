@@ -6,7 +6,7 @@ from app.domain.entities.sms import Sms
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
-from app.infra.sms.sms_client import SmsClient, Client as TwilioRestClient
+from app.infra.sms.sms_client import SmsClient, SmsClientParams, Client as TwilioRestClient
 from app.infra.sms.exceptions import SmsClientException
 
 fake = Faker()
@@ -20,8 +20,8 @@ fake_messaging_service_sid = fake.uuid4()
 
 class SmsClientTestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.sms_client = SmsClient(account_sid=fake_account_sid, auth_token=fake_auth_token,
-                                    messaging_service_sid=fake_messaging_service_sid)
+        self.sms_client = SmsClient(SmsClientParams(account_sid=fake_account_sid, auth_token=fake_auth_token,
+                                                    messaging_service_sid=fake_messaging_service_sid))
 
     @patch.object(TwilioRestClient, "messages")
     def test_sends_sms_with_provided_sender(self, mock_twilio_client_messages: Mock):
