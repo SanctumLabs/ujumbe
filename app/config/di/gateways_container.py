@@ -16,6 +16,7 @@ class GatewaysContainer(containers.DeclarativeContainer):
     kafka_producer_client = providers.Singleton(KafkaProducer)
 
     database_client = providers.Singleton(DatabaseClient, DatabaseClientParams(
+        dialect=db_config.dialect,
         driver=db_config.driver,
         host=db_config.host,
         port=db_config.port,

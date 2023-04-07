@@ -16,10 +16,15 @@ class DatabaseClientParams:
     database: str
     username: str
     password: str
-    driver: str
     logging_enabled: bool
+    dialect: str = "postgresql"
+    driver: str = "psycopg2"
     autocommit: bool = False
     autoflush: bool = False
+
+    @property
+    def drivername(self) -> str:
+        return f"{self.dialect}+{self.driver}"
 
 
 class DatabaseClient:
@@ -30,13 +35,14 @@ class DatabaseClient:
 
     def __init__(self, params: DatabaseClientParams):
         url = URL.create(
-            drivername=params.driver,
+            drivername=params.drivername,
             host=params.host,
             port=params.port,
             username=params.username,
             password=params.password,
             database=params.database,
         )
+
         self.engine = create_engine(url=url, echo=params.logging_enabled)
         self.session_factory = scoped_session(
             sessionmaker(
