@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict, Union, Optional
 from datetime import datetime
 
-from sqlalchemy import Column, String, Enum
+from sqlalchemy import Column, String, Enum, UniqueConstraint
 from sqlalchemy.orm import Mapped, relationship
 
 from app.domain.entities.sms_status import SmsDeliveryStatus
@@ -15,6 +15,12 @@ from .sms_response_model import SmsResponse
 
 
 class Sms(BaseModel):
+    __table_args__ = (
+        UniqueConstraint(
+            "sender", "recipient", "message", name="sms_sender_recipient_message_constraint"
+        ),
+    )
+
     sender = Column(String, name="sender", nullable=False)
     recipient = Column(String, name="recipient", nullable=False)
     message = Column(String, name="message", nullable=False)
