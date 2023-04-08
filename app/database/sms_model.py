@@ -20,7 +20,6 @@ class Sms(BaseModel):
             "sender", "recipient", "message", name="sms_sender_recipient_message_constraint"
         ),
     )
-
     sender = Column(String, name="sender", nullable=False)
     recipient = Column(String, name="recipient", nullable=False)
     message = Column(String, name="message", nullable=False)
@@ -28,13 +27,15 @@ class Sms(BaseModel):
     response: Mapped[Optional["SmsResponse"]] = relationship(back_populates="sms")
 
     def __repr__(self):
-        return f"Sms(id={self.id}, created_on={self.created_at}, updated_on={self.updated_at}, " \
+        return f"Sms(id={self.identifier}, identifier={self.identifier} created_on={self.created_at}, " \
+               f"updated_on={self.updated_at}, " \
                f"updated_by={self.updated_by}, deleted_at={self.deleted_at}, sender={self.sender}, " \
                f"recipient={self.recipient}, message={self.message}, status={self.status})"
 
     def to_dict(self) -> Dict[str, Union[str, datetime, Optional[SmsResponse]]]:
         return dict(
-            id=self.id,
+            id=self.identifier,
+            identifier=self.identifier,
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at,

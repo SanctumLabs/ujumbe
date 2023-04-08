@@ -43,7 +43,7 @@ class SmsResponse(BaseModel):
     sms: Mapped["Sms"] = relationship(back_populates="response")
 
     def __repr__(self):
-        return f"SmsResponse(id={self.id}, created_on={self.created_at}, updated_on={self.updated_at}, " \
+        return f"SmsResponse(id={self.identifier}, created_on={self.created_at}, updated_on={self.updated_at}, " \
                f"updated_by={self.updated_by}, deleted_at={self.deleted_at}, sms_id={self.sms_id} " \
                f"account_sid={self.account_sid}, " \
                f"sid={self.sid}, date_created={self.date_created}, date_sent={self.date_sent}, " \
@@ -55,7 +55,7 @@ class SmsResponse(BaseModel):
 
     def to_dict(self) -> Dict[str, Union[str, datetime, float, int, Dict]]:
         return dict(
-            id=self.id,
+            id=self.identifier,
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at,

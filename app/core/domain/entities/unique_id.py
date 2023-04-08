@@ -4,4 +4,4 @@ from nanoid import generate
 
 @dataclass(frozen=True)
 class UniqueId:
-    value: str = field(default_factory=generate)
+    value: str = field(default_factory=generate, hash=True)

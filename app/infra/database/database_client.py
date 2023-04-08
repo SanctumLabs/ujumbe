@@ -55,6 +55,9 @@ class DatabaseClient:
     def create_database(self) -> None:
         Base.metadata.create_all(self.engine)
 
+    def drop_database(self) -> None:
+        Base.metadata.drop_all(self.engine)
+
     @contextmanager
     def session(self) -> Callable[..., AbstractContextManager[Session]]:
         session: Session = self.session_factory()

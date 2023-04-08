@@ -17,9 +17,9 @@ class Sms(BaseModel, Entity):
     to the system's default
     """
 
-    sender: PhoneNumber = None
     recipient: PhoneNumber
     message: Message
+    sender: Optional[PhoneNumber] = None
     status: SmsDeliveryStatus = SmsDeliveryStatus.PENDING
     response: Optional[SmsResponse] = None
 
@@ -27,8 +27,10 @@ class Sms(BaseModel, Entity):
     def from_dict(data: Dict[str, str]) -> 'Sms':
         sender = data.get('sender', None)
         recipient = data.get('recipient', None)
+        status = data.get("status", None)
+
         if not recipient:
-            raise ValueError("Missing phone number")
+            raise ValueError("Missing recipient phone number")
 
         message_text = data.get('message', None)
         if not message_text:
@@ -37,4 +39,5 @@ class Sms(BaseModel, Entity):
         sender_phone_number = PhoneNumber(value=sender) if sender else None
         recipient_phone_number = PhoneNumber(value=recipient)
         message = Message(value=message_text)
-        return Sms(sender=sender_phone_number, recipient=recipient_phone_number, message=message)
+        sms_status = SmsDeliveryStatus(status or SmsDeliveryStatus.UNKNOWN)
+        return Sms(sender=sender_phone_number, recipient=recipient_phone_number, message=message, status=sms_status)

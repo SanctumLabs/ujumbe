@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from sqlalchemy import Column, DateTime, func, String
+from sqlalchemy import Column, DateTime, func, String, Integer
 from sqlalchemy.ext.declarative import declared_attr
 from nanoid import generate
 from app.infra.database.models import Base
@@ -11,10 +11,11 @@ A date time that indicates a record has not been deleted
 NOT_DELETED = datetime(1970, 1, 1, 0, 0, 1, 0, timezone.utc)
 
 
-class IdPrimaryKeyMixin:
-    id = Column(
+class IdentifierPrimaryKeyMixin:
+    id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
+
+    identifier = Column(
         String,
-        primary_key=True,
         unique=True,
         default=generate,
         nullable=False
@@ -50,7 +51,7 @@ class TableNameMixin:
 
 class BaseModel(
     Base,
-    IdPrimaryKeyMixin,
+    IdentifierPrimaryKeyMixin,
     TimestampColumnsMixin,
     SoftDeleteMixin,
     AuditedMixin,
@@ -63,9 +64,9 @@ class BaseModel(
     def pk(cls):
         if hasattr(cls, "id"):
             return cls.id
-        elif hasattr(cls, "uuid"):
-            return cls.uuid
         elif hasattr(cls, "identifier"):
             return cls.identifier
+        elif hasattr(cls, "uuid"):
+            return cls.uuid
         else:
             raise Exception("Class does not have pk (primary key) defined")

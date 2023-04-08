@@ -12,6 +12,7 @@ TEST_DATABASE_DIALECT = "postgresql"
 
 
 class BaseIntegrationTestCases(unittest.TestCase):
+    started_container: PostgresContainer = None
     client: DatabaseClient
 
     @classmethod
@@ -19,19 +20,24 @@ class BaseIntegrationTestCases(unittest.TestCase):
         postgres_container = PostgresContainer(image=TEST_DATABASE_VERSION, port=TEST_DATABASE_PORT,
                                                user=TEST_DATABASE_USERNAME, password=TEST_DATABASE_PASSWORD,
                                                dbname=TEST_DATABASE_NAME, driver=TEST_DATABASE_DRIVER)
-        with postgres_container as postgres:
-            cls.postgres_database = postgres
-            port = int(postgres.get_exposed_port(TEST_DATABASE_PORT))
 
-            params = DatabaseClientParams(
-                host=postgres.get_container_host_ip(),
-                username=TEST_DATABASE_USERNAME,
-                password=TEST_DATABASE_PASSWORD,
-                database=TEST_DATABASE_NAME,
-                port=port,
-                dialect=TEST_DATABASE_DIALECT,
-                driver=TEST_DATABASE_DRIVER,
-                logging_enabled=True,
-            )
-            cls.client = DatabaseClient(params=params)
-            cls.client.create_database()
+        cls.started_container = postgres_container.start()
+        port = int(cls.started_container.get_exposed_port(TEST_DATABASE_PORT))
+
+        params = DatabaseClientParams(
+            host=cls.started_container.get_container_host_ip(),
+            username=TEST_DATABASE_USERNAME,
+            password=TEST_DATABASE_PASSWORD,
+            database=TEST_DATABASE_NAME,
+            port=port,
+            dialect=TEST_DATABASE_DIALECT,
+            driver=TEST_DATABASE_DRIVER,
+            logging_enabled=True,
+        )
+        cls.client = DatabaseClient(params=params)
+        cls.client.create_database()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.client.drop_database()
+        cls.started_container.stop()

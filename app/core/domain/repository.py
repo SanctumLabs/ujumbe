@@ -8,7 +8,7 @@ class Repository(metaclass=ABCMeta):
     """A generic repository"""
 
     @abstractmethod
-    def add(self, entity: Entity):
+    def add(self, entity: Entity) -> Entity:
         raise NotImplementedError()
 
     @abstractmethod
