@@ -29,3 +29,24 @@ class SmsResponse(BaseModel, Entity):
     messaging_service_sid: Optional[str] = None
     error_code: Optional[str] = None
     error_message: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, str]:
+        return dict(
+            id=self.id.value,
+            account_sid=self.account_sid,
+            sid=self.sid,
+            date_sent=self.sms_date.date_sent,
+            date_updated=self.sms_date.date_updated,
+            date_created=self.sms_date.date_created,
+            type=self.sms_type,
+            num_media=self.num_media,
+            num_segments=self.num_segments,
+            price=self.price.price,
+            currency=self.price.currency,
+            status=self.status,
+            subresource_uris=self.subresource_uris,
+            uri=self.uri,
+            messaging_service_sid=self.messaging_service_sid,
+            error_code=self.error_code,
+            error_message=self.error_message
+        )

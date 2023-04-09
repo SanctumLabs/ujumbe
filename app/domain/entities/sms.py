@@ -16,7 +16,7 @@ class Sms(BaseModel, Entity):
     SMS Entity contains the sender, recipient and message values. The Sender is optional & if not provided will default
     to the system's default
     """
-
+    id = Entity.next_id()
     recipient: PhoneNumber
     message: Message
     sender: Optional[PhoneNumber] = None
@@ -41,3 +41,13 @@ class Sms(BaseModel, Entity):
         message = Message(value=message_text)
         sms_status = SmsDeliveryStatus(status or SmsDeliveryStatus.UNKNOWN)
         return Sms(sender=sender_phone_number, recipient=recipient_phone_number, message=message, status=sms_status)
+
+    def to_dict(self) -> Dict[str, str]:
+        return dict(
+            id=self.id.value,
+            sender=self.sender.value,
+            recipient=self.recipient.value or None,
+            message=self.message.value,
+            status=self.status,
+            response=self.response.to_dict(),
+        )
