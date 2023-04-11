@@ -1,7 +1,7 @@
 """
 SMS Database repository that handles CRUD operations on an SMS entity
 """
-from typing import Iterator
+from typing import Iterator, Optional
 
 from app.domain.entities.sms import Sms
 from app.domain.sms.sms_repository import SmsRepository
@@ -27,7 +27,7 @@ class SmsDatabaseRepository(SmsRepository):
                 session.refresh(sms)
                 return sms_model_to_entity(sms)
         except Exception as e:
-            logger.error(f"Failed to persist sms {entity}")
+            logger.error(f"Failed to persist sms {entity}", e)
             raise e
 
     def get_by_id(self, sid: str) -> Sms:
@@ -41,10 +41,20 @@ class SmsDatabaseRepository(SmsRepository):
     def get_all(self) -> Iterator[Sms]:
         with self.session_factory() as session:
             sms_models = session.query(SmsModel).all()
-            return map(sms_model_to_entity, sms_models)
+            return list(map(sms_model_to_entity, sms_models))
 
     def update(self, sms: Sms):
-        pass
+        with self.session_factory() as session:
+            sms_model: Optional[SmsModel] = session.query(SmsModel).filter(SmsModel.identifier == sms.id.value).first()
+            if not sms_model:
+                raise SmsNotFoundError(sms.id.value)
+
+            # We only update the status of the SMS, we don't want to update the sender, recipient & message as at this
+            # point we assume that the SMS has already been sent out & these values are now immutable
+            sms_model.status = sms.status
+
+            session.add(sms_model)
+            session.commit()
 
     def remove(self, entity: Sms):
         with self.session_factory() as session:

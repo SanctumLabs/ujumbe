@@ -39,5 +39,10 @@ class BaseIntegrationTestCases(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.client.drop_database()
         cls.started_container.stop()
+
+    def setUp(self) -> None:
+        self.client.create_database()
+
+    def tearDown(self) -> None:
+        self.client.drop_database()

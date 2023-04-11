@@ -9,9 +9,6 @@ fake = Faker()
 
 class SmsModelTestCases(BaseModelTestCases):
 
-    def tearDown(self) -> None:
-        Base.metadata.drop_all(self.engine)
-
     def test_valid_sms_is_persisted(self):
         """Test that a valid SMS can be persisted"""
         with self.session() as session:
