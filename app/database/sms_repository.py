@@ -9,7 +9,7 @@ from app.domain.sms.exceptions import SmsNotFoundError
 from app.infra.database.database_client import DatabaseClient
 from app.infra.logger import log as logger
 from .sms_model import Sms as SmsModel
-from .mapper import sms_entity_to_model, sms_model_to_entity
+from .mapper import map_sms_entity_to_model, map_sms_model_to_entity
 
 
 class SmsDatabaseRepository(SmsRepository):
@@ -21,11 +21,11 @@ class SmsDatabaseRepository(SmsRepository):
     def add(self, entity: Sms) -> Sms:
         try:
             with self.session_factory() as session:
-                sms = sms_entity_to_model(entity)
+                sms = map_sms_entity_to_model(entity)
                 session.add(sms)
                 session.commit()
                 session.refresh(sms)
-                return sms_model_to_entity(sms)
+                return map_sms_model_to_entity(sms)
         except Exception as e:
             logger.error(f"Failed to persist sms {entity}", e)
             raise e
@@ -36,12 +36,12 @@ class SmsDatabaseRepository(SmsRepository):
             if not sms_model:
                 raise SmsNotFoundError(sid)
 
-            return sms_model_to_entity(sms_model)
+            return map_sms_model_to_entity(sms_model)
 
     def get_all(self) -> Iterator[Sms]:
         with self.session_factory() as session:
             sms_models = session.query(SmsModel).all()
-            return list(map(sms_model_to_entity, sms_models))
+            return list(map(map_sms_model_to_entity, sms_models))
 
     def update(self, sms: Sms):
         with self.session_factory() as session:
