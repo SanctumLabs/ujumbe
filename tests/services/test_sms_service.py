@@ -48,6 +48,9 @@ class UjumbeSmsServiceTestCase(unittest.TestCase):
         recipient = PhoneNumber(value=recipient_phone)
         message_text = fake.text()
         message = Message(value=message_text)
+        date_created = fake.past_datetime()
+        date_sent = fake.future_datetime()
+        date_updated = fake.future_datetime()
 
         mock_sms = Sms(
             sender=sender,
@@ -58,8 +61,8 @@ class UjumbeSmsServiceTestCase(unittest.TestCase):
 
         mock_sms_response = SmsResponseDto(account_sid=fake.uuid4(), api_version=fake.date(),
                                            body=message_text,
-                                           date_created=fake.date(), date_sent=fake.date(),
-                                           date_updated=fake.date(), direction="outbound-api",
+                                           date_created=date_created, date_sent=date_sent,
+                                           date_updated=date_updated, direction="outbound-api",
                                            error_code=None, error_message=None,
                                            from_=sender_phone, messaging_service_sid=fake.uuid4(),
                                            num_media="0", num_segments="1",
@@ -73,7 +76,14 @@ class UjumbeSmsServiceTestCase(unittest.TestCase):
 
         actual = self.sms_service.send(sms=mock_sms)
 
-        self.assertEquals(mock_sms_response, actual)
+        self.assertEquals(mock_sms_response.account_sid, actual.account_sid)
+        self.assertEquals(mock_sms_response.error_code, actual.error_code)
+        self.assertEquals(mock_sms_response.error_message, actual.error_message)
+        self.assertEquals(mock_sms_response.messaging_service_sid, actual.messaging_service_sid)
+        self.assertEquals(int(mock_sms_response.num_media), int(actual.num_media))
+        self.assertEquals(int(mock_sms_response.num_segments), int(actual.num_segments))
+        self.assertEquals(mock_sms_response.subresource_uris, actual.subresource_uris)
+        self.assertEquals(mock_sms_response.uri, actual.uri)
 
         self.mock_sms_client.send.assert_called_with(mock_sms)
 

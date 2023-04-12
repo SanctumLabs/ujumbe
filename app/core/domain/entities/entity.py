@@ -1,10 +1,8 @@
 from dataclasses import dataclass, field
-import attr
 from .unique_id import UniqueId
 
 
-@dataclass(frozen=True)
-@attr.s(auto_attribs=True)
+@dataclass(frozen=True, kw_only=True)
 class Entity:
     id: UniqueId = field(hash=True, default_factory=UniqueId.next_id)
 

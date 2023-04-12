@@ -16,6 +16,9 @@ class SmsPrice(ValueObject):
             if not self.price.replace(".", "", 1).isdigit():
                 raise ValueError(f"Price {self.price} is not valid")
 
+    def __repr__(self):
+        return f"{self.currency} {self.price}"
+
     @property
     def amount(self) -> Optional[float]:
         """

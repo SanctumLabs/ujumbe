@@ -3,6 +3,7 @@ SMS Response is the response received from a 3rd Party SMS Provider with status 
 delivered.
 """
 from typing import Dict, Optional
+from dataclasses import dataclass
 from pydantic import BaseModel
 from app.core.domain.entities.entity import Entity
 from .sms_status import SmsDeliveryStatus
@@ -11,6 +12,7 @@ from .sms_price import SmsPrice
 from .sms_type import SmsType
 
 
+@dataclass(frozen=True, kw_only=True)
 class SmsResponse(BaseModel, Entity):
     """
     Entity denoting the response of an Sms. Contains information about the sms delivery status with information such as
