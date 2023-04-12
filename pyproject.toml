@@ -40,6 +40,7 @@ faker = "^17.5.0"
 testcontainers-postgres = "^0.0.1rc1"
 testcontainers-kafka = "^0.0.1rc1"
 
+# Pytest Options
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
@@ -48,6 +49,11 @@ pythonpath = "app"
 norecursedirs = "tmp"
 testpaths = "tests"
 filterwarnings = [ "ignore::DeprecationWarning" ]
+markers = [
+    "integration: integration test",
+    "unit: unit test",
+    "e2e: end to end test"
+]
 
 [build-system]
 requires = ["poetry-core"]

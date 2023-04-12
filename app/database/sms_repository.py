@@ -8,7 +8,7 @@ from app.domain.sms.sms_repository import SmsRepository
 from app.domain.sms.exceptions import SmsNotFoundError
 from app.infra.database.database_client import DatabaseClient
 from app.infra.logger import log as logger
-from .sms_model import Sms as SmsModel
+from app.database.models.sms_model import Sms as SmsModel
 from .mapper import map_sms_entity_to_model, map_sms_model_to_entity
 
 

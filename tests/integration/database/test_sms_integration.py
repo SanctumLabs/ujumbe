@@ -1,8 +1,10 @@
 import unittest
 from faker import Faker
 
+import pytest
+
 from app.domain.entities.sms import Sms
-from app.database.sms_model import Sms as SmsModel
+from app.database.models.sms_model import Sms as SmsModel
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
@@ -15,6 +17,7 @@ from . import BaseIntegrationTestCases
 fake = Faker()
 
 
+@pytest.mark.integration
 class SmsIntegrationTestCases(BaseIntegrationTestCases):
     def setUp(self) -> None:
         super().setUp()
