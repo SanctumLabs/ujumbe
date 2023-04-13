@@ -26,4 +26,4 @@ class SubmitSmsService(Service):
         try:
             self.producer.publish_message(sms)
         except Exception as e:
-            raise Exception('Failed to submit sms')
+            raise SubmitSmsException('Failed to submit sms')
