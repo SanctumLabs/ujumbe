@@ -1,5 +1,5 @@
 """
-Use case to send out sms
+Use case to send out an sms
 """
 from app.domain.entities.sms import Sms
 from app.core.infra.sms_service import SmsService

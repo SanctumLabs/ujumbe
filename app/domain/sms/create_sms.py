@@ -26,4 +26,4 @@ class CreateSmsService(Service):
             self.repository.add(sms)
             self.producer.publish_message(sms)
         except Exception as e:
-            raise Exception('Failed to submit sms')
+            raise CreateSmsException('Failed to submit sms')
