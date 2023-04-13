@@ -5,7 +5,7 @@ from fastapi import Request, FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
-from app.routers.dto import ApiError
+from app.api.dto import ApiError
 
 
 def _rewrite_error(err):
