@@ -54,7 +54,8 @@ class UjumbeSmsService(SmsService):
                 uri=response.uri,
                 messaging_service_sid=response.messaging_service_sid,
                 error_code=response.error_code,
-                error_message=response.error_message
+                error_message=response.error_message,
+                sms_id=sms.id.value
             )
         except Exception as e:
             logger.error(f"Failed to send sms with error {e}")
