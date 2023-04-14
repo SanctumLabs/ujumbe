@@ -27,5 +27,6 @@ class DomainContainer(containers.DeclarativeContainer):
 
     send_sms = providers.Factory(
         SendSmsService,
-        sms_service=services.sms_service
+        sms_service=services.sms_service,
+        sms_response_repository=database.sms_response_repository
     )
