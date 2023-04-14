@@ -1,6 +1,7 @@
 import unittest
 from faker import Faker
 import pytest
+from app.database.models.sms_model import Sms
 from app.database.models.sms_response_model import SmsResponse
 from app.domain.entities.sms_type import SmsType
 from app.domain.entities.sms_status import SmsDeliveryStatus
@@ -15,10 +16,23 @@ class SmsResponseModelTestCases(BaseModelTestCases):
     def test_valid_sms_response_is_persisted(self):
         """Test that a valid SMS Response can be persisted"""
         with self.session() as session:
+            sender_phone = "+254700000000"
+            recipient_phone = "+254711111111"
+            message = fake.text()
+
+            sms = Sms(
+                sender=sender_phone,
+                recipient=recipient_phone,
+                message=message
+            )
+            session.add(sms)
+            session.commit()
+
+            saved_sms = session.query(Sms).filter_by(id=sms.id).first()
+
             date_created = fake.past_datetime()
             date_sent = fake.future_datetime()
             date_updated = fake.future_datetime()
-            sms_id = fake.uuid4()
             account_sid = fake.uuid4()
             sid = fake.uuid4()
             date_sent = date_sent
@@ -37,7 +51,7 @@ class SmsResponseModelTestCases(BaseModelTestCases):
             error_message = None
 
             sms_response = SmsResponse(
-                sms_id=sms_id,
+                sms_id=saved_sms.id,
                 account_sid=account_sid,
                 sid=sid,
                 date_sent=date_sent,
@@ -53,7 +67,7 @@ class SmsResponseModelTestCases(BaseModelTestCases):
                 uri=uri,
                 messaging_service_sid=messaging_service_sid,
                 error_code=error_code,
-                error_message=error_message
+                error_message=error_message,
             )
 
             session.add(sms_response)

@@ -68,7 +68,8 @@ def map_sms_response_model_to_entity(model: SmsResponseModel) -> SmsResponse:
         uri=model.uri,
         messaging_service_sid=model.messaging_service_sid,
         error_code=model.error_code,
-        error_message=model.error_message
+        error_message=model.error_message,
+        sms_id=model.sms_id
     )
 
 
