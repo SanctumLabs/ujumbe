@@ -23,6 +23,10 @@ class Repository(metaclass=ABCMeta):
     def get_all(self) -> Iterator[Entity]:
         raise NotImplementedError()
 
+    @abstractmethod
+    def update(self, sms: Entity):
+        raise NotImplementedError()
+
     def __getitem__(self, index) -> Entity:
         return self.get_by_id(index)
 
