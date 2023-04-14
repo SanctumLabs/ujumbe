@@ -28,6 +28,7 @@ class SmsResponse(BaseModel, Entity):
     status: SmsDeliveryStatus
     subresource_uris: Dict[str, str]
     uri: str
+    sms_id: str
     messaging_service_sid: Optional[str] = None
     error_code: Optional[str] = None
     error_message: Optional[str] = None
@@ -50,5 +51,6 @@ class SmsResponse(BaseModel, Entity):
             uri=self.uri,
             messaging_service_sid=self.messaging_service_sid,
             error_code=self.error_code,
-            error_message=self.error_message
+            error_message=self.error_message,
+            sms_id=self.sms_id
         )

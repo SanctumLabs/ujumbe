@@ -1,18 +1,9 @@
 """
-Sms Repository handling CRUD operations on an SMS
+Sms Repository handling CRUD operations on an SMS & SMS Response
 """
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 from app.core.domain.repository import Repository
-from ..entities.sms import Sms
 
 
 class SmsRepository(Repository, metaclass=ABCMeta):
-
-    @abstractmethod
-    def update(self, sms: Sms):
-        """
-        Updates the status of an SMS
-        Args:
-            sms: SMS entity
-        """
-        raise NotImplementedError()
+    """Sms Repository"""
