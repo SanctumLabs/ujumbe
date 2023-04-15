@@ -17,16 +17,13 @@ class ServicesContainer(containers.DeclarativeContainer):
     submit_sms_producer = providers.Factory(
         SmsProducer,
         kafka_producer=gateways.kafka_producer_client,
-        topic=config.submit_sms_topic
+        topic=config.submit_sms_topic,
     )
 
     send_sms_producer = providers.Factory(
         SmsProducer,
         kafka_producer=gateways.kafka_producer_client,
-        topic=config.send_sms_topic
+        topic=config.send_sms_topic,
     )
 
-    sms_service = providers.Factory(
-        UjumbeSmsService,
-        sms_client=gateways.sms_client
-    )
+    sms_service = providers.Factory(UjumbeSmsService, sms_client=gateways.sms_client)

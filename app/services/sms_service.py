@@ -30,13 +30,10 @@ class UjumbeSmsService(SmsService):
             sms_date = SmsDate(
                 date_sent=response.date_sent,
                 date_updated=response.date_updated,
-                date_created=response.date_created
+                date_created=response.date_created,
             )
 
-            sms_price = SmsPrice(
-                price=response.price,
-                currency=response.price_unit
-            )
+            sms_price = SmsPrice(price=response.price, currency=response.price_unit)
 
             sms_type = SmsType(response.direction)
             status = SmsDeliveryStatus(response.status)
@@ -55,7 +52,7 @@ class UjumbeSmsService(SmsService):
                 messaging_service_sid=response.messaging_service_sid,
                 error_code=response.error_code,
                 error_message=response.error_message,
-                sms_id=sms.id.value
+                sms_id=sms.id.value,
             )
         except Exception as e:
             logger.error(f"Failed to send sms with error {e}")

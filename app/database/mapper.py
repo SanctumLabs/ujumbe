@@ -29,33 +29,43 @@ def map_sms_model_to_entity(model: SmsModel) -> Sms:
     response = model.response
     sms_response = map_sms_response_model_to_entity(response) if response else None
 
-    return Sms(id=sms_id, sender=sender, recipient=recipient, message=message, status=delivery_status,
-               response=sms_response)
+    return Sms(
+        id=sms_id,
+        sender=sender,
+        recipient=recipient,
+        message=message,
+        status=delivery_status,
+        response=sms_response,
+    )
 
 
 def map_sms_entity_to_model(entity: Sms) -> SmsModel:
-    return SmsModel(identifier=entity.id.value, sender=entity.sender.value, recipient=entity.recipient.value,
-                    message=entity.message.value,
-                    status=entity.status,
-                    response=map_sms_response_entity_to_model(entity.response) if entity.response else None)
+    return SmsModel(
+        identifier=entity.id.value,
+        sender=entity.sender.value,
+        recipient=entity.recipient.value,
+        message=entity.message.value,
+        status=entity.status,
+        response=map_sms_response_entity_to_model(entity.response)
+        if entity.response
+        else None,
+    )
 
 
 def map_sms_response_model_to_entity(model: SmsResponseModel) -> SmsResponse:
     sms_date = SmsDate(
         date_sent=model.date_sent,
         date_updated=model.date_updated,
-        date_created=model.date_created
+        date_created=model.date_created,
     )
 
-    sms_price = SmsPrice(
-        price=model.price,
-        currency=model.price_unit
-    )
+    sms_price = SmsPrice(price=model.price, currency=model.currency)
 
     sms_type = SmsType(model.direction)
     status = SmsDeliveryStatus(model.status)
 
     return SmsResponse(
+        id=UniqueId(model.identifier),
         account_sid=model.account_sid,
         sid=model.sid,
         sms_date=sms_date,
@@ -69,12 +79,13 @@ def map_sms_response_model_to_entity(model: SmsResponseModel) -> SmsResponse:
         messaging_service_sid=model.messaging_service_sid,
         error_code=model.error_code,
         error_message=model.error_message,
-        sms_id=model.sms_id
+        sms_id=model.sms.identifier,
     )
 
 
 def map_sms_response_entity_to_model(entity: SmsResponse) -> SmsResponseModel:
     return SmsResponseModel(
+        identifier=entity.id.value,
         account_sid=entity.account_sid,
         sid=entity.sid,
         date_sent=entity.sms_date.date_sent,
@@ -90,5 +101,5 @@ def map_sms_response_entity_to_model(entity: SmsResponse) -> SmsResponseModel:
         uri=entity.uri,
         messaging_service_sid=entity.messaging_service_sid,
         error_code=entity.error_code,
-        error_message=entity.error_message
+        error_message=entity.error_message,
     )

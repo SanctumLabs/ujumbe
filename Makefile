@@ -32,17 +32,32 @@ test-integration:
 	PYTHONPATH=. pytest tests/integration
 .PHONY: test-integration
 
+# Runs integration tests with coverage
+test-integration-cover:
+	PYTHONPATH=. pytest --cov=app tests/integration/
+.PHONY: test-integration-cover
+
 # Runs end to end tests
 test-e2e:
 	PYTHONPATH=. pytest tests/e2e
 .PHONY: test-e2e
 
-# Runs all tests
+# Runs e2e tests with coverage
+test-e2e-cover:
+	PYTHONPATH=. pytest --cov=app tests/e2e/
+.PHONY: test-e2e-cover
+
+# Runs unit tests
 test-unit:
 	PYTHONPATH=. pytest tests/unit
 .PHONY: test-unit
 
-# Runs tests with coverage
+# Runs unit tests with coverage
+test-unit-cover:
+	PYTHONPATH=. pytest --cov=app tests/unit/
+.PHONY: test-unit-cover
+
+# Runs all tests with coverage
 test-cover:
 	PYTHONPATH=. pytest --cov=app tests/
 .PHONY: test-cover

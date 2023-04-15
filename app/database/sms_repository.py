@@ -13,7 +13,6 @@ from .mapper import map_sms_entity_to_model, map_sms_model_to_entity
 
 
 class SmsDatabaseRepository(SmsRepository):
-
     def __init__(self, db_client: DatabaseClient):
         self.db_client = db_client
         self.session_factory = self.db_client.session
@@ -32,7 +31,9 @@ class SmsDatabaseRepository(SmsRepository):
 
     def get_by_id(self, sid: str) -> Sms:
         with self.session_factory() as session:
-            sms_model: SmsModel = session.query(SmsModel).filter(SmsModel.identifier == sid).first()
+            sms_model: SmsModel = (
+                session.query(SmsModel).filter(SmsModel.identifier == sid).first()
+            )
             if not sms_model:
                 raise SmsNotFoundError(sid)
 
@@ -45,7 +46,11 @@ class SmsDatabaseRepository(SmsRepository):
 
     def update(self, sms: Sms):
         with self.session_factory() as session:
-            sms_model: Optional[SmsModel] = session.query(SmsModel).filter(SmsModel.identifier == sms.id.value).first()
+            sms_model: Optional[SmsModel] = (
+                session.query(SmsModel)
+                .filter(SmsModel.identifier == sms.id.value)
+                .first()
+            )
             if not sms_model:
                 raise SmsNotFoundError(sms.id.value)
 
@@ -58,7 +63,11 @@ class SmsDatabaseRepository(SmsRepository):
 
     def remove(self, entity: Sms):
         with self.session_factory() as session:
-            sms_model = session.query(SmsModel).filter(SmsModel.identifier == entity.id.value).first()
+            sms_model = (
+                session.query(SmsModel)
+                .filter(SmsModel.identifier == entity.id.value)
+                .first()
+            )
             if not sms_model:
                 raise SmsNotFoundError(entity.id.value)
             session.delete(sms_model)

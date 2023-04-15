@@ -13,11 +13,9 @@ class DatabaseContainer(containers.DeclarativeContainer):
     gateways = providers.DependenciesContainer()
 
     sms_repository = providers.Factory(
-        SmsDatabaseRepository,
-        db_client=gateways.databse_client
+        SmsDatabaseRepository, db_client=gateways.databse_client
     )
 
     sms_response_repository = providers.Factory(
-        SmsResponseDatabaseRepository,
-        db_client=gateways.databse_client
+        SmsResponseDatabaseRepository, db_client=gateways.databse_client
     )

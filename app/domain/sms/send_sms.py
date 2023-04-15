@@ -9,7 +9,6 @@ from app.core.domain.services import Service
 
 
 class SendSmsService(Service):
-
     def __init__(self, sms_service: SmsService, sms_response_repository: SmsRepository):
         self.sms_service = sms_service
         self.sms_response_repository = sms_response_repository
@@ -26,4 +25,4 @@ class SendSmsService(Service):
             sms_response = self.sms_service.send(sms)
             self.sms_response_repository.add(sms_response)
         except Exception as e:
-            raise SendSmsException('Failed to send sms')
+            raise SendSmsException("Failed to send sms")

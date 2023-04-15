@@ -19,15 +19,17 @@ class ProducerMessage:
         if isinstance(value, bytes):
             return cls.from_bytes(value)
 
-        raise ValueError(f'Wrong message value type: {type(value)}')
+        raise ValueError(f"Wrong message value type: {type(value)}")
 
     @classmethod
     def from_json(cls, value: Any):
-        return json.dumps(value, indent=None, sort_keys=True, default=str, ensure_ascii=False)
+        return json.dumps(
+            value, indent=None, sort_keys=True, default=str, ensure_ascii=False
+        )
 
     @classmethod
     def from_string(cls, value: Any):
-        return value.encode('utf-8')
+        return value.encode("utf-8")
 
     @classmethod
     def from_bytes(cls, value: Any):

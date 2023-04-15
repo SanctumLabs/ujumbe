@@ -18,6 +18,7 @@ class SmsResponse(BaseModel, Entity):
     Entity denoting the response of an Sms. Contains information about the sms delivery status with information such as
     price, status, uri, error codes and a couple of IDs to mark the uniqueness of the response
     """
+
     account_sid: str
     sid: str
     sms_date: SmsDate
@@ -52,5 +53,5 @@ class SmsResponse(BaseModel, Entity):
             messaging_service_sid=self.messaging_service_sid,
             error_code=self.error_code,
             error_message=self.error_message,
-            sms_id=self.sms_id
+            sms_id=self.sms_id,
         )

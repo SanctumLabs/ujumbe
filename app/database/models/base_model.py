@@ -14,12 +14,7 @@ NOT_DELETED = datetime(1970, 1, 1, 0, 0, 1, 0, timezone.utc)
 class IdentifierPrimaryKeyMixin:
     id = Column(Integer, primary_key=True, autoincrement=True, nullable=False)
 
-    identifier = Column(
-        String,
-        unique=True,
-        default=generate,
-        nullable=False
-    )
+    identifier = Column(String, unique=True, default=generate, nullable=False)
 
 
 class TimestampColumnsMixin:
@@ -55,7 +50,7 @@ class BaseModel(
     TimestampColumnsMixin,
     SoftDeleteMixin,
     AuditedMixin,
-    TableNameMixin
+    TableNameMixin,
 ):
     __abstract__ = True
 

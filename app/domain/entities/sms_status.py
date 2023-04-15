@@ -9,6 +9,7 @@ class SmsDeliveryStatus(Enum):
     """
     Enum with the statuses of the sms delivery. This will default to UNKNOWN if the status can not be found.
     """
+
     ACCEPTED = "ACCEPTED"
     SCHEDULED = "SCHEDULED"
     CANCELED = "CANCELED"
@@ -24,7 +25,7 @@ class SmsDeliveryStatus(Enum):
     UNKNOWN = "UNKNOWN"
 
     @classmethod
-    def _missing_(cls, value: str) -> 'SmsDeliveryStatus':
+    def _missing_(cls, value: str) -> "SmsDeliveryStatus":
         value = inflection.underscore(value).upper()
         for member in cls:
             if member.value == value:

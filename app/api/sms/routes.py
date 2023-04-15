@@ -21,8 +21,10 @@ router = APIRouter(prefix="/v1/sms", tags=["SMS"])
     response_model=ApiResponse,
 )
 @inject
-async def send_sms(payload: SmsRequestDto,
-                   submit_sms: SubmitSmsService = dependency(ApplicationContainer.domain.submit_sms)):
+async def send_sms(
+    payload: SmsRequestDto,
+    submit_sms: SubmitSmsService = dependency(ApplicationContainer.domain.submit_sms),
+):
     """
     Send sms API function. This is a POST REST endpoint that accepts requests that meet the criteria defined by the
     schema validation before sending a plain text sms
@@ -32,7 +34,9 @@ async def send_sms(payload: SmsRequestDto,
         return BadRequest(message="No data provided")
 
     try:
-        data = dict(sender=payload.sender, recipient=payload.recipient, message=payload.message)
+        data = dict(
+            sender=payload.sender, recipient=payload.recipient, message=payload.message
+        )
 
         sms = Sms.from_dict(data)
 

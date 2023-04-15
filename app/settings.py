@@ -27,6 +27,7 @@ class SmsClientSettings(BaseSettings):
     """
     Twilio Sms Client settings
     """
+
     # twilio sms client settings
     account_sid: str = ""
     auth_token: str = ""

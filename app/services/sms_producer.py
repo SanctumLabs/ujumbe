@@ -5,7 +5,6 @@ from app.infra.broker.message import ProducerMessage
 
 
 class SmsProducer(Producer):
-
     def __init__(self, topic: str, kafka_producer: KafkaProducer):
         self.topic = topic
         self.kafka_producer = kafka_producer

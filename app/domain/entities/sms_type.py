@@ -10,7 +10,7 @@ class SmsType(Enum):
     UNKNOWN = "UNKNOWN"
 
     @classmethod
-    def _missing_(cls, value: str) -> 'SmsType':
+    def _missing_(cls, value: str) -> "SmsType":
         value = inflection.underscore(value).upper()
         for member in cls:
             if member.value == value:

@@ -8,7 +8,9 @@ class UniqueId:
     value: str = field(default_factory=generate, hash=True)
 
     @classmethod
-    def next_id(cls, token: Optional[str] = None, size: Optional[int] = None) -> 'UniqueId':
+    def next_id(
+        cls, token: Optional[str] = None, size: Optional[int] = None
+    ) -> "UniqueId":
         """
         Generates the next id
         Args:
@@ -27,5 +29,5 @@ class UniqueId:
     def __len__(self) -> int:
         return len(self.value)
 
-    def __eq__(self, other: 'UniqueId') -> bool:
+    def __eq__(self, other: "UniqueId") -> bool:
         return self.value == other.value

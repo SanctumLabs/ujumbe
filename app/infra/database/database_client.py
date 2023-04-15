@@ -48,7 +48,7 @@ class DatabaseClient:
             sessionmaker(
                 autocommit=params.autocommit,
                 autoflush=params.autoflush,
-                bind=self.engine
+                bind=self.engine,
             )
         )
 

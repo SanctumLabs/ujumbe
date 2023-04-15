@@ -10,5 +10,5 @@ class Entity:
     def next_id(cls) -> UniqueId:
         return UniqueId.next_id()
 
-    def __eq__(self, other: 'Entity') -> bool:
+    def __eq__(self, other: "Entity") -> bool:
         return other.id == self.id
