@@ -8,7 +8,7 @@ class Repository(metaclass=ABCMeta):
     """A generic repository"""
 
     @abstractmethod
-    def add(self, entity: Entity):
+    def add(self, entity: Entity) -> Entity:
         raise NotImplementedError()
 
     @abstractmethod
@@ -21,6 +21,10 @@ class Repository(metaclass=ABCMeta):
 
     @abstractmethod
     def get_all(self) -> Iterator[Entity]:
+        raise NotImplementedError()
+
+    @abstractmethod
+    def update(self, sms: Entity):
         raise NotImplementedError()
 
     def __getitem__(self, index) -> Entity:

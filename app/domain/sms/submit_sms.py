@@ -9,7 +9,6 @@ from app.core.domain.services import Service
 
 
 class SubmitSmsService(Service):
-
     def __init__(self, producer: Producer):
         self.producer = producer
 
@@ -26,4 +25,4 @@ class SubmitSmsService(Service):
         try:
             self.producer.publish_message(sms)
         except Exception as e:
-            raise Exception('Failed to submit sms')
+            raise SubmitSmsException("Failed to submit sms")

@@ -22,12 +22,42 @@ run-error-worker:
 run-analytics-worker:
 	celery -A app.worker.celery_app worker --events -l info -n ujumbe-analytics-worker@%n --concurrency=5 -Q sms-analytics-queue
 
-# Runs tests
+# Runs all tests tests
 test:
 	PYTHONPATH=. pytest
 .PHONY: test
 
-# Runs tests with coverage
+# Runs integration tests
+test-integration:
+	PYTHONPATH=. pytest tests/integration
+.PHONY: test-integration
+
+# Runs integration tests with coverage
+test-integration-cover:
+	PYTHONPATH=. pytest --cov=app tests/integration/
+.PHONY: test-integration-cover
+
+# Runs end to end tests
+test-e2e:
+	PYTHONPATH=. pytest tests/e2e
+.PHONY: test-e2e
+
+# Runs e2e tests with coverage
+test-e2e-cover:
+	PYTHONPATH=. pytest --cov=app tests/e2e/
+.PHONY: test-e2e-cover
+
+# Runs unit tests
+test-unit:
+	PYTHONPATH=. pytest tests/unit
+.PHONY: test-unit
+
+# Runs unit tests with coverage
+test-unit-cover:
+	PYTHONPATH=. pytest --cov=app tests/unit/
+.PHONY: test-unit-cover
+
+# Runs all tests with coverage
 test-cover:
 	PYTHONPATH=. pytest --cov=app tests/
 .PHONY: test-cover

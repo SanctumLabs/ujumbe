@@ -6,4 +6,5 @@ class ConfigContainer(containers.DeclarativeContainer):
     """
     Dependency Injector container for Gateway services or 3rd party services used in the application
     """
+
     config = providers.Configuration(pydantic_settings=[KafkaSettings()])

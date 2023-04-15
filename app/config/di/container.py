@@ -9,19 +9,11 @@ class ApplicationContainer(containers.DeclarativeContainer):
     """
     Application container wiring all dependencies together
     """
+
     config = providers.Configuration(pydantic_settings=[KafkaSettings()])
 
-    gateways = providers.Container(
-        GatewaysContainer,
-        config=config
-    )
+    gateways = providers.Container(GatewaysContainer, config=config)
 
-    services = providers.Container(
-        ServicesContainer,
-        gateways=gateways
-    )
+    services = providers.Container(ServicesContainer, gateways=gateways)
 
-    domain = providers.Container(
-        DomainContainer,
-        services=services
-    )
+    domain = providers.Container(DomainContainer, services=services)

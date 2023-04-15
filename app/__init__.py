@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-import app.routers.sms.routes
-from app.routers.sms.routes import router as sms_router
-from app.routers.monitoring.routes import router as monitoring_router
+import app.api.sms.routes
+from app.api.sms.routes import router as sms_router
+from app.api.monitoring.routes import router as monitoring_router
 from app.config.di.container import ApplicationContainer
 from app.infra.middleware.header_middleware import HeaderMiddleware
 from app.infra.middleware.logger_middleware import LoggerRequestMiddleware
@@ -9,7 +9,7 @@ from app.infra.handlers.exception_handlers import attach_exception_handlers
 from .settings import config
 
 container = ApplicationContainer()
-container.wire(modules=[app.routers.sms.routes])
+container.wire(modules=[app.api.sms.routes])
 
 app = FastAPI(
     title=config.server_name,

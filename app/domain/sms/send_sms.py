@@ -1,26 +1,28 @@
 """
-Use case to send out sms
+Use case to send out an SMS
 """
 from app.domain.entities.sms import Sms
 from app.core.infra.sms_service import SmsService
+from .sms_repository import SmsRepository
 from .exceptions import SendSmsException
 from app.core.domain.services import Service
 
 
 class SendSmsService(Service):
-
-    def __init__(self, sms_service: SmsService):
+    def __init__(self, sms_service: SmsService, sms_response_repository: SmsRepository):
         self.sms_service = sms_service
+        self.sms_response_repository = sms_response_repository
 
     def execute(self, sms: Sms):
         """
-        Handles persisting SMS & publishing a SEND_SMS_EVENT that will then trigger sending out SMS
+        Handles sending out an SMS & saving the subsequent response
         Args:
-            sms: Sms
+            sms: Sms message to send
         """
         if not sms:
             raise SendSmsException("Invalid sms provided")
         try:
-            self.sms_service.send(sms)
+            sms_response = self.sms_service.send(sms)
+            self.sms_response_repository.add(sms_response)
         except Exception as e:
-            raise Exception('Failed to send sms')
+            raise SendSmsException("Failed to send sms")

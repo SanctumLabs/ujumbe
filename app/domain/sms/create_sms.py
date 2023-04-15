@@ -3,13 +3,12 @@ Use case to create an sms
 """
 from app.domain.entities.sms import Sms
 from app.core.infra.producer import Producer
-from .sms_repositoty import SmsRepository
+from .sms_repository import SmsRepository
 from .exceptions import CreateSmsException
 from app.core.domain.services import Service
 
 
 class CreateSmsService(Service):
-
     def __init__(self, repository: SmsRepository, producer: Producer):
         self.producer = producer
         self.repository = repository
@@ -26,4 +25,4 @@ class CreateSmsService(Service):
             self.repository.add(sms)
             self.producer.publish_message(sms)
         except Exception as e:
-            raise Exception('Failed to submit sms')
+            raise CreateSmsException("Failed to submit sms")

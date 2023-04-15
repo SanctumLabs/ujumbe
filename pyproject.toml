@@ -22,6 +22,8 @@ alembic = "^1.10.2"
 inflection = "^0.5.1"
 twilio = "^7.17.0"
 requests = "^2.28.2"
+attrs = "^22.2.0"
+psycopg2 = "^2.9.6"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
@@ -35,7 +37,10 @@ pytest-cov = "^4.0.0"
 pytest = "^7.2.1"
 locust = "^2.15.0"
 faker = "^17.5.0"
+testcontainers-postgres = "^0.0.1rc1"
+testcontainers-kafka = "^0.0.1rc1"
 
+# Pytest Options
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
@@ -44,6 +49,11 @@ pythonpath = "app"
 norecursedirs = "tmp"
 testpaths = "tests"
 filterwarnings = [ "ignore::DeprecationWarning" ]
+markers = [
+    "integration: integration test",
+    "unit: unit test",
+    "e2e: end to end test"
+]
 
 [build-system]
 requires = ["poetry-core"]

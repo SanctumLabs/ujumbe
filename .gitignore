@@ -13,3 +13,4 @@ htmlcov/
 coverage/
 logs
 .coverage.*
+:memory
