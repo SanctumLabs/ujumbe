@@ -8,9 +8,9 @@ class KafkaProducer:
         self.conf = {
             "bootstrap.servers": config.kafka.bootstrap_servers,
             "security.protocol": config.kafka.security_protocol,
-            "sasl.mechanisms": config.kafka.sasl_mechanisms,
-            "sasl.username": config.kafka.sasl_password,
-            "sasl.password": config.kafka.sasl_password,
+            # "sasl.mechanisms": config.kafka.sasl_mechanisms,
+            # "sasl.username": config.kafka.sasl_password,
+            # "sasl.password": config.kafka.sasl_password,
         }
         self._producer = Producer(self.conf)
 

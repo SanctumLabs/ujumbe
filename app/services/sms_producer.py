@@ -1,7 +1,7 @@
 from app.core.infra.producer import Producer
 from app.domain.entities.sms import Sms
-from app.infra.broker.producer import KafkaProducer
-from app.infra.broker.message import ProducerMessage
+from app.infra.broker.kafka.producer import KafkaProducer
+from app.infra.broker.kafka.message import ProducerMessage
 
 
 class SmsProducer(Producer):

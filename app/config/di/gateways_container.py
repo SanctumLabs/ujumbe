@@ -1,5 +1,5 @@
 from dependency_injector import containers, providers
-from app.infra.broker.producer import KafkaProducer
+from app.infra.broker.kafka.producer import KafkaProducer
 from app.infra.database.database_client import DatabaseClient, DatabaseClientParams
 from app.infra.sms.sms_client import SmsClient, SmsClientParams
 from app.settings import DatabaseSettings, SmsClientSettings
