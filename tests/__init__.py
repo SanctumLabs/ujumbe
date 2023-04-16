@@ -1,10 +1,10 @@
 import unittest
-import os
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
-import pytest
 from app import app
 from app.settings import AppSettings, get_config
+
+base_url = "http://ujumbe-test-server"
 
 
 class BaseTestCase(unittest.TestCase):
@@ -12,16 +12,11 @@ class BaseTestCase(unittest.TestCase):
     Base test case for application
     """
 
-    os.environ.update(SENTRY_ENABLED="False", RESULT_BACKEND="rpc")
-
     def setUp(self):
-        self.test_client = TestClient(app=app)
         app.dependency_overrides[get_config] = self._get_settings_override()
-
-    @pytest.fixture(scope="class")
-    async def client(self):
-        async with AsyncClient(app=app, base_url="http://test") as client:
-            yield client
+        self.app = app
+        self.test_client = TestClient(app=app, base_url=base_url)
+        self.async_client = AsyncClient(app=app, base_url=base_url)
 
     def tearDown(self):
         pass

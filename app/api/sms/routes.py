@@ -13,7 +13,6 @@ from dependency_injector.wiring import inject
 router = APIRouter(prefix="/v1/sms", tags=["SMS"])
 
 
-@logger.catch
 @router.post(
     path="/",
     summary="Sends SMS",
@@ -48,5 +47,5 @@ async def send_sms(
     except AppException as e:
         logger.error(f"Failed to send sms to {payload} with error {e}")
         return ApiResponse(
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to send email"
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to send SMS"
         )
