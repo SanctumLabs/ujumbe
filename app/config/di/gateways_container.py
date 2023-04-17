@@ -19,14 +19,14 @@ class GatewaysContainer(containers.DeclarativeContainer):
     database_client = providers.Singleton(
         DatabaseClient,
         DatabaseClientParams(
-            dialect=db_config.dialect,
-            driver=db_config.driver,
-            host=db_config.host,
-            port=db_config.port,
-            database=db_config.database,
-            username=db_config.username,
-            password=db_config.password,
-            logging_enabled=db_config.logging_enabled,
+            dialect=db_config.db_dialect,
+            driver=db_config.db_driver,
+            host=db_config.db_host,
+            port=db_config.db_port,
+            database=db_config.db_database,
+            username=db_config.db_username,
+            password=db_config.db_password,
+            logging_enabled=db_config.db_logging_enabled,
         ),
     )
 

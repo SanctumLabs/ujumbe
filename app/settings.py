@@ -39,13 +39,14 @@ class DatabaseSettings(BaseSettings):
     Database Settings
     """
 
-    username: str = "ujumbe-user"
-    password: str = "ujumbe-password"
-    host: str = "localhost"
-    port: int = 5432
-    database: str = "ujumbe"
-    driver: str = "postgresql"
-    logging_enabled: bool = False
+    db_username: str = "ujumbe"
+    db_password: str = "password"
+    db_host: str = "localhost"
+    db_port: int = 5432
+    db_name: str = "ujumbedb"
+    db_driver: str = "postgresql"
+    db_logging_enabled: bool = False
+    db_log_level: str = "INFO"
 
 
 class KafkaSettings(BaseSettings):
@@ -53,14 +54,25 @@ class KafkaSettings(BaseSettings):
     Kafka Settings
     """
 
-    bootstrap_servers: str = "http://localhost:9091"
-    security_protocol: str = "ssl"
-    sasl_mechanisms: str = ""
-    sasl_username: str = "ujumbe"
-    sasl_password: str = "ujumbe"
+    kafka_bootstrap_servers: str = "localhost:9091"
+    kafka_security_protocol: str = "ssl"
+    kafka_sasl_mechanisms: str = ""
+    kafka_sasl_username: str = "ujumbe"
+    kafka_sasl_password: str = "ujumbe"
 
     submit_sms_topic: str = "SUBMIT_SMS_TOPIC"
     send_sms_topic: str = "SEND_SMS_TOPIC"
+
+
+class SentrySettings(BaseSettings):
+    """
+    Sentry settings
+    """
+
+    sentry_dsn: str = ""
+    sentry_enabled: bool = False
+    sentry_traces_sample_rate: float = 0.5
+    sentry_debug_enabled: bool = False
 
 
 # pylint: disable=too-few-public-methods
@@ -80,17 +92,11 @@ class AppSettings(BaseSettings):
 
     result_backend: Optional[str] = "rpc://"
 
-    # sentry settings
-    sentry_dsn: str = ""
-    sentry_enabled: bool = False
-    sentry_traces_sample_rate: float = 0.5
-    sentry_debug_enabled: bool = False
-
     # security settings
     username: str = "ujumbe-user"
     password: str = "ujumbe-password"
 
-    # kafka settings
+    sentry: SentrySettings = SentrySettings()
     kafka: KafkaSettings = KafkaSettings()
     database: DatabaseSettings = DatabaseSettings()
     sms: SmsClientSettings = SmsClientSettings()
