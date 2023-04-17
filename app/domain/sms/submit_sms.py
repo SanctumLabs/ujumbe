@@ -4,6 +4,7 @@ which is then picked up by another part of the system to then handle persisting 
 """
 from app.domain.entities.sms import Sms
 from app.core.infra.producer import Producer
+from app.infra.logger import log as logger
 from .exceptions import SubmitSmsException
 from app.core.domain.services import Service
 
@@ -25,4 +26,5 @@ class SubmitSmsService(Service):
         try:
             self.producer.publish_message(sms)
         except Exception as e:
+            logger.error(f"SubmitSmsService> Failed to submit sms. Err: {e}", e)
             raise SubmitSmsException("Failed to submit sms")

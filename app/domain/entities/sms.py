@@ -51,9 +51,9 @@ class Sms(BaseModel, Entity):
     def to_dict(self) -> Dict[str, str]:
         return dict(
             id=self.id.value,
-            sender=self.sender.value,
+            sender=self.sender.value if self.sender else None,
             recipient=self.recipient.value or None,
             message=self.message.value,
             status=self.status,
-            response=self.response.to_dict(),
+            response=self.response.to_dict() if self.response else None,
         )

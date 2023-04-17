@@ -1,13 +1,14 @@
 from confluent_kafka import KafkaError, KafkaException, Producer
 from app.settings import config
+from app.infra.logger import log as logger
 from .message import ProducerMessage
 
 
 class KafkaProducer:
     def __init__(self):
         self.conf = {
-            "bootstrap.servers": config.kafka.bootstrap_servers,
-            "security.protocol": config.kafka.security_protocol,
+            "bootstrap.servers": config.kafka.kafka_bootstrap_servers,
+            # "security.protocol": config.kafka.kafka_security_protocol,
             # "sasl.mechanisms": config.kafka.sasl_mechanisms,
             # "sasl.username": config.kafka.sasl_password,
             # "sasl.password": config.kafka.sasl_password,
@@ -21,6 +22,7 @@ class KafkaProducer:
             )
             self._producer.flush()
         except KafkaException as exc:
+            logger.error(f"KafkaProducer> Failed to produce message. Err: {e}", e)
             if exc.args[0].code() == KafkaError.MSG_SIZE_TOO_LARGE:
                 # TODO: handle error
                 pass
