@@ -1,3 +1,6 @@
+"""
+Application Entry point
+"""
 from fastapi import FastAPI
 import app.api.sms.routes
 from app.api.sms.routes import router as sms_router

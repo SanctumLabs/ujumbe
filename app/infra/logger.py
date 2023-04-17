@@ -60,7 +60,9 @@ log.add(
 
 # critical logs
 log.add(
-    sink="logs/critical.log" if os.environ.get("ENVIRONMENT") == "local" else sys.stdout,
+    sink="logs/critical.log"
+    if os.environ.get("ENVIRONMENT") == "local"
+    else sys.stdout,
     backtrace=True
     if os.environ.get("ENVIRONMENT", "development") == "development"
     else False,

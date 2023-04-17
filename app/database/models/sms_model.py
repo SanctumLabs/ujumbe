@@ -15,6 +15,10 @@ from .sms_response_model import SmsResponse
 
 
 class Sms(BaseModel):
+    """
+    Represents an SMS record in the database
+    """
+
     __table_args__ = (
         UniqueConstraint(
             "sender",
@@ -34,6 +38,7 @@ class Sms(BaseModel):
     response: Mapped[Optional["SmsResponse"]] = relationship(back_populates="sms")
 
     def __repr__(self):
+        """String Representation of an SMS record"""
         return (
             f"Sms(id={self.identifier}, identifier={self.identifier} created_on={self.created_at}, "
             f"updated_on={self.updated_at}, "
@@ -42,6 +47,10 @@ class Sms(BaseModel):
         )
 
     def to_dict(self) -> Dict[str, Union[str, datetime, Optional[SmsResponse]]]:
+        """
+        Converts this record to a dictionary
+        Returns: Dictionary representation of this database record
+        """
         return dict(
             id=self.identifier,
             identifier=self.identifier,

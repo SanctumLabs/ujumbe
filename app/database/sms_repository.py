@@ -13,6 +13,10 @@ from .mapper import map_sms_entity_to_model, map_sms_model_to_entity
 
 
 class SmsDatabaseRepository(SmsRepository):
+    """
+    Handles CRUD operations on SmsModel
+    """
+
     def __init__(self, db_client: DatabaseClient):
         self.db_client = db_client
         self.session_factory = self.db_client.session
@@ -25,9 +29,9 @@ class SmsDatabaseRepository(SmsRepository):
                 session.commit()
                 session.refresh(sms)
                 return map_sms_model_to_entity(sms)
-        except Exception as e:
-            logger.error(f"Failed to persist sms {entity}", e)
-            raise e
+        except Exception as exc:
+            logger.error(f"Failed to persist sms {entity}", exc)
+            raise exc
 
     def get_by_id(self, sid: str) -> Sms:
         with self.session_factory() as session:
@@ -54,8 +58,7 @@ class SmsDatabaseRepository(SmsRepository):
             if not sms_model:
                 raise SmsNotFoundError(sms.id.value)
 
-            # We only update the status of the SMS, we don't want to update the sender, recipient & message as at this
-            # point we assume that the SMS has already been sent out & these values are now immutable
+            # We only update the status of the SMS, as at this point
             sms_model.status = sms.status
 
             session.add(sms_model)

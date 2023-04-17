@@ -24,7 +24,7 @@ class Repository(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @abstractmethod
-    def update(self, sms: Entity):
+    def update(self, entity: Entity):
         raise NotImplementedError()
 
     def __getitem__(self, index) -> Entity:

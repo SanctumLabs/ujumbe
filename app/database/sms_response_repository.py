@@ -17,6 +17,10 @@ from .mapper import (
 
 
 class SmsResponseDatabaseRepository(SmsRepository):
+    """
+    SMS Response Database Repository handles CRUD operations on the SmsResponseModel
+    """
+
     def __init__(self, db_client: DatabaseClient):
         self.db_client = db_client
         self.session_factory = self.db_client.session
@@ -39,9 +43,9 @@ class SmsResponseDatabaseRepository(SmsRepository):
                 session.commit()
 
                 return entity
-        except Exception as e:
-            logger.error(f"Failed to persist sms response {entity}", e)
-            raise e
+        except Exception as exc:
+            logger.error(f"Failed to persist sms response {entity}", exc)
+            raise exc
 
     def get_by_id(self, sid: str) -> SmsResponse:
         with self.session_factory() as session:
@@ -70,9 +74,9 @@ class SmsResponseDatabaseRepository(SmsRepository):
             if not sms_model:
                 raise SmsNotFoundError(sms_response.id.value)
 
-            # We only update the status of the SMS, we don't want to update other metadata as at this point we assume
-            # that the SMS Response was already received from an earlier request and persisted & now we need to track
-            # the status
+            # We only update the status, we don't want to update other metadata as at this point we assume
+            # that the SMS Response was received from an earlier request and persisted
+            # & now we need to track the status
             sms_model.status = sms_response.status
 
             session.add(sms_model)

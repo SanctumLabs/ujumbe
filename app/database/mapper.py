@@ -1,3 +1,6 @@
+"""
+Contains public functions to handle mapping between Database models and Domain entities
+"""
 from app.core.domain.entities.unique_id import UniqueId
 from app.domain.entities.sms import Sms
 from app.domain.entities.sms_response import SmsResponse
@@ -12,7 +15,13 @@ from app.database.models.sms_response_model import SmsResponse as SmsResponseMod
 
 
 def map_sms_model_to_entity(model: SmsModel) -> Sms:
-    """"""
+    """
+    Map from SsmModel to Sms Entity
+    Args:
+        model: represents a record in the database
+    Returns:
+        Sms domain entity
+    """
     sms_id = UniqueId(value=model.identifier)
     sender_phone_number = model.sender
     sender = PhoneNumber(value=sender_phone_number)
@@ -27,6 +36,7 @@ def map_sms_model_to_entity(model: SmsModel) -> Sms:
     delivery_status = SmsDeliveryStatus(value=status)
 
     response = model.response
+    # pylint: disable=unexpected-keyword-arg)
     sms_response = map_sms_response_model_to_entity(response) if response else None
 
     return Sms(
@@ -40,6 +50,13 @@ def map_sms_model_to_entity(model: SmsModel) -> Sms:
 
 
 def map_sms_entity_to_model(entity: Sms) -> SmsModel:
+    """
+    Maps an Sms Domain Entity to an SmsModel for persistence in a database
+    Args:
+        entity: Sms domain entity
+    Returns:
+        Sms Model
+    """
     return SmsModel(
         identifier=entity.id.value,
         sender=entity.sender.value,
@@ -53,6 +70,13 @@ def map_sms_entity_to_model(entity: Sms) -> SmsModel:
 
 
 def map_sms_response_model_to_entity(model: SmsResponseModel) -> SmsResponse:
+    """
+    Maps an SmsResponseModel to an SmsResponse Domain entity
+    Args:
+        model: SmsResponseModel represents an SMS response record in the database
+    Returns:
+        SmsResponse domain entity
+    """
     sms_date = SmsDate(
         date_sent=model.date_sent,
         date_updated=model.date_updated,
@@ -84,6 +108,13 @@ def map_sms_response_model_to_entity(model: SmsResponseModel) -> SmsResponse:
 
 
 def map_sms_response_entity_to_model(entity: SmsResponse) -> SmsResponseModel:
+    """
+    Maps an SmsResponse domain entity to an SmsResponseModel that is mapped to a record in the database
+    Args:
+        entity: SmsResponse domain entity
+    Returns:
+        SmsResponseModel which is a representation of a record in the database
+    """
     return SmsResponseModel(
         identifier=entity.id.value,
         account_sid=entity.account_sid,

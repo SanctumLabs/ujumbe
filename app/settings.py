@@ -23,6 +23,7 @@ def load_from_file(path: str, mode: str, encoding: str) -> AnyStr:
         return file.read()
 
 
+# pylint: disable=too-few-public-methods
 class SmsClientSettings(BaseSettings):
     """
     Twilio Sms Client settings
@@ -34,6 +35,7 @@ class SmsClientSettings(BaseSettings):
     messaging_service_sid: str = ""
 
 
+# pylint: disable=too-few-public-methods
 class DatabaseSettings(BaseSettings):
     """
     Database Settings
@@ -49,6 +51,7 @@ class DatabaseSettings(BaseSettings):
     db_log_level: str = "INFO"
 
 
+# pylint: disable=too-few-public-methods
 class KafkaSettings(BaseSettings):
     """
     Kafka Settings
@@ -64,6 +67,7 @@ class KafkaSettings(BaseSettings):
     send_sms_topic: str = "SEND_SMS_TOPIC"
 
 
+# pylint: disable=too-few-public-methods
 class SentrySettings(BaseSettings):
     """
     Sentry settings
@@ -108,6 +112,6 @@ config = AppSettings()
 @lru_cache()
 def get_config():
     """
-    Gets configuration This is wrapped with lru_cache to ensure we don't continuously read from .env file on restarts
+    This is wrapped with lru_cache to ensure we don't continuously read from .env file on restarts
     """
     return AppSettings()
