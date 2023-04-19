@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package ujumbe.sms.events;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FileOptions {
+    // The domain (e.g. "merchant_account") that owns the Events described in this file.
+    string domain = 11716485;
+
+    string grouping = 11716486;
+}
+
+extend google.protobuf.MessageOptions {
+    // The Event type (e.g. "sms_sent") that relates to this message.
+    string event_type = 11716487;
+
+    repeated string tags = 11716488;
+}
+
+message SmsSubmitted {
+    option (ujumbe.events.event_type) = "sms_submitted";
+
+    optional string name = 1;
+    optional int32 id = 2;
+    optional string email = 3;
+
+    enum PhoneType {
+        MOBILE = 0;
+        HOME = 1;
+        WORK = 2;
+    }
+
+    message PhoneNumber {
+        optional string number = 1;
+        optional PhoneType type = 2 [default = HOME];
+    }
+
+    repeated PhoneNumber phones = 4;
+}
+
+message AddressBook {
+    repeated Person people = 1;
+}

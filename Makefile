@@ -9,6 +9,12 @@ run:
 # Runs the application with reload flag set
 run-reload:
 	uvicorn app:app --port 5000 --reload
+.PHONY: run-reload
+
+# Runs the consumer application with reload flag set
+run-reload-submit-sms-consumer:
+	uvicorn app.workers.submit_sms_consumer:consumer_app --port 5001 --reload
+.PHONY: run-reload-submit-sms-consumer
 
 # Runs SMS worker
 run-sms-worker:

@@ -1,0 +1,70 @@
+@startuml
+
+title Sending an SMS Flow
+footer This shows the happy path flow when sending out an SMS
+
+autonumber
+
+box Clients
+    participant Client as client
+endbox
+
+note over client: Triggers sending out an SMS
+
+box Ujumbe SMS API
+    participant Ujumbe as ujumbe
+endbox
+
+box Integrations
+    database Database as database
+    queue Broker as broker
+endbox
+
+box Consumers
+    participant "Submit SMS Consumer" as submit_sms_consumer
+    participant "Send SMS Consumer" as send_sms_consumer
+    participant "SMS Callback Consumer" as sms_callback_consumer
+endbox
+
+box 3rd Party
+    participant SmsAPI as sms_api
+endbox
+
+group Send SMS Flow
+ client -> ujumbe: /api/v1/sms Send an SMS
+ ujumbe -> broker: Publish SMS_RECEIVED_EVENT
+ ujumbe -> client: 200 OK
+end
+
+group SMS Received Event Flow
+ broker -> submit_sms_consumer: Consume SMS_RECEIVED_EVENT
+ submit_sms_consumer -> database: Create an SMS record
+ database -> submit_sms_consumer: SMS record created
+ submit_sms_consumer -> broker: Publish SEND_SMS_EVENT
+end
+
+group Send SMS Event Flow
+ broker --> send_sms_consumer: Consume SEND_SMS_EVENT
+ send_sms_consumer -> sms_api: Send Sms
+ sms_api -> send_sms_consumer: 200 OK Response
+ send_sms_consumer -> database: Save SMS response
+end
+
+== Time passes ==
+
+group 3rd Party Sends out SMS either on schedule or immediately
+ sms_api --> client: Sends SMS
+end
+
+group 3rd Party API responds with Webhook about sent SMS
+ sms_api --> ujumbe: Webhook event regarding sent SMS
+ ujumbe -> broker: publish SMS_CALLBACK_RECEIVED_EVENT
+end
+
+group SMS Callback Event Flow
+ broker --> sms_callback_consumer: Consume SMS_CALLBACK_RECEIVED_EVENT regarding SMS callback
+ sms_callback_consumer -> database: Updates record for an earlier sent sms
+ database -> sms_callback_consumer: Record updated
+end
+
+@enduml
