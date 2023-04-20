@@ -63,8 +63,13 @@ class KafkaSettings(BaseSettings):
     kafka_sasl_username: str = "ujumbe"
     kafka_sasl_password: str = "ujumbe"
 
+    sms_received_topic: str = "SMS_RECEIVED_TOPIC"
+    sms_received_group_id: str = "SMS_RECEIVED_GROUP_ID"
+
     submit_sms_topic: str = "SUBMIT_SMS_TOPIC"
+
     send_sms_topic: str = "SEND_SMS_TOPIC"
+    send_sms_group_id: str = "SEND_SMS_GROUP_ID"
 
 
 # pylint: disable=too-few-public-methods

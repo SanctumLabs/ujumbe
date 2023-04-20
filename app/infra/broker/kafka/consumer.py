@@ -1,44 +1,67 @@
-from typing import List
-
+from typing import List, Union
+from dataclasses import dataclass
 from confluent_kafka import KafkaError, KafkaException, Consumer, OFFSET_BEGINNING, TopicPartition, Message
-from app.settings import config
 from app.infra.logger import log as logging
 
 
+@dataclass
+class KafkaConsumerParams:
+    """
+    bootstrap_servers: Kafka bootstrap servers to listen on
+    topic: Either a single topic or a list of topics for this consumer to listen to
+    group_id: Group ID this consumer belongs to
+    """
+    bootstrap_servers: str
+    topic: Union[str, List[str]]
+    group_id: str
+
+    @property
+    def topics(self) -> Union[str, List[str]]:
+        if isinstance(self.topic, str):
+            return [self.topic]
+        else:
+            return self.topic
+
+
 class KafkaConsumer:
-    def __init__(self):
-        self.conf = {
-            "bootstrap.servers": config.kafka.kafka_bootstrap_servers,
-            "group.id": "submit_sms_group_id"
+    def __init__(self, params: KafkaConsumerParams):
+        """
+        Creates an instance of a Kafka consumer
+        Args:
+            params: KafkaConsumerParams to initialize a Kafka Consumer
+        """
+        conf = {
+            "bootstrap.servers": params.bootstrap_servers,
+            "group.id": params.group_id
             # "security.protocol": config.kafka.security_protocol,
             # "sasl.mechanisms": config.kafka.sasl_mechanisms,
             # "sasl.username": config.kafka.sasl_password,
             # "sasl.password": config.kafka.sasl_password,
         }
-        self._consumer = Consumer(self.conf)
+        self._consumer = Consumer(conf)
+        self._consumer.subscribe(topics=params.topics)
 
-    def consume(self, topic: str) -> Message:
-        try:
-            self._consumer.subscribe([topic])
-            while True:
-                message = self._consumer.poll(1.0)
+    def consume(self):
+        while True:
+            try:
+                message = self._consumer.poll()
                 if not message:
                     logging.info(f"Waiting for messages...")
+                    continue
                 elif message.error():
-                    logging.error(f"Failed to consume message {message}", message.error())
+                    logging.error(f"Failed to consume message {message.error()}")
                 else:
                     logging.info(
                         f"Consumed event from topic {message.topic()}: key = {message.key().decode('utf-8')} "
                         f"value = {message.value().decode('utf-8')}"
                     )
-                    return message
 
-        except KafkaException as exc:
-            if exc.args[0].code() == KafkaError.MSG_SIZE_TOO_LARGE:
-                # TODO: handle error
-                pass
-            else:
-                raise exc
+            except KafkaException as exc:
+                if exc.args[0].code() == KafkaError.MSG_SIZE_TOO_LARGE:
+                    # TODO: handle error
+                    pass
+                else:
+                    raise exc
 
     def close(self):
         try:
