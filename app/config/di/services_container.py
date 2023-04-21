@@ -13,27 +13,28 @@ class ServicesContainer(containers.DeclarativeContainer):
     """
 
     gateways = providers.DependenciesContainer()
-    config = providers.Configuration(pydantic_settings=[KafkaSettings()])
+    kafka_config = providers.Configuration(pydantic_settings=[KafkaSettings()])
+    kafka_config.from_pydantic(KafkaSettings())
 
     sms_received_kafka_consumer_client = providers.Factory(
         KafkaConsumer,
         params=KafkaConsumerParams(
-            bootstrap_servers=config.kafka_bootstrap_servers,
-            topic=config.sms_received_topic,
-            group_id=config.sms_received_group_id
+            bootstrap_servers=kafka_config.kafka_bootstrap_servers(),
+            topic=kafka_config.sms_received_topic(),
+            group_id=kafka_config.sms_received_group_id()
         )
     )
 
     submit_sms_producer = providers.Factory(
         SmsProducer,
         kafka_producer=gateways.kafka_producer_client,
-        topic=config.sms_received_topic,
+        topic=kafka_config.sms_received_topic,
     )
 
     send_sms_producer = providers.Factory(
         SmsProducer,
         kafka_producer=gateways.kafka_producer_client,
-        topic=config.send_sms_topic,
+        topic=kafka_config.send_sms_topic,
     )
 
     sms_service = providers.Factory(UjumbeSmsService, sms_client=gateways.sms_client)

@@ -1,6 +1,6 @@
-from typing import List, Union
+from typing import List, Union, Optional
 from dataclasses import dataclass
-from confluent_kafka import KafkaError, KafkaException, Consumer, OFFSET_BEGINNING, TopicPartition, Message
+from confluent_kafka import Consumer, OFFSET_BEGINNING, TopicPartition, Message
 from app.infra.logger import log as logging
 
 
@@ -41,27 +41,13 @@ class KafkaConsumer:
         self._consumer = Consumer(conf)
         self._consumer.subscribe(topics=params.topics)
 
-    def consume(self):
-        while True:
-            try:
-                message = self._consumer.poll()
-                if not message:
-                    logging.info(f"Waiting for messages...")
-                    continue
-                elif message.error():
-                    logging.error(f"Failed to consume message {message.error()}")
-                else:
-                    logging.info(
-                        f"Consumed event from topic {message.topic()}: key = {message.key().decode('utf-8')} "
-                        f"value = {message.value().decode('utf-8')}"
-                    )
-
-            except KafkaException as exc:
-                if exc.args[0].code() == KafkaError.MSG_SIZE_TOO_LARGE:
-                    # TODO: handle error
-                    pass
-                else:
-                    raise exc
+    def consume(self, timeout: Optional[float] = 1.0) -> Optional[Message]:
+        try:
+            message = self._consumer.poll(timeout=timeout)
+            return message
+        except Exception as exc:
+            logging.error(f"failed to consume messages", exc)
+            raise exc
 
     def close(self):
         try:

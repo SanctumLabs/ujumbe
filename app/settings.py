@@ -46,7 +46,8 @@ class DatabaseSettings(BaseSettings):
     db_host: str = "localhost"
     db_port: int = 5432
     db_name: str = "ujumbedb"
-    db_driver: str = "postgresql"
+    db_dialect: str = "postgresql"
+    db_driver: str = "psycopg2"
     db_logging_enabled: bool = False
     db_log_level: str = "INFO"
 
@@ -57,19 +58,22 @@ class KafkaSettings(BaseSettings):
     Kafka Settings
     """
 
+    kafka_schema_registry: str = "http://localhost:8081"
+
     kafka_bootstrap_servers: str = "localhost:9091"
     kafka_security_protocol: str = "ssl"
     kafka_sasl_mechanisms: str = ""
     kafka_sasl_username: str = "ujumbe"
     kafka_sasl_password: str = "ujumbe"
 
-    sms_received_topic: str = "SMS_RECEIVED_TOPIC"
-    sms_received_group_id: str = "SMS_RECEIVED_GROUP_ID"
+    sms_received_topic: str = "sms_received_topic"
+    sms_received_group_id: str = "sms_received_group_id"
 
-    submit_sms_topic: str = "SUBMIT_SMS_TOPIC"
+    submit_sms_topic: str = "submit_sms_topic"
+    submit_sms_group_id: str = "submit_sms_group_id"
 
-    send_sms_topic: str = "SEND_SMS_TOPIC"
-    send_sms_group_id: str = "SEND_SMS_GROUP_ID"
+    send_sms_topic: str = "send_sms_topic"
+    send_sms_group_id: str = "send_sms_group_id"
 
 
 # pylint: disable=too-few-public-methods

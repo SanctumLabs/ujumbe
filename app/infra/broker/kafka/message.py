@@ -1,11 +1,28 @@
-from typing import Any
+"""
+Wrapper for a Producer message to be used by producers when sending messages to a broker
+"""
+from typing import Any, Optional
 import json
+from uuid import uuid4
+from confluent_kafka.serialization import StringSerializer
 
 
 class ProducerMessage:
-    def __init__(self, topic: str, value: Any, key=None) -> None:
+    """
+    Producer message
+    """
+
+    def __init__(self, topic: str, value: Any, key: Optional[str] = None) -> None:
+        """
+        Creates an instance of a producer message
+        Args:
+            topic (str): Topic this message belongs to
+            value (dict): Value of the message as a dictionary
+            key (str): Optional Key of the message
+        """
+        string_serializer = StringSerializer('utf_8')
         self.topic = topic
-        self.key = key
+        self.key = key or string_serializer(str(uuid4()))
         self.value = self.convert_value_to_bytes(value)
 
     @classmethod

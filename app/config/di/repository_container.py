@@ -3,9 +3,9 @@ from app.database.sms_repository import SmsDatabaseRepository
 from app.database.sms_response_repository import SmsResponseDatabaseRepository
 
 
-class DatabaseContainer(containers.DeclarativeContainer):
+class RepositoryContainer(containers.DeclarativeContainer):
     """
-    Dependency Injector Container for Database repositories
+    Dependency Injector Container for Repositories
 
     see https://github.com/ets-labs/python-dependency-injector for more details
     """
@@ -13,9 +13,9 @@ class DatabaseContainer(containers.DeclarativeContainer):
     gateways = providers.DependenciesContainer()
 
     sms_repository = providers.Factory(
-        SmsDatabaseRepository, db_client=gateways.databse_client
+        SmsDatabaseRepository, db_client=gateways.database_client
     )
 
     sms_response_repository = providers.Factory(
-        SmsResponseDatabaseRepository, db_client=gateways.databse_client
+        SmsResponseDatabaseRepository, db_client=gateways.database_client
     )
