@@ -3,7 +3,8 @@ syntax = "proto3";
 package ujumbe.sms.messages;
 
 import "google/protobuf/timestamp.proto";
-import "sms_status.proto";
+import "google/protobuf/any.proto";
+import "data/sms_status.proto";
 
 message SmsResponse {
     string id = 1;
@@ -15,7 +16,7 @@ message SmsResponse {
     int64 num_segments = 7;
     SmsPrice price = 8;
     SmsStatus status = 9;
-    map subresource_uris = 10;
+    map<string, google.protobuf.Any> subresource_uris = 10;
     string uri = 11;
     string sms_id = 12;
     optional string messaging_service_sid = 13;

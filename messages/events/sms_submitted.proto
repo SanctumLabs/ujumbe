@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package ujumbe.sms.events;
+
+import "data/sms.proto";
+import "events/events.proto";
+
+message SmsSubmitted {
+    option (ujumbe.sms.events.event_type) = "sms_submitted";
+    ujumbe.sms.messages.Sms sms = 1;
+}

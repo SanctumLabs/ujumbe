@@ -15,5 +15,4 @@ enum SmsStatus {
     RECEIVING = 9;
     READ = 10;
     PENDING = 11;
-    UNKNOWN = 12;
 }

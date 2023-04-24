@@ -5,7 +5,7 @@ from dependency_injector.wiring import inject, Provide
 from app.domain.entities.sms import Sms
 from app.infra.logger import log as logger
 from app.domain.sms.create_sms import CreateSmsService
-from app.infra.broker.kafka.consumer import KafkaConsumer
+from app.infra.broker.kafka.consumers.consumer import KafkaConsumer
 from app.config.di.container import ApplicationContainer
 
 

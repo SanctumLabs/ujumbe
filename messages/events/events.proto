@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package ujumbe.sms.events;
+
+import "google/protobuf/descriptor.proto";
+
+extend google.protobuf.FileOptions {
+    // The domain (e.g. "payment_team") that owns the Events described in this file.
+    string domain = 11716485;
+
+    string grouping = 11716486;
+}
+
+extend google.protobuf.MessageOptions {
+    // The Event type (e.g. "sms_sent") that relates to this message.
+    string event_type = 11716487;
+
+    repeated string tags = 11716488;
+}

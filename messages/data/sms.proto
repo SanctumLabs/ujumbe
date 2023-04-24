@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package ujumbe.sms.messages;
 
-import "sms_status.proto";
-import "sms_response.proto";
+import "data/sms_status.proto";
+import "data/sms_response.proto";
 
 message Sms {
     string id = 1;

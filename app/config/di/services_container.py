@@ -2,7 +2,7 @@ from dependency_injector import containers, providers
 from app.services.sms_producer import SmsProducer
 from app.services.sms_service import UjumbeSmsService
 from app.settings import KafkaSettings
-from app.infra.broker.kafka.consumer import KafkaConsumer, KafkaConsumerParams
+from app.infra.broker.kafka.consumers.consumer import KafkaConsumer, KafkaConsumerParams
 
 
 class ServicesContainer(containers.DeclarativeContainer):

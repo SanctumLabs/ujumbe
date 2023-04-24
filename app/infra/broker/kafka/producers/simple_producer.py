@@ -1,29 +1,18 @@
-import socket
 from typing import Optional
 from confluent_kafka import KafkaError, KafkaException, Producer
 from confluent_kafka.serialization import SerializationContext, MessageField, Serializer
 from app.settings import config
 from app.infra.logger import log as logger
-from .message import ProducerMessage
-from .type_aliases import DeliverReportHandler
-from .callbacks import delivery_report
+from app.infra.broker.kafka.message import ProducerMessage
+from app.infra.broker.kafka.type_aliases import DeliverReportHandler
+from app.infra.broker.kafka.callbacks import delivery_report
+from . import KafkaProducer
 
-log_prefix = "KafkaProducer> "
 
-
-class KafkaProducer:
-    def __init__(self, bootstrap_servers: str = config.kafka.kafka_bootstrap_servers,
-                 client_id: Optional[str] = None,
-                 ):
-        conf = {
-            "bootstrap.servers": bootstrap_servers,
-            "client.id": client_id or socket.gethostname(),
-            # "security.protocol": config.kafka.kafka_security_protocol,
-            # "sasl.mechanisms": config.kafka.sasl_mechanisms,
-            # "sasl.username": config.kafka.sasl_password,
-            # "sasl.password": config.kafka.sasl_password,
-        }
-        self._producer = Producer(conf)
+class KafkaSimpleProducer(KafkaProducer):
+    def __init__(self, bootstrap_servers: str = config.kafka.kafka_bootstrap_servers, client_id: Optional[str] = None):
+        super().__init__(bootstrap_servers, client_id)
+        self._producer = Producer(self.conf)
 
     def produce(self,
                 message: ProducerMessage,
@@ -49,9 +38,9 @@ class KafkaProducer:
             self._producer.flush()
         except KafkaException as exc:
             # TODO: handle kafka exception
-            logger.error(f"{log_prefix} Failed to produce message. Err: {exc}", exc)
+            logger.error(f"{self.log_prefix}> Failed to produce message. Err: {exc}", exc)
             if exc.args[0].code() == KafkaError.MSG_SIZE_TOO_LARGE:
-                logger.error(f"{log_prefix} message size too large.")
+                logger.error(f"{self.log_prefix}> message size too large.")
             else:
                 raise exc
 

@@ -4,7 +4,7 @@ Sms Producer to handle sending SMS message events to broker
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
 from app.domain.entities.sms import Sms
-from app.infra.broker.kafka.producer import KafkaProducer
+from app.infra.broker.kafka.producers import KafkaProducer
 from app.infra.broker.kafka.message import ProducerMessage
 
 
@@ -19,7 +19,7 @@ class SmsProducer(Producer):
         events.
         Args:
             topic (str): Topic to send message to
-            kafka_producer (KafkaProducer): Kafka Producer client to use
+            kafka_producer (KafkaSimpleProducer): Kafka Producer client to use
         """
         self.topic = topic
         self.kafka_producer = kafka_producer
