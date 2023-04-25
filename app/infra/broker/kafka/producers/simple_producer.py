@@ -7,11 +7,16 @@ from app.infra.broker.kafka.message import ProducerMessage
 from app.infra.broker.kafka.type_aliases import DeliverReportHandler
 from app.infra.broker.kafka.callbacks import delivery_report
 from . import KafkaProducer
+from ..config import KafkaProducerConfig
 
 
 class KafkaSimpleProducer(KafkaProducer):
-    def __init__(self, bootstrap_servers: str = config.kafka.kafka_bootstrap_servers, client_id: Optional[str] = None):
-        super().__init__(bootstrap_servers, client_id)
+    def __init__(self,
+                 params: KafkaProducerConfig = KafkaProducerConfig(
+                     bootstrap_servers=config.kafka.kafka_bootstrap_servers,
+                     client_id=None
+                 )):
+        super().__init__(params)
         self._producer = Producer(self.conf)
 
     def produce(self,

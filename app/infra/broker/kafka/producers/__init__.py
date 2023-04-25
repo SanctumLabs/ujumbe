@@ -3,18 +3,25 @@ from typing import Optional
 from abc import abstractmethod, ABCMeta
 from app.infra.broker.kafka.message import ProducerMessage
 from app.infra.broker.kafka.type_aliases import DeliverReportHandler
+from ..config import KafkaProducerConfig
 
 
 class KafkaProducer(metaclass=ABCMeta):
-    def __init__(self, bootstrap_servers, client_id: Optional[str] = None):
+    def __init__(self, config: KafkaProducerConfig):
+        security_config = config.security
+
         self.conf = {
-            "bootstrap.servers": bootstrap_servers,
-            "client.id": client_id or socket.gethostname(),
-            # "security.protocol": config.kafka.kafka_security_protocol,
-            # "sasl.mechanisms": config.kafka.sasl_mechanisms,
-            # "sasl.username": config.kafka.sasl_password,
-            # "sasl.password": config.kafka.sasl_password,
+            "bootstrap.servers": config.bootstrap_servers,
+            "client.id": config.client_id or socket.gethostname(),
         }
+
+        if security_config:
+            if security_config.security_protocol:
+                self.conf["security.protocol"] = security_config.security_protocol
+            if security_config.sasl_password and security_config.sasl_mechanisms and security_config.sasl_username:
+                self.conf["sasl.mechanisms"] = security_config.sasl_mechanisms
+                self.conf["sasl.username"] = security_config.sasl_password
+                self.conf["sasl.password"] = security_config.sasl_password
 
     @abstractmethod
     def produce(self,

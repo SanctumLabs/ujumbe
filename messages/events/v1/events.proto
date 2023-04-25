@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+// buf:lint:ignore PACKAGE_DIRECTORY_MATCH
+package ujumbe.sms.events.v1;
+
+import "messages/events/events.proto";
+import "messages/events/v1/data.proto";
+
+message SmsSubmitted {
+  option (ujumbe.sms.events.event_type) = "sms_submitted";
+  ujumbe.sms.events.v1.Sms sms = 1;
+}

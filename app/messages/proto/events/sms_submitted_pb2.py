@@ -11,8 +11,8 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-from data import sms_pb2 as data_dot_sms__pb2
-from events import events_pb2 as events_dot_events__pb2
+from ..data import sms_pb2 as data_dot_sms__pb2
+import events_pb2 as events_dot_events__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1a\x65vents/sms_submitted.proto\x12\x11ujumbe.sms.events\x1a\x0e\x64\x61ta/sms.proto\x1a\x13\x65vents/events.proto\"N\n\x0cSmsSubmitted\x12*\n\x03sms\x18\x01 \x01(\x0b\x32\x18.ujumbe.sms.messages.SmsR\x03sms:\x12\xba\xf8\xd8,\rsms_submittedB\x90\x01\n\x15\x63om.ujumbe.sms.eventsB\x11SmsSubmittedProtoP\x01\xa2\x02\x03USE\xaa\x02\x11Ujumbe.Sms.Events\xca\x02\x11Ujumbe\\Sms\\Events\xe2\x02\x1dUjumbe\\Sms\\Events\\GPBMetadata\xea\x02\x13Ujumbe::Sms::Eventsb\x06proto3')

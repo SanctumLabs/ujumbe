@@ -10,9 +10,8 @@ from google.protobuf import symbol_database as _symbol_database
 
 _sym_db = _symbol_database.Default()
 
-
-from data import sms_status_pb2 as data_dot_sms__status__pb2
-from data import sms_response_pb2 as data_dot_sms__response__pb2
+import .sms_status_pb2 as data_dot_sms__status__pb2
+import .sms_response_pb2 as data_dot_sms__response__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0e\x64\x61ta/sms.proto\x12\x13ujumbe.sms.messages\x1a\x15\x64\x61ta/sms_status.proto\x1a\x17\x64\x61ta/sms_response.proto\"\xfd\x01\n\x03Sms\x12\x0e\n\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n\x06sender\x18\x02 \x01(\tH\x00R\x06sender\x88\x01\x01\x12\x1c\n\trecipient\x18\x03 \x01(\tR\trecipient\x12\x18\n\x07message\x18\x04 \x01(\tR\x07message\x12\x36\n\x06status\x18\x05 \x01(\x0e\x32\x1e.ujumbe.sms.messages.SmsStatusR\x06status\x12\x41\n\x08response\x18\x06 \x01(\x0b\x32 .ujumbe.sms.messages.SmsResponseH\x01R\x08response\x88\x01\x01\x42\t\n\x07_senderB\x0b\n\t_responseB\x91\x01\n\x17\x63om.ujumbe.sms.messagesB\x08SmsProtoP\x01\xa2\x02\x03USM\xaa\x02\x13Ujumbe.Sms.Messages\xca\x02\x13Ujumbe\\Sms\\Messages\xe2\x02\x1fUjumbe\\Sms\\Messages\\GPBMetadata\xea\x02\x15Ujumbe::Sms::Messagesb\x06proto3')

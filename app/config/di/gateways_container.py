@@ -1,5 +1,4 @@
 from dependency_injector import containers, providers
-from app.infra.broker.kafka.producers.simple_producer import KafkaSimpleProducer
 from app.infra.database.database_client import DatabaseClient, DatabaseClientParams
 from app.infra.sms.sms_client import SmsClient, SmsClientParams
 from app.settings import DatabaseSettings, SmsClientSettings
@@ -15,8 +14,6 @@ class GatewaysContainer(containers.DeclarativeContainer):
 
     sms_config = providers.Configuration(pydantic_settings=[SmsClientSettings()])
     sms_config.from_pydantic(SmsClientSettings())
-
-    kafka_producer_client = providers.Singleton(KafkaSimpleProducer)
 
     database_client = providers.Singleton(
         DatabaseClient,

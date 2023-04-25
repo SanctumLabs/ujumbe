@@ -1,25 +1,26 @@
 from typing import Optional
 from confluent_kafka import KafkaError, KafkaException, SerializingProducer
 from confluent_kafka.serialization import StringSerializer
-from app.settings import config
 from app.infra.logger import log as logger
 from app.infra.broker.kafka.message import ProducerMessage
 from app.infra.broker.kafka.serializers.protobuf_serializer import KafkaProtobufSerializer
 from app.infra.broker.kafka.type_aliases import DeliverReportHandler
 from app.infra.broker.kafka.callbacks import delivery_report
 from . import KafkaProducer
+from ..config import KafkaProducerConfig
 
 
 class KafkaProtoProducer(KafkaProducer):
-    def __init__(self, serializer: KafkaProtobufSerializer,
-                 bootstrap_servers: str = config.kafka.kafka_bootstrap_servers, client_id: Optional[str] = None):
-        super().__init__(bootstrap_servers, client_id)
-        key_serializer = StringSerializer()
-        self.conf.update({
-            "key.serializer": key_serializer,
-            "value.serializer": serializer.serializer
+    def __init__(self, params: KafkaProducerConfig, serializer: KafkaProtobufSerializer):
+        super().__init__(params)
+        self.key_serializer = StringSerializer()
+        self.serializer = serializer
+        self.config = self.conf.copy()
+        self.config.update({
+            "key.serializer": self.key_serializer,
+            "value.serializer": self.serializer.serializer
         })
-        self._producer = SerializingProducer(self.conf)
+        self._producer = SerializingProducer(self.config)
 
     def produce(self, message: ProducerMessage, report_callback: Optional[DeliverReportHandler] = None, **kwargs):
         """
@@ -35,8 +36,8 @@ class KafkaProtoProducer(KafkaProducer):
         try:
             self._producer.produce(
                 topic=message.topic,
-                key=message.key,
-                value=message.value,
+                key=self.key_serializer(message.key),
+                value=self.serializer.serialize_message_to_protobuf(message),
                 on_delivery=report_callback or delivery_report
             )
             self._producer.flush()

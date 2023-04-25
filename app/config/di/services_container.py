@@ -13,6 +13,8 @@ class ServicesContainer(containers.DeclarativeContainer):
     """
 
     gateways = providers.DependenciesContainer()
+    kafka_container = providers.DependenciesContainer()
+
     kafka_config = providers.Configuration(pydantic_settings=[KafkaSettings()])
     kafka_config.from_pydantic(KafkaSettings())
 
@@ -27,13 +29,13 @@ class ServicesContainer(containers.DeclarativeContainer):
 
     submit_sms_producer = providers.Factory(
         SmsProducer,
-        kafka_producer=gateways.kafka_producer_client,
+        kafka_producer=kafka_container.kafka_producer_client,
         topic=kafka_config.sms_received_topic,
     )
 
     send_sms_producer = providers.Factory(
         SmsProducer,
-        kafka_producer=gateways.kafka_producer_client,
+        kafka_producer=kafka_container.kafka_sms_submitted_proto_producer_client,
         topic=kafka_config.send_sms_topic,
     )
 

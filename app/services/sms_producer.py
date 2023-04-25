@@ -6,6 +6,7 @@ from app.infra.logger import log as logger
 from app.domain.entities.sms import Sms
 from app.infra.broker.kafka.producers import KafkaProducer
 from app.infra.broker.kafka.message import ProducerMessage
+import app.messages.proto.events.sms_submitted_pb2 as sms_submitted_event
 
 
 class SmsProducer(Producer):
@@ -26,7 +27,7 @@ class SmsProducer(Producer):
 
     def publish_message(self, sms: Sms):
         try:
-            message = ProducerMessage(topic=self.topic, value=sms.to_dict())
+            message = ProducerMessage(topic=self.topic, value=sms_submitted_event.SmsSubmitted(sms=sms))
             self.kafka_producer.produce(message=message)
         except Exception as e:
             logger.error(f"SmsProducer> Failed to publish message Err: {e}", e)
