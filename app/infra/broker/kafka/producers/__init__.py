@@ -1,3 +1,6 @@
+"""
+Contains an Abstract Kafka Producer that can be subclasses by producer classes
+"""
 import socket
 from typing import Optional
 from abc import abstractmethod, ABCMeta
@@ -7,7 +10,15 @@ from ..config import KafkaProducerConfig
 
 
 class KafkaProducer(metaclass=ABCMeta):
+    """
+    Abstract Kafka Producer
+    """
     def __init__(self, config: KafkaProducerConfig):
+        """
+        Initializes a Kafka producer
+        Args:
+            config (KafkaProducerConfig): configuration for producer
+        """
         security_config = config.security
 
         self.conf = {
@@ -43,4 +54,8 @@ class KafkaProducer(metaclass=ABCMeta):
 
     @property
     def log_prefix(self):
+        """
+        Log prefix
+        Returns: Name of class
+        """
         return self.__class__.__name__

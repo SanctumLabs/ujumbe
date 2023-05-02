@@ -1,7 +1,7 @@
 """
 Wrapper for a Producer message to be used by producers when sending messages to a broker
 """
-from typing import Any, Optional
+from typing import Any, Optional, Dict
 import json
 from uuid import uuid4
 from confluent_kafka.serialization import StringSerializer
@@ -17,16 +17,15 @@ class ProducerMessage:
         Creates an instance of a producer message
         Args:
             topic (str): Topic this message belongs to
-            value (dict): Value of the message as a dictionary
+            value (object): Value of the message as a dictionary
             key (str): Optional Key of the message
         """
-        string_serializer = StringSerializer('utf_8')
         self.topic = topic
-        self.key = key or string_serializer(str(uuid4()))
-        self.value = self.convert_value_to_bytes(value)
+        self.key = key
+        self.value = value
 
     @classmethod
-    def convert_value_to_bytes(cls, value: Any):
+    def convert_value_to_bytes(cls, value: Any) -> Any:
         if isinstance(value, dict):
             return cls.from_json(value)
 
@@ -36,7 +35,7 @@ class ProducerMessage:
         if isinstance(value, bytes):
             return cls.from_bytes(value)
 
-        raise ValueError(f"Wrong message value type: {type(value)}")
+        return value
 
     @classmethod
     def from_json(cls, value: Any):
@@ -51,3 +50,13 @@ class ProducerMessage:
     @classmethod
     def from_bytes(cls, value: Any):
         return value
+
+    def __repr__(self):
+        return f"ProducerMessage(topic: {self.topic}, key: {self.key}, value: {self.value})"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return dict(
+            topic=self.topic,
+            key=self.key,
+            value=self.value
+        )

@@ -13,3 +13,11 @@ class Producer(metaclass=ABCMeta):
             message (object): message to be sent to broker
         """
         raise NotImplementedError()
+
+    @property
+    def producer_name(self):
+        """
+        Producer name
+        Returns: Name of producer class
+        """
+        return self.__class__.__name__

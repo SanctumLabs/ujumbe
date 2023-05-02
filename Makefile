@@ -13,7 +13,7 @@ run-reload:
 
 # Runs the consumer application
 run-reload-sms-received-consumer:
-	python -m app/workers/consumers/sms_received
+	python app/workers/consumers/sms_received/__main__.py
 .PHONY: run-reload-sms-received-consumer
 
 # Runs SMS worker
@@ -76,3 +76,18 @@ lint:
 
 load-test:
 	locust --config .locust.conf
+
+# Builds the buf module
+buf-build:
+	buf build
+.PHONY: buf-build
+
+# updates the buf module
+buf-update:
+	buf mod update
+.PHONY: buf-update
+
+# generates protobuf messages
+buf-generate:
+	buf generate
+.PHONY: buf-generate

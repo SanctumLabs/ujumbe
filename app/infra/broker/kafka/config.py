@@ -1,7 +1,7 @@
 """
 Configuration dataclasses for setting up Kafka
 """
-from typing import Optional
+from typing import Optional, Union, List
 from dataclasses import dataclass
 from enum import Enum
 
@@ -57,3 +57,29 @@ class KafkaProducerConfig:
     bootstrap_servers: str
     client_id: Optional[str] = None
     security: Optional[KafkaSecurityProtocolConfig] = None
+
+
+@dataclass
+class KafkaConsumerConfig:
+    """
+    Args:
+        bootstrap_servers (str): Kafka bootstrap servers to listen on
+        topic (str): Either a single topic or a list of topics for this consumer to listen to
+        group_id (str) : Group ID this consumer belongs to
+        client_id (str): client ID
+        security (KafkaSecurityProtocolConfig): Optional security configuration
+        auto_offset_reset (str): Auto offset reset
+    """
+    bootstrap_servers: str
+    topic: Union[str, List[str]]
+    group_id: str
+    client_id: Optional[str] = None
+    security: Optional[KafkaSecurityProtocolConfig] = None
+    auto_offset_reset: Optional[str] = "earliest"
+
+    @property
+    def topics(self) -> Union[str, List[str]]:
+        if isinstance(self.topic, str):
+            return [self.topic]
+        else:
+            return self.topic

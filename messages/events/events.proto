@@ -1,7 +1,6 @@
 syntax = "proto3";
 
-// buf:lint:ignore PACKAGE_DIRECTORY_MATCH
-package ujumbe.sms.events;
+package messages.events;
 
 import "google/protobuf/descriptor.proto";
 

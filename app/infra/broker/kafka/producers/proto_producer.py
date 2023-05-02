@@ -13,7 +13,7 @@ from ..config import KafkaProducerConfig
 class KafkaProtoProducer(KafkaProducer):
     def __init__(self, params: KafkaProducerConfig, serializer: KafkaProtobufSerializer):
         super().__init__(params)
-        self.key_serializer = StringSerializer()
+        self.key_serializer = StringSerializer("utf8")
         self.serializer = serializer
         self.config = self.conf.copy()
         self.config.update({
@@ -37,13 +37,13 @@ class KafkaProtoProducer(KafkaProducer):
             self._producer.produce(
                 topic=message.topic,
                 key=self.key_serializer(message.key),
-                value=self.serializer.serialize_message_to_protobuf(message),
+                value=message.value,
                 on_delivery=report_callback or delivery_report
             )
             self._producer.flush()
         except KafkaException as exc:
             # TODO: handle kafka exception
-            logger.error(f"{self.log_prefix}> Failed to produce message. Err: {exc}", exc)
+            logger.error(f"{self.log_prefix}> Failed to produce message. Err: {exc}")
             if exc.args[0].code() == KafkaError.MSG_SIZE_TOO_LARGE:
                 logger.error(f"{self.log_prefix}> message size too large.")
             else:

@@ -2,40 +2,31 @@
 Consumer Application Entry point
 """
 from dependency_injector.wiring import inject, Provide
-from app.domain.entities.sms import Sms
 from app.infra.logger import log as logger
 from app.domain.sms.create_sms import CreateSmsService
-from app.infra.broker.kafka.consumers.consumer import KafkaConsumer
+from app.services.sms_submitted_consumer import SmsSubmittedConsumer
 from app.config.di.container import ApplicationContainer
 
 
 @inject
 def main(
     create_sms_svc: CreateSmsService = Provide[ApplicationContainer.domain.create_sms],
-    kafka_client: KafkaConsumer = Provide[ApplicationContainer.services.sms_received_kafka_consumer_client]
+    sms_submitted_consumer: SmsSubmittedConsumer = Provide[ApplicationContainer.services.sms_submitted_consumer]
 ):
     log_prefix = "SMS Received Listener>"
     logger.info(f"{log_prefix} starting up...")
-    try:
-        while True:
-            message = kafka_client.consume()
-            if not message:
+    while True:
+        try:
+            sms = sms_submitted_consumer.consume()
+            if not sms:
                 logger.info(f"{log_prefix} Waiting for messages...")
-            elif message.error():
-                logger.error(f"{log_prefix} Failed to consume message {message.error()}")
             else:
-                logger.info(
-                    f"{log_prefix} Consumed event from topic {message.topic()}: key = {message.key().decode('utf-8')} "
-                    f"value = {message.value().decode('utf-8')}"
-                )
-                data = message.value()
-                sms = Sms.from_dict(data)
                 create_sms_svc.execute(sms)
-    except Exception as exc:
-        logger.error(f"{log_prefix} failed to consume message: {exc}", exc)
-        pass
-    finally:
-        kafka_client.close()
+        except Exception as exc:
+            logger.error(f"{log_prefix} failed to consume message: {exc}", exc)
+            pass
+        # finally:
+        #     sms_submitted_consumer.close()
 
 
 if __name__ == "__main__":
