@@ -91,3 +91,15 @@ buf-update:
 buf-generate:
 	buf generate
 .PHONY: buf-generate
+
+migrate-up:
+	alembic upgrade head
+.PHONY: migrate-up
+
+migrate-down:
+	alembic downgrade base
+.PHONY: migrate-down
+
+migrate-revision:
+	alembic revision --autogenerate -m "$(ARGS)"
+.PHONY: migrate-revision

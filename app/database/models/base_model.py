@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, DateTime, func, String, Integer
 from sqlalchemy.ext.declarative import declared_attr
 from nanoid import generate
-from app.infra.database.models import Base
+from . import Base
 import inflection
 
 # A date time that indicates a record has not been deleted

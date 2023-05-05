@@ -50,6 +50,7 @@ class DatabaseSettings(BaseSettings):
     db_driver: str = "psycopg2"
     db_logging_enabled: bool = False
     db_log_level: str = "INFO"
+    db_url: Optional[str] = f'{db_dialect}://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}'
 
 
 # pylint: disable=too-few-public-methods
@@ -116,6 +117,10 @@ class AppSettings(BaseSettings):
 
 
 config = AppSettings()
+sentry = SentrySettings()
+database_settings = DatabaseSettings()
+kafka_settings = KafkaSettings()
+sms_settings = SmsClientSettings()
 
 
 @lru_cache()

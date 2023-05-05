@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from contextlib import contextmanager, AbstractContextManager
 from sqlalchemy import create_engine, URL
 from sqlalchemy.orm import Session, sessionmaker, scoped_session
-from .models import Base
+from app.database.models import Base
 
 
 @dataclass

@@ -1,5 +1,5 @@
 import unittest
-from app.infra.database.models import Base
+from app.database.models import Base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
