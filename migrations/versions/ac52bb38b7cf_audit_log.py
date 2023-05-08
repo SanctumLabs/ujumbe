@@ -7,6 +7,7 @@ Create Date: 2020-07-01 18:13:18.504487
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.sql import text
 from sqlalchemy.orm import sessionmaker
 
 Session = sessionmaker()
@@ -25,7 +26,7 @@ def upgrade():
 
     with open("migrations/sql/audit_log.sql") as f:
         sql = f.read()
-        session.execute(sql)
+        session.execute(text(sql))
 
 
 def downgrade():

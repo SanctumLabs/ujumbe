@@ -7,6 +7,7 @@ Create Date: 2023-05-05 17:19:36.419982
 """
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.sql import text
 
 
 # revision identifiers, used by Alembic.
@@ -215,8 +216,8 @@ def upgrade() -> None:
     Session = sessionmaker()
     bind = op.get_bind()
     session = Session(bind=bind)
-    session.execute("SELECT audit.audit_table('sms')")
-    session.execute("SELECT audit.audit_table('sms_responses')")
+    session.execute(text("SELECT audit.audit_table('sms')"))
+    session.execute(text("SELECT audit.audit_table('sms_responses')"))
     # ### end Alembic commands ###
 
 
