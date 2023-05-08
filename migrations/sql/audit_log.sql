@@ -1,7 +1,7 @@
 -- Adaptation of https://github.com/razorlabs/pg-json-audit-trigger
 --
 -- Changes from the above implementation:
--- Record record UUIDs in `entity_uuid` column
+-- Record record UUIDs in `entity_identifier` column
 -- Record session UUIDs where available in `session_id` column.
 -- Removed `application_name` and `application_user` columns.
 -- Removed indexes from timestamp columns
@@ -78,8 +78,7 @@ CREATE OPERATOR - (
   PROCEDURE = jsonb_minus
 );
 
-
-CREATE SCHEMA audit;
+CREATE SCHEMA IF NOT EXISTS audit;
 REVOKE ALL ON SCHEMA audit FROM public;
 COMMENT ON SCHEMA audit IS 'Out-of-table audit/history logging tables and trigger functions';
 
@@ -102,7 +101,7 @@ COMMENT ON SCHEMA audit IS 'Out-of-table audit/history logging tables and trigge
 --
 CREATE TABLE audit.log (
   id bigserial NOT NULL PRIMARY KEY,
-  entity_uuid UUID NOT NULL,
+  entity_identifier text NOT NULL,
   updated_by text,
   schema_name text NOT NULL,
   table_name text NOT NULL,
@@ -125,7 +124,7 @@ REVOKE ALL ON audit.log FROM public;
 
 COMMENT ON TABLE audit.log IS 'History of auditable actions on audited tables, from audit.if_modified_func()';
 COMMENT ON COLUMN audit.log.id IS 'Unique identifier for each auditable event';
-COMMENT ON COLUMN audit.log.entity_uuid IS 'Unique identifier of the updated entity within the audited table';
+COMMENT ON COLUMN audit.log.entity_identifier IS 'Unique identifier of the updated entity within the audited table';
 COMMENT ON COLUMN audit.log.updated_by IS 'User id from JWT that performed this action';
 COMMENT ON COLUMN audit.log.schema_name IS 'Database schema audited table for this event is in';
 COMMENT ON COLUMN audit.log.table_name IS 'Non-schema-qualified table name of table event occured in';
@@ -144,13 +143,13 @@ COMMENT ON COLUMN audit.log.diff IS 'New values of fields changed by UPDATE. Nul
 COMMENT ON COLUMN audit.log.statement_only IS '''t'' if audit event is from an FOR EACH STATEMENT trigger, ''f'' for FOR EACH ROW';
 
 CREATE INDEX log_relid_idx ON audit.log(relid);
-CREATE INDEX log_entity_uuid_idx ON audit.log(entity_uuid);
+CREATE INDEX log_entity_identifier_idx ON audit.log(entity_identifier);
 
 CREATE OR REPLACE FUNCTION audit.if_modified_func() RETURNS TRIGGER AS $body$
 DECLARE
   audit_row audit.log;
   excluded_cols text[] = ARRAY[]::text[];
-  entity_uuid UUID;
+  entity_identifier TEXT;
   updated_by TEXT;
   json_new JSONB;
   json_old JSONB;
@@ -162,7 +161,7 @@ BEGIN
 
   IF ((TG_OP = 'UPDATE' OR TG_OP = 'INSERT') AND TG_LEVEL = 'ROW') THEN
     json_new = to_jsonb(NEW.*);
-    entity_uuid = NEW.uuid;
+    entity_identifier = NEW.identifier;
     updated_by = NEW.updated_by;
 
     -- find the session id, if present
@@ -173,13 +172,13 @@ BEGIN
 
   IF ((TG_OP = 'UPDATE' OR TG_OP = 'DELETE') AND TG_LEVEL = 'ROW') THEN
     json_old = to_jsonb(OLD.*);
-    entity_uuid = OLD.uuid;
+    entity_identifier = OLD.identifier;
     updated_by = NEW.updated_by;
   END IF;
 
   audit_row = ROW(
     nextval('audit.log_id_seq'),                  -- log ID
-    entity_uuid,                                  -- entity_uuid
+    entity_identifier,                            -- entity_identifier
     updated_by,
     TG_TABLE_SCHEMA::text,                        -- schema_name
     TG_TABLE_NAME::text,                          -- table_name

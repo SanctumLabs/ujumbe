@@ -14,5 +14,5 @@ def delivery_report(err: KafkaError, message: Message):
     if err is not None:
         logger.error(f"Delivery failed for record {message.key}: Error: {err}")
         return
-    logger.info(f"Record {message.key()} successfully produced to {message.topic()} "
-                f"[{message.partition()}] at offset {message.offset()}")
+    logger.info(f"Record with key {message.key()} successfully produced to topic {message.topic()} "
+                f"on partition: [{message.partition()}] at offset {message.offset()}")

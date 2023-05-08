@@ -24,9 +24,7 @@ def main(
                 create_sms_svc.execute(sms)
         except Exception as exc:
             logger.error(f"{log_prefix} failed to consume message: {exc}", exc)
-            pass
-        # finally:
-        #     sms_submitted_consumer.close()
+            # TODO: report errors to monitoring tool
 
 
 if __name__ == "__main__":

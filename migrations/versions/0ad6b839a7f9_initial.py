@@ -227,4 +227,7 @@ def downgrade() -> None:
     op.drop_table("sms_responses")
     op.drop_index(op.f("ix_sms_created_at"), table_name="sms")
     op.drop_table("sms")
+    op.execute(text("DROP TYPE public.'smsdeliverystatus'"))
+    op.execute(text("DROP TYPE public.'smstype'"))
+
     # ### end Alembic commands ###
