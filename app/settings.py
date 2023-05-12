@@ -70,11 +70,11 @@ class KafkaSettings(BaseSettings):
     sms_received_topic: str = "sms_received_topic"
     sms_received_group_id: str = "sms_received_group_id"
 
-    submit_sms_topic: str = "submit_sms_topic"
-    submit_sms_group_id: str = "submit_sms_group_id"
+    sms_submitted_topic: str = "sms_submitted_topic"
+    sms_submitted_group_id: str = "sms_submitted_group_id"
 
-    send_sms_topic: str = "send_sms_topic"
-    send_sms_group_id: str = "send_sms_group_id"
+    sms_sent_topic: str = "sms_sent_topic"
+    sms_sent_group_id: str = "sms_sent_group_id"
 
 
 # pylint: disable=too-few-public-methods

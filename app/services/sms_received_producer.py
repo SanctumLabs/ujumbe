@@ -1,5 +1,5 @@
 """
-Sms Submitted Producer to handle sending SMS Submitted message events to broker
+Sms Received Producer to handle sending SMS Received message events to broker
 """
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
@@ -10,14 +10,14 @@ import app.messages.events.v1.events_pb2 as events
 import app.messages.events.v1.data_pb2 as sms_data
 
 
-class SmsSubmittedProducer(Producer):
+class SmsReceivedProducer(Producer):
     """
-    SMS Submitted Producer handle producing SmsSubmitted events using a Kafka producer to Kafka Broker Cluster
+    SMS Received Producer handle producing SmsReceived events using a Kafka producer to Kafka Broker Cluster
     """
 
     def __init__(self, topic: str, kafka_producer: KafkaProducer):
         """
-        Creates an instance of an sms submitted producer with a topic to send events to and a KafkaProducer client to
+        Creates an instance of an sms received producer with a topic to send events to and a KafkaProducer client to
         use to send events.
         Args:
             topic (str): Topic to send message to
@@ -35,7 +35,7 @@ class SmsSubmittedProducer(Producer):
                 message=sms.message.value,
                 status=sms_data.SmsStatus.PENDING
             )
-            event = events.SmsSubmitted(sms=data)
+            event = events.SmsReceived(sms=data)
             message = ProducerMessage(topic=self.topic, value=event)
             self.kafka_producer.produce(message=message)
         except Exception as e:

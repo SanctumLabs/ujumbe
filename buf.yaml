@@ -12,6 +12,6 @@ lint:
 
     ignore_only:
         PACKAGE_VERSION_SUFFIX:
-            - messages/events/events.proto
+            - app/messages/events/events.proto
 
     allow_comment_ignores: true

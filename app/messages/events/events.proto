@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package messages.events;
+package app.messages.events;
 
 import "google/protobuf/descriptor.proto";
 

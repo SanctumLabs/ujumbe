@@ -14,7 +14,7 @@ from app.infra.broker.kafka.deserializers.json_deserializer import KafkaJsonDese
 from app.infra.broker.kafka.registry import KafkaRegistry
 from app.settings import KafkaSettings
 from app.messages.json.sms_schema import sms_json_schema
-import app.messages.events.v1.events_pb2 as sms_submitted_event
+import app.messages.events.v1.events_pb2 as events
 
 
 class KafkaContainer(containers.DeclarativeContainer):
@@ -35,15 +35,44 @@ class KafkaContainer(containers.DeclarativeContainer):
         params=KafkaProducerConfig(bootstrap_servers=config.kafka_bootstrap_servers())
     )
 
+    # Sms Received serializer, deserializer, producer & consumer
+
+    sms_received_protobuf_serializer = providers.Singleton(
+        KafkaProtobufSerializer,
+        msg_type=events.SmsReceived,
+        registry_client=schema_registry
+    )
+
+    sms_received_protobuf_deserializer = providers.Singleton(
+        KafkaProtobufDeserializer,
+        msg_type=events.SmsReceived
+    )
+
+    sms_received_protobuf_producer = providers.Singleton(
+        KafkaProtoProducer,
+        params=KafkaProducerConfig(bootstrap_servers=config.kafka_bootstrap_servers()),
+        serializer=sms_received_protobuf_serializer
+    )
+
+    sms_received_protobuf_consumer = providers.Singleton(
+        KafkaProtoConsumer,
+        params=KafkaConsumerConfig(bootstrap_servers=config.kafka_bootstrap_servers(),
+                                   topic=config.sms_received_topic(),
+                                   group_id=config.sms_received_group_id()),
+        deserializer=sms_received_protobuf_deserializer
+    )
+
+    # Sms Submitted Event
+
     sms_submitted_protobuf_serializer = providers.Singleton(
         KafkaProtobufSerializer,
-        msg_type=sms_submitted_event.SmsSubmitted,
+        msg_type=events.SmsSubmitted,
         registry_client=schema_registry
     )
 
     sms_submitted_protobuf_deserializer = providers.Singleton(
         KafkaProtobufDeserializer,
-        msg_type=sms_submitted_event.SmsSubmitted
+        msg_type=events.SmsSubmitted
     )
 
     sms_submitted_protobuf_producer = providers.Singleton(
@@ -55,9 +84,36 @@ class KafkaContainer(containers.DeclarativeContainer):
     sms_submitted_protobuf_consumer = providers.Singleton(
         KafkaProtoConsumer,
         params=KafkaConsumerConfig(bootstrap_servers=config.kafka_bootstrap_servers(),
-                                   topic=config.sms_received_topic(),
-                                   group_id=config.sms_received_group_id()),
+                                   topic=config.sms_submitted_topic(),
+                                   group_id=config.sms_submitted_group_id()),
         deserializer=sms_submitted_protobuf_deserializer
+    )
+
+    # Sms Sent Event
+
+    send_sms_protobuf_serializer = providers.Singleton(
+        KafkaProtobufSerializer,
+        msg_type=events.SmsSent,
+        registry_client=schema_registry
+    )
+
+    send_sms_protobuf_deserializer = providers.Singleton(
+        KafkaProtobufDeserializer,
+        msg_type=events.SmsSent
+    )
+
+    send_sms_protobuf_producer = providers.Singleton(
+        KafkaProtoProducer,
+        params=KafkaProducerConfig(bootstrap_servers=config.kafka_bootstrap_servers()),
+        serializer=send_sms_protobuf_serializer
+    )
+
+    send_sms_protobuf_consumer = providers.Singleton(
+        KafkaProtoConsumer,
+        params=KafkaConsumerConfig(bootstrap_servers=config.kafka_bootstrap_servers(),
+                                   topic=config.sms_sent_topic(),
+                                   group_id=config.sms_sent_group_id()),
+        deserializer=send_sms_protobuf_deserializer
     )
 
     sms_submitted_json_serializer = providers.Singleton(

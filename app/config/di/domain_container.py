@@ -15,12 +15,12 @@ class DomainContainer(containers.DeclarativeContainer):
     repository = providers.DependenciesContainer()
 
     submit_sms = providers.Factory(
-        SubmitSmsService, producer=services.submit_sms_producer
+        SubmitSmsService, producer=services.sms_received_producer
     )
 
     create_sms = providers.Factory(
         CreateSmsService,
-        producer=services.send_sms_producer,
+        producer=services.sms_submitted_producer,
         repository=repository.sms_repository,
     )
 
