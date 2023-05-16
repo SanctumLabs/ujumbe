@@ -3,8 +3,6 @@ Wrapper for a Producer message to be used by producers when sending messages to 
 """
 from typing import Any, Optional, Dict
 import json
-from uuid import uuid4
-from confluent_kafka.serialization import StringSerializer
 
 
 class ProducerMessage:
