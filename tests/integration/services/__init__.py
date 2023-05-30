@@ -11,7 +11,7 @@ TEST_KAFKA_SCHEMA_REGISTRY_PORT = 8081
 
 
 class BaseKafkaIntegrationTestCase(unittest.TestCase):
-    started_container: KafkaContainer = None
+    started_kafka_container: KafkaContainer = None
     started_registry_container: DockerContainer = None
 
     kafka_bootstrap_server: str = None
@@ -28,8 +28,11 @@ class BaseKafkaIntegrationTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        kafka_container = KafkaContainer(image=TEST_KAFKA_VERSION, port_to_expose=TEST_KAFKA_PORT)
-        cls.started_container = kafka_container.start()
+        kafka_container = KafkaContainer(image=TEST_KAFKA_VERSION, port_to_expose=TEST_KAFKA_PORT) \
+            .with_env("KAFKA_TRANSACTION_STATE_LOG_MIN_ISR", "1") \
+            .with_env("KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR", "1")
+
+        cls.started_kafka_container = kafka_container.start()
 
         cls.kafka_bootstrap_server = kafka_container.get_bootstrap_server()
         cls.kafka_container_host = kafka_container.get_container_host_ip()
@@ -40,7 +43,7 @@ class BaseKafkaIntegrationTestCase(unittest.TestCase):
         kafka_registry_container = DockerContainer(image=TEST_KAFKA_SCHEMA_REGISTRY_VERSION) \
             .with_exposed_ports(TEST_KAFKA_SCHEMA_REGISTRY_PORT) \
             .with_env("SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS",
-                      f"http://localhost:{cls.kafka_container_port}") \
+                      f"PLAINTEXT://{cls.kafka_bootstrap_server}") \
             .with_env("SCHEMA_REGISTRY_HOST_NAME", "ujumbe-kafka-schema-registry") \
             .with_env("SCHEMA_REGISTRY_LISTENERS", f"http://0.0.0.0:{TEST_KAFKA_SCHEMA_REGISTRY_PORT}")
 
@@ -53,5 +56,5 @@ class BaseKafkaIntegrationTestCase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.started_container.stop()
+        cls.started_kafka_container.stop()
         cls.started_registry_container.stop()
