@@ -1,3 +1,25 @@
+#Contains all the services that the application uses:
+#1. Database with Postgres
+#2. Message Broker with Kafka(Zookeeper, Kafka broker, Kafka schema registry, Kafka UI, Zipkin)
+#3. Monitoring with Grafana and Prometheus
+#
+#Each has a separate profile: database, kafka and monitoring.
+#
+#To only run the database:
+#docker compose --profile database up
+#
+#To only run Kafka
+#docker compose up --profile kafka up
+#
+#To only run Monitoring
+#docker compose --profile monitoring up
+#
+#To run all the services
+#COMPOSE_PROFILES=database,kafka,monitoring docker compose up
+#OR
+#docker compose --profile database --profile kafka --profile monitoring up
+#Reference can be found here: https://docs.docker.com/compose/profiles/
+
 version: '3.7'
 
 services:
