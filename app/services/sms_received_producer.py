@@ -1,6 +1,7 @@
 """
 Sms Received Producer to handle sending SMS Received message events to broker
 """
+from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
 from app.domain.entities.sms import Sms
@@ -26,6 +27,8 @@ class SmsReceivedProducer(Producer):
         self.topic = topic
         self.kafka_producer = kafka_producer
 
+    @retry(reraise=True, stop=(stop_after_attempt(3) | stop_after_delay(10)),
+           wait=wait_exponential(multiplier=1, min=3, max=5))
     def publish_message(self, sms: Sms):
         try:
             data = sms_data.Sms(
