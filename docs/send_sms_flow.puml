@@ -21,7 +21,7 @@ box Integrations
 endbox
 
 box Consumers
-    participant "Submit SMS Consumer" as submit_sms_consumer
+    participant "SMS Received Consumer" as sms_received_consumer
     participant "Send SMS Consumer" as send_sms_consumer
     participant "SMS Callback Consumer" as sms_callback_consumer
 endbox
@@ -37,10 +37,10 @@ group Send SMS Flow
 end
 
 group SMS Received Event Flow
- broker -> submit_sms_consumer: Consume SMS_RECEIVED_EVENT
- submit_sms_consumer -> database: Create an SMS record
- database -> submit_sms_consumer: SMS record created
- submit_sms_consumer -> broker: Publish SEND_SMS_EVENT
+ broker -> sms_received_consumer: Consume SMS_RECEIVED_EVENT
+ sms_received_consumer -> database: Create an SMS record
+ database -> sms_received_consumer: SMS record created
+ sms_received_consumer -> broker: Publish SEND_SMS_EVENT
 end
 
 group Send SMS Event Flow
