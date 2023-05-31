@@ -10,6 +10,10 @@ class Consumer(metaclass=ABCMeta):
 
     @abstractmethod
     def consume(self) -> Any:
+        """
+        Consumes a message from a queue or topic
+        Returns: Consumed message
+        """
         raise NotImplementedError()
 
     @property

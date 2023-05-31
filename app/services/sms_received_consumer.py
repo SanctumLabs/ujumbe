@@ -28,6 +28,10 @@ class SmsReceivedConsumer(Consumer):
         self.kafka_consumer = kafka_consumer
 
     def consume(self) -> Optional[Sms]:
+        """
+        Consumes sms received event message
+        Returns: An (Sms) or None if there is no message
+        """
         try:
             message = self.kafka_consumer.consume()
             if message:
@@ -52,9 +56,15 @@ class SmsReceivedConsumer(Consumer):
             return None
         except Exception as e:
             logger.error(f"{self.consumer_name}> Failed to consume message. {e}")
+            # TODO: if we fail to consume this message, we need to ensure we pass it a long to a dead letter topic for
+            #  further processing
             raise e
 
     def close(self):
+        """
+        Attempts to close consumer connection to broker
+        Raises: an (Exception) if there is a failure to close consumer connection
+        """
         try:
             self.kafka_consumer.close()
         except Exception as e:
