@@ -30,7 +30,7 @@ class SmsDatabaseRepository(SmsRepository):
                 session.refresh(sms)
                 return map_sms_model_to_entity(sms)
         except Exception as exc:
-            logger.error(f"Failed to persist sms {entity}", exc)
+            logger.error(f"Failed to persist sms {entity}. {exc}")
             raise exc
 
     def get_by_id(self, sid: str) -> Sms:
@@ -46,7 +46,8 @@ class SmsDatabaseRepository(SmsRepository):
     def get_all(self) -> Iterator[Sms]:
         with self.session_factory() as session:
             sms_models = session.query(SmsModel).all()
-            return list(map(map_sms_model_to_entity, sms_models))
+            smses = map(map_sms_model_to_entity, sms_models)
+            return list(smses)
 
     def update(self, sms: Sms):
         with self.session_factory() as session:

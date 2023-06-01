@@ -57,3 +57,6 @@ class Sms(BaseModel, Entity):
             status=self.status,
             response=self.response.to_dict() if self.response else None,
         )
+
+    def __eq__(self, other: 'Sms'):
+        return self.id == other.id

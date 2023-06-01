@@ -46,9 +46,11 @@ class DatabaseSettings(BaseSettings):
     db_host: str = "localhost"
     db_port: int = 5432
     db_name: str = "ujumbedb"
-    db_driver: str = "postgresql"
+    db_dialect: str = "postgresql"
+    db_driver: str = "psycopg2"
     db_logging_enabled: bool = False
     db_log_level: str = "INFO"
+    db_url: Optional[str] = f'{db_dialect}://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}'
 
 
 # pylint: disable=too-few-public-methods
@@ -57,14 +59,22 @@ class KafkaSettings(BaseSettings):
     Kafka Settings
     """
 
+    kafka_schema_registry: str = "http://localhost:8081"
+
     kafka_bootstrap_servers: str = "localhost:9091"
     kafka_security_protocol: str = "ssl"
     kafka_sasl_mechanisms: str = ""
     kafka_sasl_username: str = "ujumbe"
     kafka_sasl_password: str = "ujumbe"
 
-    submit_sms_topic: str = "SUBMIT_SMS_TOPIC"
-    send_sms_topic: str = "SEND_SMS_TOPIC"
+    sms_received_topic: str = "sms_received_topic"
+    sms_received_group_id: str = "sms_received_group_id"
+
+    sms_submitted_topic: str = "sms_submitted_topic"
+    sms_submitted_group_id: str = "sms_submitted_group_id"
+
+    sms_sent_topic: str = "sms_sent_topic"
+    sms_sent_group_id: str = "sms_sent_group_id"
 
 
 # pylint: disable=too-few-public-methods
@@ -107,6 +117,10 @@ class AppSettings(BaseSettings):
 
 
 config = AppSettings()
+sentry = SentrySettings()
+database_settings = DatabaseSettings()
+kafka_settings = KafkaSettings()
+sms_settings = SmsClientSettings()
 
 
 @lru_cache()

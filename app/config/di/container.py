@@ -1,7 +1,8 @@
 from dependency_injector import containers, providers
-from app.settings import KafkaSettings
 from .gateways_container import GatewaysContainer
+from .kafka_container import KafkaContainer
 from .services_container import ServicesContainer
+from .repository_container import RepositoryContainer
 from .domain_container import DomainContainer
 
 
@@ -10,10 +11,12 @@ class ApplicationContainer(containers.DeclarativeContainer):
     Application container wiring all dependencies together
     """
 
-    config = providers.Configuration(pydantic_settings=[KafkaSettings()])
+    gateways = providers.Container(GatewaysContainer)
 
-    gateways = providers.Container(GatewaysContainer, config=config)
+    kafka = providers.Container(KafkaContainer)
 
-    services = providers.Container(ServicesContainer, gateways=gateways)
+    services = providers.Container(ServicesContainer, gateways=gateways, kafka_container=kafka)
 
-    domain = providers.Container(DomainContainer, services=services)
+    repository = providers.Container(RepositoryContainer, gateways=gateways)
+
+    domain = providers.Container(DomainContainer, services=services, repository=repository)
