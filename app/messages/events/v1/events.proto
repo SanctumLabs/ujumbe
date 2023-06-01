@@ -17,7 +17,7 @@ message SmsSubmitted {
   messages.events.v1.Sms sms = 1;
 }
 
-// SmsSent is an event that is emitted when the system successfully sends out an SMS with a 3rd Part system
+// SmsSent is an event that is emitted when the system successfully sends out an SMS with a 3rd party system
 message SmsSent {
   option (messages.events.event_type) = "sms_sent";
   messages.events.v1.Sms sms = 1;

@@ -1,6 +1,14 @@
+########################################################################################################################
+# Setup commands
+########################################################################################################################
+
 # Installs dependencies
 install:
 	poetry install
+
+########################################################################################################################
+# Run commands
+########################################################################################################################
 
 # Runs application
 run:
@@ -12,7 +20,7 @@ run-reload:
 .PHONY: run-reload
 
 # Runs the consumer application
-run-reload-sms-received-consumer:
+run-sms-received-consumer:
 	python app/workers/consumers/sms_received/__main__.py
 .PHONY: run-reload-sms-received-consumer
 
@@ -27,6 +35,10 @@ run-error-worker:
 # Runs Analytics worker
 run-analytics-worker:
 	celery -A app.worker.celery_app worker --events -l info -n ujumbe-analytics-worker@%n --concurrency=5 -Q sms-analytics-queue
+
+########################################################################################################################
+# Testing commands
+########################################################################################################################
 
 # Runs all tests tests
 test:
@@ -68,14 +80,21 @@ test-cover:
 	PYTHONPATH=. pytest --cov=app tests/
 .PHONY: test-cover
 
+load-test:
+	locust --config .locust.conf
+
+########################################################################################################################
+# Lint and formatting commands
+########################################################################################################################
 format:
 	black app
 
 lint:
 	pylint app
 
-load-test:
-	locust --config .locust.conf
+########################################################################################################################
+# Generation and build commands
+########################################################################################################################
 
 # Builds the buf module
 buf-build:
@@ -92,6 +111,10 @@ buf-generate:
 	buf generate
 .PHONY: buf-generate
 
+########################################################################################################################
+# Migration commands
+########################################################################################################################
+
 migrate-up:
 	alembic upgrade head
 .PHONY: migrate-up
@@ -103,3 +126,26 @@ migrate-down:
 migrate-revision:
 	alembic revision --autogenerate -m "$(ARGS)"
 .PHONY: migrate-revision
+
+########################################################################################################################
+# DOCKER commands
+########################################################################################################################
+
+start-docker:
+	COMPOSE_PROFILES=database,kafka,monitoring docker compose up
+.PHONY: start-docker
+
+# Start Kafka services
+start-kafka:
+	docker compose --profile kafka up
+.PHONY: start-kafka
+
+# Start monitoring services
+start-monitoring:
+	docker compose --profile monitoring up
+.PHONY: start-monitoring
+
+# Start database services
+start-database:
+	docker compose --profile database up
+.PHONY: start-database

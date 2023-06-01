@@ -88,5 +88,5 @@ API Documentation is generated with swagger and can be accessed on the endpoint 
 
 ## Built with
 
-- Flask
+- FastAPI
 - Python(+3.7)

@@ -40,11 +40,11 @@ group SMS Received Event Flow
  broker -> sms_received_consumer: Consume SMS_RECEIVED_EVENT
  sms_received_consumer -> database: Create an SMS record
  database -> sms_received_consumer: SMS record created
- sms_received_consumer -> broker: Publish SEND_SMS_EVENT
+ sms_received_consumer -> broker: Publish SMS_SUBMITTED_EVENT
 end
 
 group Send SMS Event Flow
- broker --> send_sms_consumer: Consume SEND_SMS_EVENT
+ broker --> send_sms_consumer: Consume SMS_SUBMITTED_EVENT
  send_sms_consumer -> sms_api: Send Sms
  sms_api -> send_sms_consumer: 200 OK Response
  send_sms_consumer -> database: Save SMS response

@@ -1,5 +1,5 @@
 """
-Send Sms Producer to handle sending SMS message events to broker
+Sms Sent Producer to handle sending SMS message events to broker
 """
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
@@ -10,14 +10,14 @@ import app.messages.events.v1.events_pb2 as sms_submitted_event
 import app.messages.events.v1.data_pb2 as sms_data
 
 
-class SendSmsProducer(Producer):
+class SmsSentProducer(Producer):
     """
-    Send SMS Producer handle producing SendSms events using a Kafka producer to Kafka Broker Cluster
+    SMS Sent Producer handle producing SendSms events using a Kafka producer to Kafka Broker Cluster
     """
 
     def __init__(self, topic: str, kafka_producer: KafkaProducer):
         """
-        Creates an instance of send sms producer with a topic to send events to and a KafkaProducer client to use to
+        Creates an instance of sms sent producer with a topic to send events to and a KafkaProducer client to use to
         send events.
         Args:
             topic (str): Topic to send message to
@@ -33,11 +33,11 @@ class SendSmsProducer(Producer):
                 sender=sms.sender.value,
                 recipient=sms.recipient.value,
                 message=sms.message.value,
-                status=sms_data.SmsStatus.PENDING
+                status=sms_data.SmsStatus.SENT
             )
-            event = sms_submitted_event.SmsSubmitted(sms=data)
+            event = sms_submitted_event.SmsSent(sms=data)
             message = ProducerMessage(topic=self.topic, value=event)
             self.kafka_producer.produce(message=message)
         except Exception as e:
-            logger.error(f"{self.producer_name}> Failed to publish message Err: {e}")
+            logger.error(f"{self.producer_name}> Failed to publish message {sms}. Err: {e}")
             raise e

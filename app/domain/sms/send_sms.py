@@ -25,4 +25,4 @@ class SendSmsService(Service):
             sms_response = self.sms_service.send(sms)
             self.sms_response_repository.add(sms_response)
         except Exception as e:
-            raise SendSmsException("Failed to send sms")
+            raise SendSmsException(f"Failed to send sms {sms}, {e}")

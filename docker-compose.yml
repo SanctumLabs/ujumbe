@@ -218,7 +218,7 @@ services:
     # http://localhost:3000
     grafana:
         image: grafana/grafana:9.2.1
-        container_name: seshat-grafana
+        container_name: ujumbe-grafana
         environment:
             GF_USERS_ALLOW_SIGN_UP: "false"
             GF_AUTH_DISABLE_LOGIN_FORM: "true"
@@ -241,7 +241,7 @@ services:
     # http://localhost:9090
     prometheus:
         image: prom/prometheus:v2.39.1
-        container_name: seshat-prometheus
+        container_name: ujumbe-prometheus
         profiles:
             - monitoring
         networks:
