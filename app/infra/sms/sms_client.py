@@ -27,7 +27,7 @@ class SmsClient:
         """
 
         try:
-            logger.info(f"Sending sms {sms}")
+            logger.info(f"{self.name}> Sending sms {sms}")
 
             if sms.sender:
                 response = self.twilio_client.messages.create(
@@ -65,5 +65,9 @@ class SmsClient:
                 uri=response.uri,
             )
         except Exception as e:
-            logger.error(f"Failed to send sms with error {e}")
-            raise SmsClientException(f"Failed to send sms message")
+            logger.error(f"{self.name}> Failed to send sms {sms} with error {e}", e)
+            raise SmsClientException(f"Failed to send sms message {sms} with exception: {e}")
+
+    @property
+    def name(self):
+        return self.__class__.__name__

@@ -37,6 +37,8 @@ def main(
                 create_sms_svc.execute(sms)
                 # publish SMS to be sent
                 sms_submitted_producer.publish_message(sms)
+                # commit only on success
+                sms_received_consumer.commit()
         except Exception as exc:
             logger.error(f"{log_prefix} failed to consume message: {exc}", exc)
             # TODO: report errors to monitoring tool

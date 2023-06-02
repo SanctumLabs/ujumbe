@@ -4,7 +4,7 @@ Contains abstract kafka consumer that can be subclasses by consumer classes
 from typing import Optional, List, Any
 import socket
 from abc import abstractmethod, ABCMeta
-from confluent_kafka import Consumer, OFFSET_BEGINNING, TopicPartition
+from confluent_kafka import Consumer, OFFSET_BEGINNING, TopicPartition, Message
 from app.infra.logger import log as logging
 from app.infra.logger import log as logger
 from ..config import KafkaConsumerConfig
@@ -49,6 +49,45 @@ class KafkaConsumer(metaclass=ABCMeta):
             message (Message): Kafka Message
         """
         raise NotImplementedError("Not Yet Implemented")
+
+    def commit(self, message: Optional[Message] = None, *args, **kwargs) -> Optional[List[TopicPartition]]:
+        """
+        Convenience method to commit a message once done processing
+        Args:
+            message (Optional[Message]): Message to commit
+            *args: Optional arguments
+                asynchronous: If true, asynchronously commit, returning None immediately. If False, the commit() call
+                will block until the commit succeeds or fails and the committed offsets will be returned (on success).
+                Note that specific partitions may have failed and the .err field of each partition should be checked for
+                success.
+            **kwargs: Key word arguments
+
+        Returns:
+            List of topic + partitions + offsets to commit.
+        Raises:
+            KafkaError if there is a failure or RuntimeException if called on a closed consumer
+        """
+        try:
+            return self._consumer.commit(message, args, kwargs)
+        except Exception as exc:
+            logger.error(f"{self.name}> Failed to commit message {message}. {exc}")
+            raise exc
+
+    def commit_async(self, message: Optional[Message] = None, *args, **kwargs) -> None:
+        """
+        Convenience method to asynchronously commit a message once done processing
+        Args:
+            message: Message to commit
+            **kwargs:
+
+        Returns:
+            None
+        """
+        try:
+            return self.commit(message, asynchronous=True, args=args, kwargs=kwargs)
+        except Exception as exc:
+            logger.error(f"{self.name}> Failed to asynchronously commit message {message}. {exc}")
+            raise exc
 
     def close(self):
         """

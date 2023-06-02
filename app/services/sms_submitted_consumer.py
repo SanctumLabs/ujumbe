@@ -1,7 +1,7 @@
 """
 Sms Submitted Consumer to handle consuming Submitted SMS message events from broker
 """
-from typing import Optional
+from typing import Optional, Any
 from app.core.infra.consumer import Consumer
 from app.infra.logger import log as logger
 from app.infra.broker.kafka.consumers import KafkaConsumer
@@ -25,13 +25,15 @@ class SmsSubmittedConsumer(Consumer):
         Args:
             kafka_consumer (KafkaConsumer): Kafka Producer client to use
         """
+        self.message = None
         self.kafka_consumer = kafka_consumer
 
     def consume(self) -> Optional[Sms]:
         try:
-            message = self.kafka_consumer.consume()
-            if message:
-                data = message.sms
+            self.message = self.kafka_consumer.consume()
+
+            if self.message:
+                data = self.message.sms
 
                 sms_id = UniqueId(data.id)
                 sender = PhoneNumber(data.sender)
@@ -60,3 +62,9 @@ class SmsSubmittedConsumer(Consumer):
         except Exception as e:
             logger.error(f"{self.consumer_name}> Failed to close connection. {e}")
             raise e
+
+    def commit(self, *args, **kwargs) -> Any:
+        return self.kafka_consumer.commit(self.message)
+
+    def commit_async(self, *args, **kwargs) -> Any:
+        return self.kafka_consumer.commit_async(self.message)

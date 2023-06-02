@@ -32,8 +32,8 @@ class GatewaysContainer(containers.DeclarativeContainer):
     sms_client = providers.Singleton(
         SmsClient,
         SmsClientParams(
-            account_sid=sms_config.account_sid,
-            auth_token=sms_config.auth_token,
-            messaging_service_sid=sms_config.messaging_service_sid,
+            account_sid=sms_config.account_sid(),
+            auth_token=sms_config.auth_token(),
+            messaging_service_sid=sms_config.messaging_service_sid(),
         ),
     )
