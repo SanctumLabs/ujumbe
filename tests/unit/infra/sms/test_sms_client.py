@@ -8,6 +8,7 @@ from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
 from app.infra.sms.sms_client import SmsClient, SmsClientParams, Client as TwilioRestClient
+from app.infra.sms.dto import SmsResponseDto
 from app.infra.sms.exceptions import SmsClientException
 
 fake = Faker()
@@ -19,11 +20,41 @@ fake_auth_token = fake.uuid4()
 fake_messaging_service_sid = fake.uuid4()
 
 
+def create_mock_sms_response(sms: Sms):
+    fake_sid = fake.uuid4()
+
+    api_version = "2023-04-01"
+    fake_uri = f"{api_version}/Accounts/{fake_account_sid}/Messages/{fake_sid}.json"
+
+    return SmsResponseDto(
+        account_sid=fake_account_sid,
+        api_version="2023-04-01",
+        body=sms.message.value,
+        date_created="Thu, 30 Jul 2023 20:12:31 +0000",
+        date_sent="Thu, 30 Jul 2023 20:12:31 +0000",
+        date_updated="Thu, 30 Jul 2023 20:12:31 +0000",
+        direction="outbound-api",
+        error_code=None,
+        error_message=None,
+        from_=sms.sender.value if sms.sender is not None else None,
+        messaging_service_sid=fake_messaging_service_sid,
+        num_media="0",
+        num_segments="1",
+        price=None,
+        price_unit=None,
+        sid=fake_sid,
+        status="sent",
+        subresource_uris={},
+        to=sms.recipient.value,
+        uri=fake_uri,
+    )
+
+
 @pytest.mark.unit
 class SmsClientTestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.sms_client = SmsClient(SmsClientParams(account_sid=fake_account_sid, auth_token=fake_auth_token,
-                                                    messaging_service_sid=fake_messaging_service_sid))
+                                                    messaging_service_sid=fake_messaging_service_sid, enabled=True))
 
     @patch.object(TwilioRestClient, "messages")
     def test_sends_sms_with_provided_sender(self, mock_twilio_client_messages: Mock):
@@ -42,13 +73,19 @@ class SmsClientTestCase(unittest.TestCase):
             status=SmsDeliveryStatus.PENDING
         )
 
-        self.sms_client.send(sms=mock_sms)
+        mock_sms_response = create_mock_sms_response(sms=mock_sms)
+
+        mock_twilio_client_messages.create.return_value = mock_sms_response
+
+        actual = self.sms_client.send(sms=mock_sms)
 
         mock_twilio_client_messages.create.assert_called_with(
             body=message_text,
             from_=sender_phone,
             to=recipient_phone
         )
+
+        self.assertEqual(mock_sms_response, actual)
 
     @patch.object(TwilioRestClient, "messages")
     def test_sends_sms_without_provided_sender(self, mock_twilio_client_messages: Mock):
@@ -64,13 +101,19 @@ class SmsClientTestCase(unittest.TestCase):
             status=SmsDeliveryStatus.PENDING
         )
 
-        self.sms_client.send(sms=mock_sms)
+        mock_sms_response = create_mock_sms_response(sms=mock_sms)
+
+        mock_twilio_client_messages.create.return_value = mock_sms_response
+
+        actual = self.sms_client.send(sms=mock_sms)
 
         mock_twilio_client_messages.create.assert_called_with(
             body=message_text,
             messaging_service_sid=fake_messaging_service_sid,
             to=recipient_phone
         )
+
+        self.assertEqual(mock_sms_response, actual)
 
     @patch.object(TwilioRestClient, "messages", side_effect=Exception)
     def test_throws_exception_when_client_fails_to_send_sms(self, mock_twilio_client_messages: Mock):

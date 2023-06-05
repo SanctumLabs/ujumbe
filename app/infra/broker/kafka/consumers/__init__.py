@@ -98,6 +98,7 @@ class KafkaConsumer(metaclass=ABCMeta):
             self._consumer.close()
         except Exception as exc:
             logger.error(f"{self.name}> Failed to close consumer", exc)
+            raise exc
 
     @staticmethod
     def reset_offset(consumer: Consumer, partitions: List[TopicPartition]):

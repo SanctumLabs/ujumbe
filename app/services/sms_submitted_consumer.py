@@ -63,8 +63,8 @@ class SmsSubmittedConsumer(Consumer):
             logger.error(f"{self.consumer_name}> Failed to close connection. {e}")
             raise e
 
-    def commit(self, *args, **kwargs) -> Any:
-        return self.kafka_consumer.commit(self.message)
+    def commit(self, message: Optional[Any] = None, *args, **kwargs) -> Any:
+        return self.kafka_consumer.commit(message or self.message, args, kwargs)
 
-    def commit_async(self, *args, **kwargs) -> Any:
-        return self.kafka_consumer.commit_async(self.message)
+    def commit_async(self, message: Optional[Any] = None, *args, **kwargs) -> Any:
+        return self.kafka_consumer.commit_async(message or self.message, args, kwargs)

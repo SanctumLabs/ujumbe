@@ -144,9 +144,6 @@ class SendSmsServiceTestCase(unittest.TestCase):
         date_updated = fake.future_datetime()
         account_sid = fake.uuid4()
         sid = fake.uuid4()
-        date_sent = date_sent
-        date_updated = date_updated
-        date_created = date_created
         direction = SmsType.OUTBOUND
         num_media = 0
         num_segments = 0

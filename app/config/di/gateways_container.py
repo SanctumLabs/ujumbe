@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from app.infra.database.database_client import DatabaseClient, DatabaseClientParams
 from app.infra.sms.sms_client import SmsClient, SmsClientParams
-from app.settings import DatabaseSettings, SmsClientSettings
+from app.settings import DatabaseSettings, TwilioSmsClientSettings
 
 
 class GatewaysContainer(containers.DeclarativeContainer):
@@ -12,8 +12,8 @@ class GatewaysContainer(containers.DeclarativeContainer):
     db_config = providers.Configuration(pydantic_settings=[DatabaseSettings()])
     db_config.from_pydantic(DatabaseSettings())
 
-    sms_config = providers.Configuration(pydantic_settings=[SmsClientSettings()])
-    sms_config.from_pydantic(SmsClientSettings())
+    twilio_sms_config = providers.Configuration(pydantic_settings=[TwilioSmsClientSettings()])
+    twilio_sms_config.from_pydantic(TwilioSmsClientSettings())
 
     database_client = providers.Singleton(
         DatabaseClient,
@@ -32,8 +32,9 @@ class GatewaysContainer(containers.DeclarativeContainer):
     sms_client = providers.Singleton(
         SmsClient,
         SmsClientParams(
-            account_sid=sms_config.account_sid(),
-            auth_token=sms_config.auth_token(),
-            messaging_service_sid=sms_config.messaging_service_sid(),
+            account_sid=twilio_sms_config.twilio_account_sid(),
+            auth_token=twilio_sms_config.twilio_auth_token(),
+            messaging_service_sid=twilio_sms_config.twilio_messaging_service_sid(),
+            enabled=twilio_sms_config.twilio_enabled()
         ),
     )
