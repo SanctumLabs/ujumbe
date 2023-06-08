@@ -91,30 +91,32 @@ class KafkaContainer(containers.DeclarativeContainer):
 
     # Sms Sent Event
 
-    send_sms_protobuf_serializer = providers.Singleton(
+    sms_sent_protobuf_serializer = providers.Singleton(
         KafkaProtobufSerializer,
         msg_type=events.SmsSent,
         registry_client=schema_registry
     )
 
-    send_sms_protobuf_deserializer = providers.Singleton(
+    sms_sent_protobuf_deserializer = providers.Singleton(
         KafkaProtobufDeserializer,
         msg_type=events.SmsSent
     )
 
-    send_sms_protobuf_producer = providers.Singleton(
+    sms_sent_protobuf_producer = providers.Singleton(
         KafkaProtoProducer,
         params=KafkaProducerConfig(bootstrap_servers=config.kafka_bootstrap_servers()),
-        serializer=send_sms_protobuf_serializer
+        serializer=sms_sent_protobuf_serializer
     )
 
-    send_sms_protobuf_consumer = providers.Singleton(
+    sms_sent_protobuf_consumer = providers.Singleton(
         KafkaProtoConsumer,
         params=KafkaConsumerConfig(bootstrap_servers=config.kafka_bootstrap_servers(),
                                    topic=config.sms_sent_topic(),
                                    group_id=config.sms_sent_group_id()),
-        deserializer=send_sms_protobuf_deserializer
+        deserializer=sms_sent_protobuf_deserializer
     )
+
+    # Sms submitted
 
     sms_submitted_json_serializer = providers.Singleton(
         KafkaJsonSerializer,

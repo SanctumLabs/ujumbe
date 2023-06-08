@@ -24,15 +24,22 @@ def load_from_file(path: str, mode: str, encoding: str) -> AnyStr:
 
 
 # pylint: disable=too-few-public-methods
-class SmsClientSettings(BaseSettings):
+class TwilioSmsClientSettings(BaseSettings):
     """
     Twilio Sms Client settings
+
+    Attributes:
+        twilio_account_sid (str): Account SID
+        twilio_auth_token (str): Authentication token
+        twilio_messaging_service_sid (str): Messaging Service SID
+        twilio_enabled (bool): Whether the system is enabled or not. Default is disabled
     """
 
     # twilio sms client settings
-    account_sid: str = ""
-    auth_token: str = ""
-    messaging_service_sid: str = ""
+    twilio_account_sid: str = ""
+    twilio_auth_token: str = ""
+    twilio_messaging_service_sid: str = ""
+    twilio_enabled: bool = False
 
 
 # pylint: disable=too-few-public-methods
@@ -113,14 +120,14 @@ class AppSettings(BaseSettings):
     sentry: SentrySettings = SentrySettings()
     kafka: KafkaSettings = KafkaSettings()
     database: DatabaseSettings = DatabaseSettings()
-    sms: SmsClientSettings = SmsClientSettings()
+    twilio_sms_client: TwilioSmsClientSettings = TwilioSmsClientSettings()
 
 
 config = AppSettings()
 sentry = SentrySettings()
 database_settings = DatabaseSettings()
 kafka_settings = KafkaSettings()
-sms_settings = SmsClientSettings()
+twilio_sms_client_settings = TwilioSmsClientSettings()
 
 
 @lru_cache()

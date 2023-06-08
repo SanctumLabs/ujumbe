@@ -8,3 +8,11 @@ class SmsService(metaclass=ABCMeta):
     @abstractmethod
     def send(self, sms):
         raise NotImplementedError()
+
+    @property
+    def name(self) -> str:
+        """
+        Convenience method to retrieve the class name
+        Returns: Class name
+        """
+        return self.__class__.__name__

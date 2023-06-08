@@ -25,6 +25,7 @@ class UjumbeSmsService(SmsService):
         """
 
         try:
+            logger.info(f"{self.name}> Sending sms {sms}...")
             response = self.sms_client.send(sms)
 
             sms_date = SmsDate(
@@ -55,5 +56,5 @@ class UjumbeSmsService(SmsService):
                 sms_id=sms.id.value,
             )
         except Exception as e:
-            logger.error(f"Failed to send sms with error {e}")
-            raise SmsSendingException(f"Failed to send sms message")
+            logger.error(f"{self.name}> Failed to send sms {sms} with error {e}")
+            raise SmsSendingException(f"Failed to send sms message: {sms}. Err: {e}")

@@ -19,10 +19,20 @@ run-reload:
 	uvicorn app:app --port 5000 --reload
 .PHONY: run-reload
 
-# Runs the consumer application
+# Runs the sms received consumer application
 run-sms-received-consumer:
 	python app/workers/consumers/sms_received/__main__.py
 .PHONY: run-reload-sms-received-consumer
+
+# Runs the sms submitted consumer application
+run-sms-submitted-consumer:
+	python app/workers/consumers/sms_submitted/__main__.py
+.PHONY: run-reload-sms-submitted-consumer
+
+# Runs the sms sent consumer application
+run-sms-sent-consumer:
+	python app/workers/consumers/sms_sent/__main__.py
+.PHONY: run-reload-sms-sent-consumer
 
 # Runs SMS worker
 run-sms-worker:

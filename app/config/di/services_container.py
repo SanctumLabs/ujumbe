@@ -49,7 +49,7 @@ class ServicesContainer(containers.DeclarativeContainer):
 
     sms_sent_producer = providers.Factory(
         SmsSentProducer,
-        kafka_producer=kafka_container.sms_submitted_protobuf_producer,
+        kafka_producer=kafka_container.sms_sent_protobuf_producer,
         topic=kafka_config.sms_sent_topic(),
     )
 
