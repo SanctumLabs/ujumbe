@@ -12,6 +12,7 @@ from app.domain.entities.sms_status import SmsDeliveryStatus
 
 from .base_model import BaseModel
 from .sms_response_model import SmsResponse
+from .sms_callback_model import SmsCallback
 
 
 class Sms(BaseModel):
@@ -36,6 +37,7 @@ class Sms(BaseModel):
         default=SmsDeliveryStatus.PENDING,
     )
     response: Mapped[Optional["SmsResponse"]] = relationship(back_populates="sms")
+    callback: Mapped[Optional["SmsCallback"]] = relationship(back_populates="sms")
 
     def __repr__(self):
         """String Representation of an SMS record"""
@@ -62,4 +64,5 @@ class Sms(BaseModel):
             message=self.message,
             status=self.status,
             response=self.response,
+            callback=self.callback,
         )
