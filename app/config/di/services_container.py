@@ -33,6 +33,18 @@ class ServicesContainer(containers.DeclarativeContainer):
         topic=kafka_config.sms_received_topic(),
     )
 
+    # Sms Callback Received
+    sms_callback_received_consumer = providers.Factory(
+        SmsReceivedConsumer,
+        kafka_consumer=kafka_container.sms_received_protobuf_consumer
+    )
+
+    sms_callback_received_producer = providers.Factory(
+        SmsReceivedProducer,
+        kafka_producer=kafka_container.sms_received_protobuf_producer,
+        topic=kafka_config.sms_received_topic(),
+    )
+
     # Sms Submitted
     sms_submitted_consumer = providers.Factory(
         SmsSubmittedConsumer,

@@ -1,5 +1,6 @@
 from dependency_injector import containers, providers
 from app.domain.sms.submit_sms import SubmitSmsService
+from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService
 from app.domain.sms.create_sms import CreateSmsService
 from app.domain.sms.send_sms import SendSmsService
 
@@ -16,6 +17,10 @@ class DomainContainer(containers.DeclarativeContainer):
 
     submit_sms = providers.Factory(
         SubmitSmsService, producer=services.sms_received_producer
+    )
+
+    submit_sms_callback = providers.Factory(
+        SubmitSmsCallbackService, producer=services.sms_callback_received_producer
     )
 
     create_sms = providers.Factory(
