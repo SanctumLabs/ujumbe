@@ -26,12 +26,12 @@ class SmsCallback(BaseModel):
         comment="Sender of the message",
         unique=False,
     )
-    messaging_sid = Column(
+    message_sid = Column(
         String,
         nullable=True,
         comment="SID of the messaging service used",
     )
-    messaging_status = Column(
+    message_status = Column(
         Enum(SmsDeliveryStatus),
         name="message_status",
         default=SmsDeliveryStatus.UNKNOWN,
@@ -55,9 +55,8 @@ class SmsCallback(BaseModel):
             f"SmsCallback(id={self.identifier}, created_on={self.created_at}, updated_on={self.updated_at}, "
             f"updated_by={self.updated_by}, deleted_at={self.deleted_at}, sms_id={self.sms_id} "
             f"account_sid={self.account_sid}, "
-            f"from={self.from_}, "
-            f"messaging_sid={self.messaging_sid}, messaging_status={self.messaging_status}, sms_sid={self.sms_sid}, "
-            f"sms_status={self.sms_status})"
+            f"from={self.from_}, message_sid={self.message_sid}, message_status={self.message_status}, "
+            f"sms_sid={self.sms_sid}, sms_status={self.sms_status})"
         )
 
     def to_dict(self) -> Dict[str, Union[str, datetime, float, int, Dict]]:
@@ -66,10 +65,11 @@ class SmsCallback(BaseModel):
             created_at=self.created_at,
             updated_at=self.updated_at,
             deleted_at=self.deleted_at,
+            sms_id=self.sms_id,
             from_=self.from_,
             account_sid=self.account_sid,
-            sms_sid=self.sms_id,
-            messaging_sid=self.messaging_sid,
+            message_sid=self.message_sid,
+            message_status=self.message_status,
             sms_status=self.sms_status,
-            sms_id=self.sms_id,
+            sms_sid=self.sms_sid,
         )
