@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Dict, Union, TYPE_CHECKING
 from datetime import datetime
 
-from sqlalchemy import Column, String, Enum, ForeignKey
+from sqlalchemy import Column, String, Enum, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.domain.entities.sms_status import SmsDeliveryStatus
@@ -17,36 +17,53 @@ if TYPE_CHECKING:
 
 
 class SmsCallback(BaseModel):
+    __table_args__ = (
+        UniqueConstraint(
+            "account_sid",
+            "sender",
+            "message_sid",
+            "sms_sid",
+            name="sms_callback_account-sid_sender_message-sid_sms-sid_constraint",
+        ),
+    )
+
     account_sid = Column(
         String, nullable=False, comment="SID of the account that sent the message"
     )
+
     from_ = Column(
         String,
+        name="sender",
         nullable=False,
         comment="Sender of the message",
         unique=False,
     )
+
     message_sid = Column(
         String,
         nullable=True,
         comment="SID of the messaging service used",
     )
+
     message_status = Column(
         Enum(SmsDeliveryStatus),
         name="message_status",
         default=SmsDeliveryStatus.UNKNOWN,
         comment="Message status",
     )
+
     sms_sid = Column(
         String,
         comment="Sms SID of the messaging service used. Null if not used",
     )
+
     sms_status = Column(
         Enum(SmsDeliveryStatus),
         name="delivery_status",
         default=SmsDeliveryStatus.UNKNOWN,
         comment="Status of the sms",
     )
+
     sms_id: Mapped[int] = mapped_column(ForeignKey("sms.id"), comment="SMS ID")
     sms: Mapped["Sms"] = relationship(back_populates="callback")
 

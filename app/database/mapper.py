@@ -4,6 +4,7 @@ Contains public functions to handle mapping between Database models and Domain e
 from app.core.domain.entities.unique_id import UniqueId
 from app.domain.entities.sms import Sms
 from app.domain.entities.sms_response import SmsResponse
+from app.domain.entities.sms_callback import SmsCallback
 from app.domain.entities.sms_date import SmsDate
 from app.domain.entities.sms_price import SmsPrice
 from app.domain.entities.sms_type import SmsType
@@ -12,6 +13,7 @@ from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.sms_status import SmsDeliveryStatus
 from app.database.models.sms_model import Sms as SmsModel
 from app.database.models.sms_response_model import SmsResponse as SmsResponseModel
+from app.database.models.sms_callback_model import SmsCallback as SmsCallbackModel
 
 
 def map_sms_model_to_entity(model: SmsModel) -> Sms:
@@ -133,4 +135,45 @@ def map_sms_response_entity_to_model(entity: SmsResponse) -> SmsResponseModel:
         messaging_service_sid=entity.messaging_service_sid,
         error_code=entity.error_code,
         error_message=entity.error_message,
+    )
+
+
+def map_sms_callback_model_to_entity(model: SmsCallbackModel) -> SmsCallback:
+    """
+    Maps an SmsCallbackModel to an SmsCallback Domain entity
+    Args:
+        model (SmsCallbackModel): represents an SMS Callback record in the database
+    Returns:
+        SmsCallback domain entity
+    """
+    message_status = SmsDeliveryStatus(model.message_status)
+    sms_status = SmsDeliveryStatus(model.sms_status)
+
+    return SmsCallback(
+        id=UniqueId(model.identifier),
+        sms_sid=model.sms_sid,
+        account_sid=model.account_sid,
+        sender=PhoneNumber(model.from_),
+        message_sid=model.message_sid,
+        message_status=message_status,
+        sms_status=sms_status
+    )
+
+
+def map_sms_callback_entity_to_model(entity: SmsCallback) -> SmsCallbackModel:
+    """
+    Maps an SmsCallback domain entity to an SmsCallbackModel that is mapped to a record in the database
+    Args:
+        entity (SmsCallback): SmsCallback domain entity
+    Returns:
+        SmsCallbackModel which is a representation of a record in the database
+    """
+    return SmsCallbackModel(
+        identifier=entity.id.value,
+        account_sid=entity.account_sid,
+        from_=entity.sender.value,
+        sms_sid=entity.sms_sid,
+        sms_status=entity.sms_status,
+        message_sid=entity.message_sid,
+        message_status=entity.message_status
     )

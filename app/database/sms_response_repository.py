@@ -44,7 +44,7 @@ class SmsResponseDatabaseRepository(SmsRepository):
 
                 return entity
         except Exception as exc:
-            logger.error(f"Failed to persist sms response {entity}", exc)
+            logger.error(f"{self.name}> Failed to persist sms response {entity}", exc)
             raise exc
 
     def get_by_id(self, sid: str) -> SmsResponse:

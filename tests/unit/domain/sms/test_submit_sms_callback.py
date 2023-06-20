@@ -40,7 +40,7 @@ class SubmitSmsCallbackServiceTestCase(unittest.TestCase):
         self.mock_producer.publish_message.side_effect = Exception
 
         with self.assertRaises(SubmitSmsCallbackException):
-            self.submit_sms_callback_service.execute(smscallback=sms_callback)
+            self.submit_sms_callback_service.execute(callback=sms_callback)
 
         self.mock_producer.publish_message.assert_called_with(sms_callback)
 
@@ -59,7 +59,7 @@ class SubmitSmsCallbackServiceTestCase(unittest.TestCase):
 
         self.mock_producer.publish_message.return_value = None
 
-        self.submit_sms_callback_service.execute(smscallback=sms_callback)
+        self.submit_sms_callback_service.execute(callback=sms_callback)
 
         self.mock_producer.publish_message.assert_called_with(sms_callback)
 
