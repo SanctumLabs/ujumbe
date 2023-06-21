@@ -11,18 +11,16 @@ from app.database.models.sms_model import Sms as SmsModel
 from app.database.models.sms_response_model import SmsResponse as SmsResponseModel
 from app.database.models.sms_callback_model import SmsCallback as SmsCallbackModel
 from app.domain.entities.sms_status import SmsDeliveryStatus
-from app.domain.sms.exceptions import SmsNotFoundError
 
-from app.database.sms_callback_repository import SmsCallbackDatabaseRepository
-
-from . import BaseIntegrationTestCases
-from ...mocks.mock_data import create_mock_sms_response
+from app.database.sms_callback_repository import SmsCallbackDatabaseRepository, SmsCallbackNotFoundError
+from .base_test_sms import BaseSmsIntegrationTestCases
+from ...mocks.mock_data import create_mock_sms_response, create_mock_sms_callback
 
 fake = Faker()
 
 
 @pytest.mark.integration
-class SmsCallbackIntegrationTestCases(BaseIntegrationTestCases):
+class SmsCallbackIntegrationTestCases(BaseSmsIntegrationTestCases):
     def setUp(self) -> None:
         super().setUp()
         self.sms_callback_repository = SmsCallbackDatabaseRepository(self.client)
@@ -34,62 +32,22 @@ class SmsCallbackIntegrationTestCases(BaseIntegrationTestCases):
         message_text = fake.text()
 
         # create an existing SMS record first
-        with self.client.session_factory() as session:
-            sms = SmsModel(
-                sender=sender_phone_number,
-                recipient=recipient_phone_number,
-                message=message_text
-            )
-            session.add(sms)
-            session.commit()
-            session.refresh(sms)
-            session.close()
+        sms = self.create_and_persist_sms(sender=sender_phone_number, recipient=recipient_phone_number,
+                                          message=message_text)
 
         mock_sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
 
         # create an existing SMS response record as well
-        with self.client.session_factory() as session:
-            sms_response = SmsResponseModel(
-                identifier=mock_sms_response.id.value,
-                account_sid=mock_sms_response.account_sid,
-                sid=mock_sms_response.sid,
-                date_sent=mock_sms_response.sms_date.date_sent,
-                date_updated=mock_sms_response.sms_date.date_updated,
-                date_created=mock_sms_response.sms_date.date_created,
-                direction=mock_sms_response.sms_type,
-                num_media=mock_sms_response.num_media,
-                num_segments=mock_sms_response.num_segments,
-                price=mock_sms_response.price.price,
-                currency=mock_sms_response.price.currency,
-                status=mock_sms_response.status,
-                subresource_uris=mock_sms_response.subresource_uris,
-                uri=mock_sms_response.uri,
-                messaging_service_sid=mock_sms_response.messaging_service_sid,
-                error_code=mock_sms_response.error_code,
-                error_message=mock_sms_response.error_message,
-                sms_id=sms.id
-            )
+        self.create_and_persist_sms_response(sms_response=mock_sms_response, sms_id=sms.id)
 
-            session.add(sms_response)
-            session.commit()
-            session.refresh(sms_response)
+        sms_sid = mock_sms_response.sid
+        message_sid = mock_sms_response.messaging_service_sid
 
         # create sms callback
-
-        account_sid = fake.uuid4()
-        sender = PhoneNumber(sender_phone_number)
-        sms_sid = mock_sms_response.sid
-        sms_status = SmsDeliveryStatus.SENT
-        message_sid = mock_sms_response.messaging_service_sid
-        message_status = SmsDeliveryStatus.SENT
-
-        sms_callback = SmsCallback(
-            account_sid=account_sid,
-            sender=sender,
+        sms_callback = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number,
             message_sid=message_sid,
-            message_status=message_status,
-            sms_sid=sms_sid,
-            sms_status=sms_status
+            sms_sid=sms_sid
         )
 
         self.sms_callback_repository.add(sms_callback)
@@ -116,88 +74,30 @@ class SmsCallbackIntegrationTestCases(BaseIntegrationTestCases):
         message_text = fake.text()
 
         # create an existing SMS record first
-        with self.client.session_factory() as session:
-            sms = SmsModel(
-                sender=sender_phone_number,
-                recipient=recipient_phone_number,
-                message=message_text
-            )
-            session.add(sms)
-            session.commit()
-            session.refresh(sms)
-            session.close()
+        sms = self.create_and_persist_sms(sender=sender_phone_number, recipient=recipient_phone_number,
+                                          message=message_text)
 
         mock_sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
 
         # create an existing SMS response record as well
-        with self.client.session_factory() as session:
-            sms_response = SmsResponseModel(
-                identifier=mock_sms_response.id.value,
-                account_sid=mock_sms_response.account_sid,
-                sid=mock_sms_response.sid,
-                date_sent=mock_sms_response.sms_date.date_sent,
-                date_updated=mock_sms_response.sms_date.date_updated,
-                date_created=mock_sms_response.sms_date.date_created,
-                direction=mock_sms_response.sms_type,
-                num_media=mock_sms_response.num_media,
-                num_segments=mock_sms_response.num_segments,
-                price=mock_sms_response.price.price,
-                currency=mock_sms_response.price.currency,
-                status=mock_sms_response.status,
-                subresource_uris=mock_sms_response.subresource_uris,
-                uri=mock_sms_response.uri,
-                messaging_service_sid=mock_sms_response.messaging_service_sid,
-                error_code=mock_sms_response.error_code,
-                error_message=mock_sms_response.error_message,
-                sms_id=sms.id
-            )
+        self.create_and_persist_sms_response(sms_response=mock_sms_response, sms_id=sms.id)
 
-            session.add(sms_response)
-            session.commit()
-            session.refresh(sms_response)
-
-        account_sid = fake.uuid4()
-        sender = PhoneNumber(sender_phone_number)
-        sms_sid = mock_sms_response.sid
-        sms_status = SmsDeliveryStatus.SENT
-        message_sid = mock_sms_response.messaging_service_sid
-        message_status = SmsDeliveryStatus.SENT
-
-        initial_sms_callback = SmsCallback(
-            account_sid=account_sid,
-            sender=sender,
-            message_sid=message_sid,
-            message_status=message_status,
-            sms_sid=sms_sid,
-            sms_status=sms_status
+        initial_sms_callback = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number,
+            sms_sid=mock_sms_response.sid,
+            message_sid=mock_sms_response.messaging_service_sid
         )
 
         # create an existing SMS callback record
-        with self.client.session_factory() as session:
-            sms_callback = SmsCallbackModel(
-                identifier=initial_sms_callback.id.value,
-                account_sid=account_sid,
-                from_=sender.value,
-                message_sid=message_sid,
-                message_status=message_status,
-                sms_sid=sms_sid,
-                sms_status=sms_status,
-                sms_id=sms.id
-            )
-
-            session.add(sms_callback)
-            session.commit()
-            session.refresh(sms_callback)
+        self.create_and_persist_sms_callback(sms_callback=initial_sms_callback, sms_id=sms.id)
 
         second_message_status = SmsDeliveryStatus.DELIVERED
 
-        second_sms_callback = SmsCallback(
-            account_sid=account_sid,
-            sender=sender,
-            message_sid=message_sid,
+        second_sms_callback = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number,
+            message_sid=mock_sms_response.messaging_service_sid,
             message_status=second_message_status,
-            sms_sid=sms_sid,
-            sms_status=sms_status
+            sms_sid=mock_sms_response.sid,
         )
 
         self.sms_callback_repository.add(second_sms_callback)
@@ -216,241 +116,155 @@ class SmsCallbackIntegrationTestCases(BaseIntegrationTestCases):
             # was this second callback persisted with the correct SMS record?
             self.assertEqual(sms.id, actual.sms.id)
 
-    # def test_persists_2_valid_sms_responses(self):
-    #     """Test that 2 valid SMS Responses can be persisted"""
-    #     sender_phone_number_one = "+254744444444"
-    #     sender_phone_number_two = "+254712121212"
-    #     recipient_phone_number_one = "+254755555555"
-    #     recipient_phone_number_two = "+254723232323"
-    #     message_text_one = fake.text()
-    #     message_text_two = fake.text()
-    #
-    #     with self.client.session_factory() as session:
-    #         sms_one = SmsModel(
-    #             sender=sender_phone_number_one,
-    #             recipient=recipient_phone_number_one,
-    #             message=message_text_one
-    #         )
-    #         sms_two = SmsModel(
-    #             sender=sender_phone_number_two,
-    #             recipient=recipient_phone_number_two,
-    #             message=message_text_two
-    #         )
-    #
-    #         session.add(sms_one)
-    #         session.add(sms_two)
-    #         session.commit()
-    #         session.refresh(sms_one)
-    #         session.refresh(sms_two)
-    #         session.close()
-    #
-    #     sms_response_one = create_mock_sms_response(sms_identifier=sms_one.identifier)
-    #     sms_response_two = create_mock_sms_response(sms_identifier=sms_two.identifier)
-    #
-    #     self.sms_callback_repository.add(sms_response_one)
-    #     self.sms_callback_repository.add(sms_response_two)
-    #
-    #     with self.client.session_factory() as session:
-    #         actual_one = session.query(SmsResponseModel).filter_by(sid=sms_response_one.sid).first()
-    #         actual_two = session.query(SmsResponseModel).filter_by(sid=sms_response_two.sid).first()
-    #
-    #         self.assertEqual(sms_response_one.account_sid, actual_one.account_sid)
-    #         self.assertEqual(sms_response_one.sid, actual_one.sid)
-    #         self.assertEqual(sms_response_one.sms_type, actual_one.direction)
-    #         self.assertEqual(sms_response_one.num_media, actual_one.num_media)
-    #         self.assertEqual(sms_response_one.num_segments, actual_one.num_segments)
-    #         self.assertEqual(sms_response_one.price.price, actual_one.price)
-    #         self.assertEqual(sms_response_one.price.currency, actual_one.currency)
-    #         self.assertEqual(sms_response_one.status, actual_one.status)
-    #         self.assertEqual(sms_response_one.subresource_uris, actual_one.subresource_uris)
-    #         self.assertEqual(sms_response_one.uri, actual_one.uri)
-    #         self.assertEqual(sms_response_one.messaging_service_sid, actual_one.messaging_service_sid)
-    #         self.assertEqual(sms_response_one.error_code, actual_one.error_code)
-    #         self.assertEqual(sms_response_one.error_message, actual_one.error_message)
-    #         self.assertEqual("system", actual_one.updated_by)
-    #         self.assertEqual(sms_response_one.sms_date.date_created, actual_one.date_created)
-    #         self.assertEqual(sms_response_one.sms_date.date_sent, actual_one.date_sent)
-    #         self.assertEqual(sms_response_one.sms_date.date_updated, actual_one.date_updated)
-    #
-    #         self.assertEqual(sms_response_two.account_sid, actual_two.account_sid)
-    #         self.assertEqual(sms_response_two.sid, actual_two.sid)
-    #         self.assertEqual(sms_response_two.sms_type, actual_two.direction)
-    #         self.assertEqual(sms_response_two.num_media, actual_two.num_media)
-    #         self.assertEqual(sms_response_two.num_segments, actual_two.num_segments)
-    #         self.assertEqual(sms_response_two.price.price, actual_two.price)
-    #         self.assertEqual(sms_response_two.price.currency, actual_two.currency)
-    #         self.assertEqual(sms_response_two.status, actual_two.status)
-    #         self.assertEqual(sms_response_two.subresource_uris, actual_two.subresource_uris)
-    #         self.assertEqual(sms_response_two.uri, actual_two.uri)
-    #         self.assertEqual(sms_response_two.messaging_service_sid, actual_two.messaging_service_sid)
-    #         self.assertEqual(sms_response_two.error_code, actual_two.error_code)
-    #         self.assertEqual(sms_response_two.error_message, actual_two.error_message)
-    #         self.assertEqual("system", actual_two.updated_by)
-    #         self.assertEqual(sms_response_two.sms_date.date_created, actual_two.date_created)
-    #         self.assertEqual(sms_response_two.sms_date.date_sent, actual_two.date_sent)
-    #         self.assertEqual(sms_response_two.sms_date.date_updated, actual_two.date_updated)
-    #
-    # def test_get_by_id_returns_persisted_sms_response(self):
-    #     """Test that repository can retrieve initially persisted SMS Response given its ID"""
-    #     sender_phone_number = "+254744444444"
-    #     recipient_phone_number = "+254755555555"
-    #     message_text = fake.text()
-    #
-    #     # persist an SMS
-    #     with self.client.session_factory() as session:
-    #         sms = SmsModel(
-    #             sender=sender_phone_number,
-    #             recipient=recipient_phone_number,
-    #             message=message_text
-    #         )
-    #
-    #         session.add(sms)
-    #         session.commit()
-    #         session.refresh(sms)
-    #
-    #     # time elapses
-    #     sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
-    #
-    #     # Persist an sms response
-    #     with self.client.session_factory() as session:
-    #         sms_response_model = SmsResponseModel(
-    #             identifier=sms_response.id.value,
-    #             account_sid=sms_response.account_sid,
-    #             sid=sms_response.sid,
-    #             date_sent=sms_response.sms_date.date_sent,
-    #             date_updated=sms_response.sms_date.date_updated,
-    #             date_created=sms_response.sms_date.date_created,
-    #             direction=sms_response.sms_type,
-    #             num_media=sms_response.num_media,
-    #             num_segments=sms_response.num_segments,
-    #             price=sms_response.price.price,
-    #             currency=sms_response.price.currency,
-    #             status=sms_response.status,
-    #             subresource_uris=sms_response.subresource_uris,
-    #             uri=sms_response.uri,
-    #             messaging_service_sid=sms_response.messaging_service_sid,
-    #             error_code=sms_response.error_code,
-    #             error_message=sms_response.error_message,
-    #             sms_id=sms.id
-    #         )
-    #
-    #         session.add(sms_response_model)
-    #         session.commit()
-    #         session.refresh(sms_response_model)
-    #
-    #     actual = self.sms_callback_repository.get_by_id(sms_response.id.value)
-    #
-    #     self.assertEqual(sms_response.account_sid, actual.account_sid)
-    #     self.assertEqual(sms_response.sid, actual.sid)
-    #     self.assertEqual(sms_response.sms_type, actual.sms_type)
-    #     self.assertEqual(sms_response.num_media, actual.num_media)
-    #     self.assertEqual(sms_response.num_segments, actual.num_segments)
-    #     self.assertEqual(sms_response.price.price, actual.price.price)
-    #     self.assertEqual(sms_response.price.currency, actual.price.currency)
-    #     self.assertEqual(sms_response.status, actual.status)
-    #     self.assertEqual(sms_response.subresource_uris, actual.subresource_uris)
-    #     self.assertEqual(sms_response.uri, actual.uri)
-    #     self.assertEqual(sms_response.messaging_service_sid, actual.messaging_service_sid)
-    #     self.assertEqual(sms_response.error_code, actual.error_code)
-    #     self.assertEqual(sms_response.error_message, actual.error_message)
-    #     self.assertEqual(sms_response.sms_date.date_created, actual.sms_date.date_created)
-    #     self.assertEqual(sms_response.sms_date.date_sent, actual.sms_date.date_sent)
-    #     self.assertEqual(sms_response.sms_date.date_updated, actual.sms_date.date_updated)
-    #
-    # def test_get_by_id_throws_sms_not_found_exception_when_sms_response_does_not_exist(self):
-    #     """Test that repository throws SmsNotFoundError when SMS response with given ID can not be found"""
-    #
-    #     sid = SmsResponse.next_id()
-    #
-    #     with self.assertRaises(SmsNotFoundError):
-    #         self.sms_callback_repository.get_by_id(sid.value)
-    #
-    # def test_returns_all_persisted_valid_sms_responses(self):
-    #     """Should return all valid SMS responses"""
-    #     self.maxDiff = None
-    #     sender_phone_number_one = "+254744444444"
-    #     sender_phone_number_two = "+254712121212"
-    #     recipient_phone_number_one = "+254755555555"
-    #     recipient_phone_number_two = "+254723232323"
-    #     message_text_one = fake.text()
-    #     message_text_two = fake.text()
-    #
-    #     with self.client.session_factory() as session:
-    #         sms_one = SmsModel(
-    #             sender=sender_phone_number_one,
-    #             recipient=recipient_phone_number_one,
-    #             message=message_text_one
-    #         )
-    #         sms_two = SmsModel(
-    #             sender=sender_phone_number_two,
-    #             recipient=recipient_phone_number_two,
-    #             message=message_text_two
-    #         )
-    #
-    #         session.add(sms_one)
-    #         session.add(sms_two)
-    #         session.commit()
-    #         session.refresh(sms_one)
-    #         session.refresh(sms_two)
-    #         session.close()
-    #
-    #     sms_response_one = create_mock_sms_response(sms_identifier=sms_one.identifier)
-    #     sms_response_two = create_mock_sms_response(sms_identifier=sms_two.identifier)
-    #
-    #     with self.client.session_factory() as session:
-    #         sms_response_one_model = SmsResponseModel(
-    #             identifier=sms_response_one.id.value,
-    #             account_sid=sms_response_one.account_sid,
-    #             sid=sms_response_one.sid,
-    #             date_sent=sms_response_one.sms_date.date_sent,
-    #             date_updated=sms_response_one.sms_date.date_updated,
-    #             date_created=sms_response_one.sms_date.date_created,
-    #             direction=sms_response_one.sms_type,
-    #             num_media=sms_response_one.num_media,
-    #             num_segments=sms_response_one.num_segments,
-    #             price=sms_response_one.price.price,
-    #             currency=sms_response_one.price.currency,
-    #             status=sms_response_one.status,
-    #             subresource_uris=sms_response_one.subresource_uris,
-    #             uri=sms_response_one.uri,
-    #             messaging_service_sid=sms_response_one.messaging_service_sid,
-    #             error_code=sms_response_one.error_code,
-    #             error_message=sms_response_one.error_message,
-    #             sms_id=sms_one.id
-    #         )
-    #
-    #         sms_response_two_model = SmsResponseModel(
-    #             identifier=sms_response_two.id.value,
-    #             account_sid=sms_response_two.account_sid,
-    #             sid=sms_response_two.sid,
-    #             date_sent=sms_response_two.sms_date.date_sent,
-    #             date_updated=sms_response_two.sms_date.date_updated,
-    #             date_created=sms_response_two.sms_date.date_created,
-    #             direction=sms_response_two.sms_type,
-    #             num_media=sms_response_two.num_media,
-    #             num_segments=sms_response_two.num_segments,
-    #             price=sms_response_two.price.price,
-    #             currency=sms_response_two.price.currency,
-    #             status=sms_response_two.status,
-    #             subresource_uris=sms_response_two.subresource_uris,
-    #             uri=sms_response_two.uri,
-    #             messaging_service_sid=sms_response_two.messaging_service_sid,
-    #             error_code=sms_response_two.error_code,
-    #             error_message=sms_response_two.error_message,
-    #             sms_id=sms_two.id
-    #         )
-    #
-    #         session.add(sms_response_one_model)
-    #         session.add(sms_response_two_model)
-    #         session.commit()
-    #         session.refresh(sms_response_one_model)
-    #         session.refresh(sms_response_two_model)
-    #
-    #     actual = self.sms_callback_repository.get_all()
-    #
-    #     self.assertEqual(len(actual), 2)
-    #     self.assertListEqual(actual, [sms_response_one, sms_response_two])
-    #
+    def test_persists_2_valid_sms_callbacks(self):
+        """Test that 2 valid SMS Callbacks can be persisted"""
+        sender_phone_number_one = "+254744444444"
+        sender_phone_number_two = "+254712121212"
+        recipient_phone_number_one = "+254755555555"
+        recipient_phone_number_two = "+254723232323"
+        message_text_one = fake.text()
+        message_text_two = fake.text()
+
+        # create sms records
+        sms_one = self.create_and_persist_sms(sender=sender_phone_number_one, recipient=recipient_phone_number_one,
+                                              message=message_text_one)
+        sms_two = self.create_and_persist_sms(sender=sender_phone_number_two,
+                                              recipient=recipient_phone_number_two,
+                                              message=message_text_two)
+
+        mock_sms_response_one = create_mock_sms_response(sms_identifier=sms_one.identifier)
+        mock_sms_response_two = create_mock_sms_response(sms_identifier=sms_two.identifier)
+
+        # create sms responses for above sms records
+        self.create_and_persist_sms_response(sms_response=mock_sms_response_one, sms_id=sms_one.id)
+        self.create_and_persist_sms_response(sms_response=mock_sms_response_two, sms_id=sms_two.id)
+
+        # create sms callbacks for above sms records
+        sms_callback_one = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number_one,
+            message_sid=mock_sms_response_one.messaging_service_sid,
+            sms_sid=mock_sms_response_one.sid,
+        )
+
+        sms_callback_two = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number_two,
+            message_sid=mock_sms_response_two.messaging_service_sid,
+            sms_sid=mock_sms_response_two.sid,
+        )
+
+        # add the sms callbacks
+        self.sms_callback_repository.add(sms_callback_one)
+        self.sms_callback_repository.add(sms_callback_two)
+
+        # check that both have been persisted correctly
+        with self.client.session_factory() as session:
+            actual_one = session.query(SmsCallbackModel).filter_by(sms_sid=sms_callback_one.sms_sid).first()
+            actual_two = session.query(SmsCallbackModel).filter_by(sms_sid=sms_callback_two.sms_sid).first()
+
+            self.assertEqual(sms_callback_one.account_sid, actual_one.account_sid)
+            self.assertEqual(sms_callback_one.sms_sid, actual_one.sms_sid)
+            self.assertEqual(sms_callback_one.sms_status, actual_one.sms_status)
+            self.assertEqual(sms_callback_one.message_sid, actual_one.message_sid)
+            self.assertEqual(sms_callback_one.message_status, actual_one.message_status)
+            self.assertEqual(sms_callback_one.sender.value, actual_one.from_)
+            self.assertEqual("system", actual_one.updated_by)
+
+            self.assertEqual(sms_callback_two.account_sid, actual_two.account_sid)
+            self.assertEqual(sms_callback_two.sms_sid, actual_two.sms_sid)
+            self.assertEqual(sms_callback_two.sms_status, actual_two.sms_status)
+            self.assertEqual(sms_callback_two.message_sid, actual_two.message_sid)
+            self.assertEqual(sms_callback_two.message_status, actual_two.message_status)
+            self.assertEqual(sms_callback_two.sender.value, actual_two.from_)
+            self.assertEqual("system", actual_two.updated_by)
+
+    def test_get_by_id_returns_persisted_sms_callback(self):
+        """Test that repository can retrieve initially persisted SMS Callback given its ID"""
+        sender_phone_number = "+254744444444"
+        recipient_phone_number = "+254755555555"
+        message_text = fake.text()
+
+        # persist an SMS
+        sms = self.create_and_persist_sms(sender=sender_phone_number, recipient=recipient_phone_number,
+                                          message=message_text)
+
+        mock_sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
+
+        # Persist an SMS response
+        self.create_and_persist_sms_response(mock_sms_response, sms_id=sms.id)
+
+        sms_sid = mock_sms_response.sid
+        message_sid = mock_sms_response.messaging_service_sid
+
+        mock_sms_callback = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number,
+            message_sid=message_sid,
+            sms_sid=sms_sid
+        )
+
+        # create an existing SMS callback record
+        self.create_and_persist_sms_callback(mock_sms_callback, sms.id)
+
+        actual = self.sms_callback_repository.get_by_id(mock_sms_callback.id.value)
+
+        self.assertEqual(mock_sms_callback.account_sid, actual.account_sid)
+        self.assertEqual(mock_sms_callback.sms_sid, actual.sms_sid)
+        self.assertEqual(mock_sms_callback.sms_status, actual.sms_status)
+        self.assertEqual(mock_sms_callback.message_status, actual.message_status)
+        self.assertEqual(mock_sms_callback.message_sid, actual.message_sid)
+        self.assertEqual(mock_sms_callback.sender.value, actual.sender.value)
+
+    def test_get_by_id_throws_sms_not_found_exception_when_sms_callback_does_not_exist(self):
+        """Test that repository throws SmsCallbackNotFoundError when SMS callback with given ID can not be found"""
+
+        sid = SmsCallback.next_id()
+
+        with self.assertRaises(SmsCallbackNotFoundError):
+            self.sms_callback_repository.get_by_id(sid.value)
+
+    def test_returns_all_persisted_valid_sms_callbacks(self):
+        """Should return all valid SMS callbacks"""
+        self.maxDiff = None
+        sender_phone_number_one = "+254744444444"
+        sender_phone_number_two = "+254712121212"
+        recipient_phone_number_one = "+254755555555"
+        recipient_phone_number_two = "+254723232323"
+        message_text_one = fake.text()
+        message_text_two = fake.text()
+
+        sms_one = self.create_and_persist_sms(sender=sender_phone_number_one, recipient=recipient_phone_number_one,
+                                              message=message_text_one)
+
+        sms_two = self.create_and_persist_sms(sender=sender_phone_number_two,
+                                              recipient=recipient_phone_number_two,
+                                              message=message_text_two)
+
+        sms_response_one = create_mock_sms_response(sms_identifier=sms_one.identifier)
+        sms_response_two = create_mock_sms_response(sms_identifier=sms_two.identifier)
+
+        self.create_and_persist_sms_response(sms_response=sms_response_one, sms_id=sms_one.id)
+        self.create_and_persist_sms_response(sms_response=sms_response_two, sms_id=sms_two.id)
+
+        sms_callback_one = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number_one,
+            sms_sid=sms_response_one.sid,
+            message_sid=sms_response_one.messaging_service_sid
+        )
+
+        sms_callback_two = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number_two,
+            sms_sid=sms_response_two.sid,
+            message_sid=sms_response_two.messaging_service_sid
+        )
+
+        # create an existing SMS callback records
+        self.create_and_persist_sms_callback(sms_callback=sms_callback_one, sms_id=sms_one.id)
+        self.create_and_persist_sms_callback(sms_callback=sms_callback_two, sms_id=sms_two.id)
+
+        actual = self.sms_callback_repository.get_all()
+
+        self.assertEqual(len(actual), 2)
+        self.assertListEqual(actual, [sms_callback_one, sms_callback_two])
+
     # def test_updates_status_of_persisted_sms_response(self):
     #     """Should update the status of a persisted SMS Response"""
     #     sender_phone_number = "+254744444444"

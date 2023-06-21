@@ -6,6 +6,8 @@ from faker import Faker
 from app.domain.entities.sms_status import SmsDeliveryStatus
 from app.domain.entities.sms_type import SmsType
 from app.domain.entities.sms_response import SmsResponse
+from app.domain.entities.sms_callback import SmsCallback
+from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.sms_date import SmsDate
 from app.domain.entities.sms_price import SmsPrice
 
@@ -61,3 +63,21 @@ def create_mock_sms_response(sms_identifier: Optional[str] = fake.uuid4()) -> Sm
     )
 
     return sms_response
+
+
+def create_mock_sms_callback(account_sid: str = fake.uuid4(),
+                             sender_phone_number: str = "+254744444444",
+                             sms_sid: str = fake.uuid4(),
+                             sms_status: SmsDeliveryStatus = SmsDeliveryStatus.SENT,
+                             message_sid: str = fake.uuid4(),
+                             message_status: SmsDeliveryStatus = SmsDeliveryStatus.SENT) -> SmsCallback:
+    sender = PhoneNumber(sender_phone_number)
+
+    return SmsCallback(
+        account_sid=account_sid,
+        sender=sender,
+        message_sid=message_sid,
+        message_status=message_status,
+        sms_sid=sms_sid,
+        sms_status=sms_status
+    )
