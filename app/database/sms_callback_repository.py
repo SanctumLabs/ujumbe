@@ -93,6 +93,7 @@ class SmsCallbackDatabaseRepository(SmsRepository):
                 .filter(SmsCallbackModel.identifier == entity.id.value)
                 .first()
             )
+
             if not sms_callback_model:
                 raise SmsCallbackNotFoundError(entity.id.value)
 

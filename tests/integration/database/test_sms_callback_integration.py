@@ -4,11 +4,7 @@ from faker import Faker
 
 import pytest
 
-from app.domain.entities.phone_number import PhoneNumber
-from app.domain.entities.sms_response import SmsResponse
 from app.domain.entities.sms_callback import SmsCallback
-from app.database.models.sms_model import Sms as SmsModel
-from app.database.models.sms_response_model import SmsResponse as SmsResponseModel
 from app.database.models.sms_callback_model import SmsCallback as SmsCallbackModel
 from app.domain.entities.sms_status import SmsDeliveryStatus
 
@@ -265,135 +261,87 @@ class SmsCallbackIntegrationTestCases(BaseSmsIntegrationTestCases):
         self.assertEqual(len(actual), 2)
         self.assertListEqual(actual, [sms_callback_one, sms_callback_two])
 
-    # def test_updates_status_of_persisted_sms_response(self):
-    #     """Should update the status of a persisted SMS Response"""
-    #     sender_phone_number = "+254744444444"
-    #     recipient_phone_number = "+254755555555"
-    #     message_text = fake.text()
-    #
-    #     # persist an SMS
-    #     with self.client.session_factory() as session:
-    #         sms = SmsModel(
-    #             sender=sender_phone_number,
-    #             recipient=recipient_phone_number,
-    #             message=message_text
-    #         )
-    #
-    #         session.add(sms)
-    #         session.commit()
-    #         session.refresh(sms)
-    #         session.close()
-    #
-    #     # time elapses & an SMS response is created from the SMS
-    #     sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
-    #
-    #     # we persist that SMS response
-    #     with self.client.session_factory() as session:
-    #         sms_response_model = SmsResponseModel(
-    #             identifier=sms_response.id.value,
-    #             account_sid=sms_response.account_sid,
-    #             sid=sms_response.sid,
-    #             date_sent=sms_response.sms_date.date_sent,
-    #             date_updated=sms_response.sms_date.date_updated,
-    #             date_created=sms_response.sms_date.date_created,
-    #             direction=sms_response.sms_type,
-    #             num_media=sms_response.num_media,
-    #             num_segments=sms_response.num_segments,
-    #             price=sms_response.price.price,
-    #             currency=sms_response.price.currency,
-    #             status=sms_response.status,
-    #             subresource_uris=sms_response.subresource_uris,
-    #             uri=sms_response.uri,
-    #             messaging_service_sid=sms_response.messaging_service_sid,
-    #             error_code=sms_response.error_code,
-    #             error_message=sms_response.error_message,
-    #             sms_id=sms.id
-    #         )
-    #
-    #         session.add(sms_response_model)
-    #         session.commit()
-    #         session.refresh(sms_response_model)
-    #         session.close()
-    #
-    #     status = SmsDeliveryStatus.SENT
-    #     updated_sms_response = replace(sms_response, status=status)
-    #
-    #     self.sms_callback_repository.update(updated_sms_response)
-    #
-    #     with self.client.session_factory() as session:
-    #         actual = session.query(SmsResponseModel).filter_by(identifier=sms_response.id.value).first()
-    #
-    #         self.assertEqual(status, actual.status)
-    #
-    # def test_raises_exception_when_updating_an_sms_response_that_does_not_exist(self):
-    #     """Should raise SmsNotFoundException when updating the status of an SMS Response that does not exist"""
-    #     sms_response = create_mock_sms_response()
-    #
-    #     with self.assertRaises(SmsNotFoundError):
-    #         self.sms_callback_repository.update(sms_response)
-    #
-    # def test_raises_exception_when_removing_an_sms_response_that_does_not_exist(self):
-    #     """Should raise SmsNotFoundException when removing an SMS Response that does not exist"""
-    #     sms_response = create_mock_sms_response()
-    #
-    #     with self.assertRaises(SmsNotFoundError):
-    #         self.sms_callback_repository.remove(sms_response)
-    #
-    # def test_removes_initially_persisted_sms_response(self):
-    #     """Should remove an initially persisted SMS Response"""
-    #     sender_phone_number = "+254744444444"
-    #     recipient_phone_number = "+254755555555"
-    #     message_text = fake.text()
-    #
-    #     # persist an SMS
-    #     with self.client.session_factory() as session:
-    #         sms = SmsModel(
-    #             sender=sender_phone_number,
-    #             recipient=recipient_phone_number,
-    #             message=message_text
-    #         )
-    #
-    #         session.add(sms)
-    #         session.commit()
-    #         session.refresh(sms)
-    #         session.close()
-    #
-    #     # time elapses & an SMS response is created from the SMS
-    #     sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
-    #
-    #     # we persist that SMS response
-    #     with self.client.session_factory() as session:
-    #         sms_response_model = SmsResponseModel(
-    #             identifier=sms_response.id.value,
-    #             account_sid=sms_response.account_sid,
-    #             sid=sms_response.sid,
-    #             date_sent=sms_response.sms_date.date_sent,
-    #             date_updated=sms_response.sms_date.date_updated,
-    #             date_created=sms_response.sms_date.date_created,
-    #             direction=sms_response.sms_type,
-    #             num_media=sms_response.num_media,
-    #             num_segments=sms_response.num_segments,
-    #             price=sms_response.price.price,
-    #             currency=sms_response.price.currency,
-    #             status=sms_response.status,
-    #             subresource_uris=sms_response.subresource_uris,
-    #             uri=sms_response.uri,
-    #             messaging_service_sid=sms_response.messaging_service_sid,
-    #             error_code=sms_response.error_code,
-    #             error_message=sms_response.error_message,
-    #             sms_id=sms.id
-    #         )
-    #
-    #         session.add(sms_response_model)
-    #         session.commit()
-    #         session.refresh(sms_response_model)
-    #         session.close()
-    #
-    #     self.sms_callback_repository.remove(sms_response)
-    #
-    #     with self.client.session_factory() as session:
-    #         actual = session.query(SmsResponseModel).filter_by(identifier=sms_response.id.value).first()
-    #         self.assertIsNone(actual)
+    def test_updates_status_of_persisted_sms_callback(self):
+        """Should update the status of a persisted SMS Callback"""
+        sender_phone_number = "+254744444444"
+        recipient_phone_number = "+254755555555"
+        message_text = fake.text()
+
+        sms = self.create_and_persist_sms(sender=sender_phone_number, recipient=recipient_phone_number,
+                                          message=message_text)
+
+        # time elapses & an SMS response is created from the SMS
+        sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
+
+        # we persist that SMS response
+        self.create_and_persist_sms_response(sms_response=sms_response, sms_id=sms.id)
+
+        # create an sms callback
+        sms_callback = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number,
+            sms_sid=sms_response.sid,
+            message_sid=sms_response.messaging_service_sid
+        )
+
+        # persist sms callback
+        self.create_and_persist_sms_callback(sms_callback=sms_callback, sms_id=sms.id)
+
+        # update the statuses of sms callback
+        sms_status = SmsDeliveryStatus.DELIVERED
+        updated_sms_callback = replace(sms_callback, sms_status=sms_status)
+
+        # perform
+        self.sms_callback_repository.update(updated_sms_callback)
+
+        with self.client.session_factory() as session:
+            actual = session.query(SmsCallbackModel).filter_by(identifier=sms_callback.id.value).first()
+
+            self.assertEqual(sms_status, actual.sms_status)
+
+    def test_raises_exception_when_updating_an_sms_callback_that_does_not_exist(self):
+        """Should raise SmsCallbackNotFoundError when updating the status of an SMS Callback that does not exist"""
+        sms_callback = create_mock_sms_callback()
+
+        with self.assertRaises(SmsCallbackNotFoundError):
+            self.sms_callback_repository.update(sms_callback)
+
+    def test_raises_exception_when_removing_an_sms_callback_that_does_not_exist(self):
+        """Should raise SmsCallbackNotFoundError when removing an SMS Callback that does not exist"""
+        sms_callback = create_mock_sms_callback()
+
+        with self.assertRaises(SmsCallbackNotFoundError):
+            self.sms_callback_repository.remove(sms_callback)
+
+    def test_removes_initially_persisted_sms_callback(self):
+        """Should remove an initially persisted SMS Callback"""
+        sender_phone_number = "+254744444444"
+        recipient_phone_number = "+254755555555"
+        message_text = fake.text()
+
+        # persist an SMS
+        sms = self.create_and_persist_sms(sender=sender_phone_number, recipient=recipient_phone_number,
+                                          message=message_text)
+
+        # time elapses & an SMS response is created from the SMS
+        sms_response = create_mock_sms_response(sms_identifier=sms.identifier)
+
+        self.create_and_persist_sms_response(sms_response=sms_response, sms_id=sms.id)
+
+        # create an sms callback
+        sms_callback = create_mock_sms_callback(
+            sender_phone_number=sender_phone_number,
+            sms_sid=sms_response.sid,
+            message_sid=sms_response.messaging_service_sid
+        )
+
+        # persist SMS callback
+        self.create_and_persist_sms_callback(sms_callback=sms_callback, sms_id=sms.id)
+
+        self.sms_callback_repository.remove(sms_callback)
+
+        with self.client.session_factory() as session:
+            actual = session.query(SmsCallbackModel).filter_by(identifier=sms_callback.id.value).first()
+            self.assertIsNone(actual)
 
 
 if __name__ == '__main__':
