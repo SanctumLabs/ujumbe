@@ -9,6 +9,10 @@ class CreateSmsException(Exception):
     """Create SMS Exception"""
 
 
+class CreateSmsCallbackException(Exception):
+    """Create SMS Callback Exception"""
+
+
 class SubmitSmsException(Exception):
     """Submit SMS Exception"""
 

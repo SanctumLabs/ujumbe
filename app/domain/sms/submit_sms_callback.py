@@ -14,18 +14,18 @@ class SubmitSmsCallbackService(Service):
     def __init__(self, producer: Producer):
         self.producer = producer
 
-    def execute(self, smscallback: SmsCallback):
+    def execute(self, callback: SmsCallback):
         """
         Handles validation logic before submitting Sms callback, then emits an event that is handled by another part of
         the domain
         Args:
-            smscallback: Sms callback Request
+            callback: Sms callback Request
         Returns:
         """
-        if not smscallback:
+        if not callback:
             raise SubmitSmsCallbackException("Invalid sms callback request provided")
         try:
-            self.producer.publish_message(smscallback)
+            self.producer.publish_message(callback)
         except Exception as e:
             logger.error(f"{self.name}> Failed to submit sms callback because of {e}", e)
             raise SubmitSmsCallbackException("Failed to submit sms callback")
