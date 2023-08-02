@@ -22,3 +22,9 @@ message SmsSent {
   option (messages.events.event_type) = "sms_sent";
   messages.events.v1.Sms sms = 1;
 }
+
+// SmCallbackReceived is an event that is emitted when the system receives an SMS Callback
+message SmsCallbackReceived {
+  option (messages.events.event_type) = "sms_callback_received";
+  messages.events.v1.SmsCallback sms_callback = 1;
+}

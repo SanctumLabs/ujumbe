@@ -32,6 +32,16 @@ message SmsResponse {
   optional string error_message = 15;
 }
 
+message SmsCallback {
+  string id = 1;
+  string account_sid = 2;
+  string sender = 3;
+  string sms_sid = 4;
+  SmsStatus sms_status = 5;
+  string message_sid = 6;
+  SmsStatus message_status = 7;
+}
+
 message SmsDate {
   google.protobuf.Timestamp date_created = 1;
   google.protobuf.Timestamp date_sent = 2;

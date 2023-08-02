@@ -2,6 +2,7 @@
 Kafka DI container
 """
 from dependency_injector import containers, providers
+import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
 from app.infra.broker.kafka.config import KafkaSchemaRegistryConfig, KafkaProducerConfig, KafkaConsumerConfig
 from app.infra.broker.kafka.producers.simple_producer import KafkaSimpleProducer
 from app.infra.broker.kafka.producers.proto_producer import KafkaProtoProducer
@@ -14,7 +15,6 @@ from app.infra.broker.kafka.deserializers.json_deserializer import KafkaJsonDese
 from app.infra.broker.kafka.registry import KafkaRegistry
 from app.settings import KafkaSettings
 from app.messages.json.sms_schema import sms_json_schema
-import app.messages.events.v1.events_pb2 as events
 
 
 class KafkaContainer(containers.DeclarativeContainer):
@@ -114,6 +114,33 @@ class KafkaContainer(containers.DeclarativeContainer):
                                    topic=config.sms_sent_topic(),
                                    group_id=config.sms_sent_group_id()),
         deserializer=sms_sent_protobuf_deserializer
+    )
+
+    # SMS callback serializer, deserializer, producer & consumer
+
+    sms_callback_received_protobuf_serializer = providers.Singleton(
+        KafkaProtobufSerializer,
+        msg_type=events.SmsCallbackReceived,
+        registry_client=schema_registry
+    )
+
+    sms_callback_received_protobuf_deserializer = providers.Singleton(
+        KafkaProtobufDeserializer,
+        msg_type=events.SmsCallbackReceived
+    )
+
+    sms_callback_received_protobuf_producer = providers.Singleton(
+        KafkaProtoProducer,
+        params=KafkaProducerConfig(bootstrap_servers=config.kafka_bootstrap_servers()),
+        serializer=sms_callback_received_protobuf_serializer
+    )
+
+    sms_callback_received_protobuf_consumer = providers.Singleton(
+        KafkaProtoConsumer,
+        params=KafkaConsumerConfig(bootstrap_servers=config.kafka_bootstrap_servers(),
+                                   topic=config.sms_callback_received_topic(),
+                                   group_id=config.sms_callback_received_group_id()),
+        deserializer=sms_callback_received_protobuf_deserializer
     )
 
     # Sms submitted
