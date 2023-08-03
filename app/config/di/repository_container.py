@@ -1,6 +1,7 @@
 from dependency_injector import containers, providers
 from app.database.sms_repository import SmsDatabaseRepository
 from app.database.sms_response_repository import SmsResponseDatabaseRepository
+from app.database.sms_callback_repository import SmsCallbackDatabaseRepository
 
 
 class RepositoryContainer(containers.DeclarativeContainer):
@@ -18,4 +19,8 @@ class RepositoryContainer(containers.DeclarativeContainer):
 
     sms_response_repository = providers.Factory(
         SmsResponseDatabaseRepository, db_client=gateways.database_client
+    )
+
+    sms_callback_repository = providers.Factory(
+        SmsCallbackDatabaseRepository, db_client=gateways.database_client
     )

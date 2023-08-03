@@ -3,6 +3,8 @@ from app.services.sms_received_producer import SmsReceivedProducer
 from app.services.sms_received_consumer import SmsReceivedConsumer
 from app.services.sms_submitted_producer import SmsSubmittedProducer
 from app.services.sms_submitted_consumer import SmsSubmittedConsumer
+from app.services.sms_callback_received_producer import SmsCallbackReceivedProducer
+from app.services.sms_callback_received_consumer import SmsCallbackReceivedConsumer
 from app.services.sms_sent_producer import SmsSentProducer
 from app.services.sms_service import UjumbeSmsService
 from app.settings import KafkaSettings
@@ -31,6 +33,21 @@ class ServicesContainer(containers.DeclarativeContainer):
         SmsReceivedProducer,
         kafka_producer=kafka_container.sms_received_protobuf_producer,
         topic=kafka_config.sms_received_topic(),
+    )
+
+    # Sms Callback Received
+
+    # consumer
+    sms_callback_received_consumer = providers.Factory(
+        SmsCallbackReceivedProducer,
+        kafka_consumer=kafka_container.sms_callback_received_protobuf_consumer
+    )
+
+    # producer
+    sms_callback_received_producer = providers.Factory(
+        SmsCallbackReceivedConsumer,
+        kafka_producer=kafka_container.sms_callback_received_protobuf_producer,
+        topic=kafka_config.sms_callback_received_topic(),
     )
 
     # Sms Submitted

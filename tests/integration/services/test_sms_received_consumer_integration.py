@@ -1,13 +1,13 @@
 import unittest
 import pytest
 from faker import Faker
+import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
 from app.domain.entities.sms import Sms
 from app.services.sms_received_producer import SmsReceivedProducer
 from app.services.sms_received_consumer import SmsReceivedConsumer
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
-import app.messages.events.v1.events_pb2 as events
 from app.infra.broker.kafka.serializers.protobuf_serializer import KafkaProtobufSerializer
 from app.infra.broker.kafka.deserializers.protobuf_deserializer import KafkaProtobufDeserializer
 from app.infra.broker.kafka.producers.proto_producer import KafkaProtoProducer

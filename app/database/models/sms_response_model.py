@@ -24,7 +24,7 @@ class SmsResponse(BaseModel):
     sid = Column(
         String,
         nullable=False,
-        comment="Unique string that was created to identifier the message",
+        comment="Unique string that was created to identify the message",
         unique=True,
     )
     date_created = Column(

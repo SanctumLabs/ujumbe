@@ -2,13 +2,13 @@
 Sms Received Producer to handle sending SMS Received message events to broker
 """
 from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential
+import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
+import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
 from app.domain.entities.sms import Sms
 from app.infra.broker.kafka.producers import KafkaProducer
 from app.infra.broker.kafka.message import ProducerMessage
-import app.messages.events.v1.events_pb2 as events
-import app.messages.events.v1.data_pb2 as sms_data
 
 
 class SmsReceivedProducer(Producer):
@@ -36,7 +36,6 @@ class SmsReceivedProducer(Producer):
                 sender=sms.sender.value,
                 recipient=sms.recipient.value,
                 message=sms.message.value,
-                status=sms_data.SmsStatus.PENDING
             )
             event = events.SmsReceived(sms=data)
             message = ProducerMessage(topic=self.topic, value=event)

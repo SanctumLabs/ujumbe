@@ -1,12 +1,14 @@
 from fastapi import APIRouter
 from starlette import status
 from app.infra.logger import log as logger
-from .dto import SmsRequestDto
+from .dto import SmsRequestDto, SmsCallbackRequestDto
 from ..dto import BadRequest, ApiResponse
 from app.core.domain.exceptions import AppException
 from app.domain.sms.submit_sms import SubmitSmsService
+from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService
 from app.config.di.dependency import dependency
 from app.domain.entities.sms import Sms
+from app.domain.entities.sms_callback import SmsCallback
 from app.config.di.container import ApplicationContainer
 from dependency_injector.wiring import inject
 
@@ -20,7 +22,7 @@ router = APIRouter(prefix="/v1/sms", tags=["SMS"])
     response_model=ApiResponse,
 )
 @inject
-async def send_sms(
+async def send_sms_api(
     payload: SmsRequestDto,
     submit_sms: SubmitSmsService = dependency(ApplicationContainer.domain.submit_sms),
 ):
@@ -44,8 +46,48 @@ async def send_sms(
         return ApiResponse(
             status=status.HTTP_200_OK, message="Sms sent out successfully"
         )
-    except AppException as e:
+    except Exception as e:
         logger.error(f"Failed to send sms to {payload} with error {e}")
+        if e is AppException:
+            return ApiResponse(
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to send SMS"
+            )
+        else:
+            return ApiResponse(status=status.HTTP_400_BAD_REQUEST, message=f"{e}")
+
+
+@router.post(
+    path="/callback",
+    summary="SMS Callback to track delivery of sms",
+    description="Receives callback from 3rd Party services to track the delivery status of messages",
+    response_model=ApiResponse,
+)
+@inject
+async def sms_callback_api(
+    payload: SmsCallbackRequestDto,
+    submit_sms_callback: SubmitSmsCallbackService = dependency(ApplicationContainer.domain.submit_sms_callback),
+):
+    """
+    SMS callback API. This is a POST REST endpoint that accepts sms callback requests that is used to track the status
+    of an initially delivered SMS message.
+    :return: JSON response to client
+    """
+    if not payload:
+        return BadRequest(message="No data provided")
+
+    try:
+        callback = SmsCallback.from_dict(payload.dict())
+
+        submit_sms_callback.execute(callback)
+
         return ApiResponse(
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to send SMS"
+            status=status.HTTP_202_ACCEPTED, message="Sms status received successfully"
         )
+    except Exception as e:
+        logger.error(f"Failed to handle sms callback {payload} with error {e}")
+        if e is AppException:
+            return ApiResponse(
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to handle SMS Callback"
+            )
+        else:
+            return ApiResponse(status=status.HTTP_400_BAD_REQUEST, message=f"{e}")

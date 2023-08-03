@@ -2,6 +2,7 @@
 Sms Received Consumer to handle consuming Submitted SMS message events from broker
 """
 from typing import Optional, Any
+import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
 from app.core.infra.consumer import Consumer
 from app.infra.logger import log as logger
 from app.infra.broker.kafka.consumers import KafkaConsumer
@@ -10,7 +11,6 @@ from app.domain.entities.sms import Sms
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
-import app.messages.events.v1.data_pb2 as sms_data
 
 
 class SmsReceivedConsumer(Consumer):

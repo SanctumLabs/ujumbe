@@ -11,3 +11,8 @@ class Service(BusinessRuleValidationMixin):
     @abstractmethod
     def execute(self, request: Any) -> Optional[Any]:
         raise NotImplementedError("Not yet implemented")
+
+    @property
+    def name(self) -> str:
+        """Used to get the service name"""
+        return self.__class__.__name__

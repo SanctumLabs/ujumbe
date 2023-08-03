@@ -8,8 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 fastapi = "^0.92.0"
-uvicorn = {extras = ["stadard"], version = "^0.20.0"}
-celery = {extras = ["redis"], version = "^5.2.7"}
+uvicorn = { extras = ["stadard"], version = "^0.20.0" }
+celery = { extras = ["redis"], version = "^5.2.7" }
 python-dotenv = "^1.0.0"
 loguru = "^0.6.0"
 httpx = "^0.23.3"
@@ -27,6 +27,7 @@ psycopg2 = "^2.9.6"
 protobuf = "^4.22.3"
 jsonschema = "^4.17.3"
 tenacity = "^8.2.2"
+sanctumlabs-messageschema = { version = "^0.1.dev0", source = "sanctumlabs-gitlab-pypi-messageschema" }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
@@ -42,8 +43,17 @@ locust = "^2.15.0"
 faker = "^17.5.0"
 testcontainers-postgres = "^0.0.1rc1"
 testcontainers-kafka = "^0.0.1rc1"
+types-protobuf = "^4.23.0.2"
 
-# Pytest Options
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "sanctumlabs-gitlab-pypi-messageschema"
+url = "https://gitlab.com/api/v4/projects/47231151/packages/pypi/simple/"
+priority = "supplemental"
+
 [tool.pytest.ini_options]
 addopts = [
     "--import-mode=importlib",
@@ -51,7 +61,7 @@ addopts = [
 pythonpath = "app"
 norecursedirs = "tmp"
 testpaths = "tests"
-filterwarnings = [ "ignore::DeprecationWarning" ]
+filterwarnings = ["ignore::DeprecationWarning"]
 markers = [
     "integration: integration test",
     "unit: unit test",

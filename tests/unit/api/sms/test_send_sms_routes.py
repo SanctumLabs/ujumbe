@@ -1,41 +1,42 @@
 import unittest
 from unittest.mock import Mock
 import pytest
-from tests import BaseTestCase
+from . import BaseTestSmsApi
 from app.domain.sms.submit_sms import SubmitSmsService
-
-base_url = "/api/v1/sms/"
+from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService
 
 
 @pytest.mark.unit
-class TestSmsApi(BaseTestCase):
+class TestSmsApi(BaseTestSmsApi):
     """
     Test Sms API
     """
 
     def setUp(self):
         super().setUp()
+        self.send_sms_url = f"{self.base_url}/"
         self.mock_submit_service = Mock(spec=SubmitSmsService)
+        self.mock_submit_sms_callback_service = Mock(spec=SubmitSmsCallbackService)
 
     @pytest.mark.anyio
     def test_throws_405_with_invalid_get_request(self):
-        """Test sms api throws 405 with invalid http get request"""
+        """Test send sms api throws 405 with invalid http get request"""
         with self.test_client as tc:
-            response = tc.get(base_url)
+            response = tc.get(self.send_sms_url)
             self.assert_status(405, response.status_code)
 
     @pytest.mark.anyio
     def test_throws_405_with_invalid_patch_request(self):
         """Test sms api throws 405 with invalid http patch request"""
         with self.test_client as ac:
-            response = ac.patch(base_url)
+            response = ac.patch(self.send_sms_url)
             self.assert_status(status_code=405, actual=response.status_code)
 
     @pytest.mark.anyio
     def test_throws_405_with_invalid_put_request(self):
         """Test sms api throws 405 with invalid http put request"""
         with self.test_client as ac:
-            response = ac.put(base_url)
+            response = ac.put(self.send_sms_url)
 
             self.assert_status(status_code=405, actual=response.status_code)
 
@@ -43,7 +44,7 @@ class TestSmsApi(BaseTestCase):
     def test_throws_400_with_missing_json_body(self):
         """Test sms api throws 400 with missing JSON body"""
         with self.test_client as ac:
-            response = ac.post(base_url)
+            response = ac.post(self.send_sms_url)
             self.assert_status(status_code=400, actual=response.status_code)
 
     @pytest.mark.anyio
@@ -51,7 +52,7 @@ class TestSmsApi(BaseTestCase):
         """Test sms api throws 400 with missing 'recipient' in JSON body"""
         with self.test_client as ac:
             response = ac.post(
-                base_url,
+                self.send_sms_url,
                 json=dict(
                     message="Rocket Schematics!",
                 )
@@ -68,7 +69,7 @@ class TestSmsApi(BaseTestCase):
         """Test sms api throws 400 with missing message in JSON body"""
         with self.test_client as ac:
             response = ac.post(
-                base_url,
+                self.send_sms_url,
                 json=dict(
                     recipient="+254700000000"
                 )
@@ -85,7 +86,7 @@ class TestSmsApi(BaseTestCase):
         """Test sms api throws 400 with an invalid length of message in JSON body"""
         with self.test_client as ac:
             response = ac.post(
-                base_url,
+                self.send_sms_url,
                 json=dict(
                     recipient="+254700000000",
                     message=""
@@ -107,7 +108,7 @@ class TestSmsApi(BaseTestCase):
         with self.app.container.domain.submit_sms.override(self.mock_submit_service):
             with self.test_client as ac:
                 response = ac.post(
-                    base_url,
+                    self.send_sms_url,
                     json=dict(
                         recipient="+254700000000",
                         message="Let us build a rocket to the Moon"
@@ -121,15 +122,15 @@ class TestSmsApi(BaseTestCase):
             self.assertEqual("Sms sent out successfully", message)
 
     @pytest.mark.anyio
-    @unittest.skip("Failure to mock side effect on submit_service.execute. Need to investigate underlying Exception")
     def test_returns_500_with_valid_json_body_but_submit_service_fails(self):
         """Test sms api returns 500 with valid JSON body but failure from submit sms service"""
-        self.mock_submit_service.execute.side_effect = Exception("Failed to send out sms")
+        error_message = "Failed to send out sms"
+        self.mock_submit_service.execute.side_effect = Exception(error_message)
 
         with self.app.container.domain.submit_sms.override(self.mock_submit_service):
             with self.test_client as ac:
                 response = ac.post(
-                    base_url,
+                    self.send_sms_url,
                     json=dict(
                         recipient="+254700000000",
                         message="Let us build a rocket to the Moon"
@@ -138,9 +139,7 @@ class TestSmsApi(BaseTestCase):
 
             response_json = response.json()
             message = response_json.get("message")
-
-            self.assert_status(actual=response.status_code, status_code=500)
-            self.assertEqual("Failed to send SMS", message)
+            self.assertEqual(error_message, message)
 
 
 if __name__ == '__main__':

@@ -49,3 +49,16 @@ class BulkSmsRequestDto(BaseModel):
         if len(m) == 0:
             raise ValueError("must not be empty")
         return m
+
+
+class SmsCallbackRequestDto(BaseModel):
+    """
+    SMS Callback Payload DTO
+    """
+
+    AccountSid: str
+    From: str
+    MessageSid: str
+    MessageStatus: str
+    SmsSid: str
+    SmsStatus: str

@@ -61,6 +61,33 @@ configurations. This file is not checked into VCS(Version Control System).
 
 You will first need to install the dependencies as specified in the [pyproject](pyproject.toml) file by running:
 
+There are some dependencies that are not on PyPI and therefore some additional setup will be required. First step is to
+add a source/repository in order for poetry to install them.
+
+```shell
+poetry --source add gitlab-pypi https://gitlab.com/api/v4/projects/47231151/packages/pypi/simple/
+```
+
+Since, the repository requires authentication, configure credentials for it:
+
+```shell
+poetry config http-basic.gitlab-pypi __token__ <GITLAB_PERSONAL_ACCESS_TOKEN>
+```
+
+> Your `GITLAB_PERSONAL_ACCESS_TOKEN>` is your Gitlab Personal Access token, more
+> information [here](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html) that has the scope
+> of `read packages`. This will allow access to the package on Gitlab.
+
+Once that is done dependencies can be added to the project from this source:
+
+```shell
+poetry add --source gitlab-pypi <PACKAGE_NAME>
+```
+
+> Where `<PACKAGE_NAME>` is the name of the packge to install from the repository
+
+Now, you can run the below command
+
 ```shell
 poetry install
 ```
@@ -117,9 +144,11 @@ Steps to run the project include:
     ```
 
    Or
+
     ```shell
     make run-reload
     ```
+
    > Runs the application watching for changes in the [app](app) directory
 
 4. Next, run the consumer workers/listeners which consume events from Kafka:
@@ -127,14 +156,17 @@ Steps to run the project include:
    ```shell
    make run-sms-received-consumer
    ```
+
    > Runs the SMS received consumer
 
    on a different terminal, run the SMS submitted consumer:
+
    ```shell
    make run-sms-submitted-consumer
    ```
 
    on a different terminal, run the SMS Sent consumer:
+
    ```shell
    make run-sms-sent-consumer
    ```
@@ -181,7 +213,8 @@ make test-e2e
 ```
 
 > Runs end-to-end tests
-> Note, that running e2e tests is a little more complicated, as it involves spinning up docker containers, This is documented in the [testing doc](docs/Testing.md)
+> Note, that running e2e tests is a little more complicated, as it involves spinning up docker containers, This is
+> documented in the [testing doc](docs/Testing.md)
 
 ```shell
 make test
@@ -191,7 +224,8 @@ make test
 
 ## API Documentation
 
-API Documentation is generated with OpenAPI and can be accessed on the URL http://127.0.0.1:5000/docs while running the
+API Documentation is generated with OpenAPI and can be accessed on the URL <http://127.0.0.1:5000/docs> while running
+the
 application locally.
 
 ## Built with
