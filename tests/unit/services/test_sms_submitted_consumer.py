@@ -2,14 +2,14 @@ import unittest
 from unittest.mock import Mock
 import pytest
 from faker import Faker
+import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
+import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
 from app.domain.entities.sms import Sms
 from app.services.sms_submitted_consumer import SmsSubmittedConsumer
 from app.infra.broker.kafka.consumers import KafkaConsumer
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
-import app.messages.events.v1.events_pb2 as events
-import app.messages.events.v1.data_pb2 as sms_data
 
 fake = Faker()
 

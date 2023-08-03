@@ -1,13 +1,13 @@
 """
 Sms Submitted Producer to handle sending SMS Submitted message events to broker
 """
+import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
+import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
 from app.domain.entities.sms import Sms
 from app.infra.broker.kafka.producers import KafkaProducer
 from app.infra.broker.kafka.message import ProducerMessage
-import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
-import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
 
 
 class SmsSubmittedProducer(Producer):
