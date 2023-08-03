@@ -6,15 +6,11 @@ import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as event
 from app.infra.broker.kafka.config import KafkaSchemaRegistryConfig, KafkaProducerConfig, KafkaConsumerConfig
 from app.infra.broker.kafka.producers.simple_producer import KafkaSimpleProducer
 from app.infra.broker.kafka.producers.proto_producer import KafkaProtoProducer
-from app.infra.broker.kafka.producers.json_producer import KafkaJsonProducer
 from app.infra.broker.kafka.consumers.proto_consumer import KafkaProtoConsumer
 from app.infra.broker.kafka.serializers.protobuf_serializer import KafkaProtobufSerializer
-from app.infra.broker.kafka.serializers.json_serializer import KafkaJsonSerializer
 from app.infra.broker.kafka.deserializers.protobuf_deserializer import KafkaProtobufDeserializer
-from app.infra.broker.kafka.deserializers.json_deserializer import KafkaJsonDeserializer
 from app.infra.broker.kafka.registry import KafkaRegistry
 from app.settings import KafkaSettings
-from app.messages.json.sms_schema import sms_json_schema
 
 
 class KafkaContainer(containers.DeclarativeContainer):
@@ -144,20 +140,20 @@ class KafkaContainer(containers.DeclarativeContainer):
     )
 
     # Sms submitted
-
-    sms_submitted_json_serializer = providers.Singleton(
-        KafkaJsonSerializer,
-        schema=sms_json_schema,
-        registry_client=schema_registry
-    )
-
-    sms_submitted_json_deserializer = providers.Singleton(
-        KafkaJsonDeserializer,
-        schema=sms_json_schema
-    )
-
-    json_producer_client = providers.Singleton(
-        KafkaJsonProducer,
-        params=KafkaProducerConfig(bootstrap_servers=config.kafka_bootstrap_servers()),
-        serializer=sms_submitted_json_serializer
-    )
+    #
+    # sms_submitted_json_serializer = providers.Singleton(
+    #     KafkaJsonSerializer,
+    #     schema=sms_json_schema,
+    #     registry_client=schema_registry
+    # )
+    #
+    # sms_submitted_json_deserializer = providers.Singleton(
+    #     KafkaJsonDeserializer,
+    #     schema=sms_json_schema
+    # )
+    #
+    # json_producer_client = providers.Singleton(
+    #     KafkaJsonProducer,
+    #     params=KafkaProducerConfig(bootstrap_servers=config.kafka_bootstrap_servers()),
+    #     serializer=sms_submitted_json_serializer
+    # )
