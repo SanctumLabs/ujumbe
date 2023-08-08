@@ -25,6 +25,7 @@ class SubmitSmsCallbackService(Service):
         if not callback:
             raise SubmitSmsCallbackException("Invalid sms callback request provided")
         try:
+            # TODO: add retry to handle failures. max of 3
             self.producer.publish_message(callback)
         except Exception as e:
             logger.error(f"{self.name}> Failed to submit sms callback because of {e}", e)

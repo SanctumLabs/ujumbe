@@ -42,7 +42,10 @@ class SmsReceivedProducerTestCases(unittest.TestCase):
             self.sms_received_producer.publish_message(mock_sms)
 
         self.mock_kafka_producer.produce.assert_called()
-        self.mock_kafka_producer.produce.assert_called_once()
+
+        # there are 3 attempts to call the produce method before giving up
+        call_count = self.mock_kafka_producer.produce.call_count
+        self.assertEquals(3, call_count)
 
     def test_successfully_publishes_message(self):
         """Should successfully produce message with Kafka client. No exception is thrown"""

@@ -27,7 +27,7 @@ psycopg2 = "^2.9.6"
 protobuf = "^4.22.3"
 jsonschema = "^4.17.3"
 tenacity = "^8.2.2"
-sanctumlabs-messageschema = { version = "^0.1.dev0", source = "sanctumlabs-gitlab-pypi-messageschema" }
+sanctumlabs-messageschema = { version = "^0.3.0", source = "sanctumlabs-gitlab-pypi-messageschema" }
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
@@ -60,7 +60,9 @@ addopts = [
 ]
 pythonpath = "app"
 norecursedirs = "tmp"
-testpaths = "tests"
+testpaths = [
+    "tests"
+]
 filterwarnings = ["ignore::DeprecationWarning"]
 markers = [
     "integration: integration test",
