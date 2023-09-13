@@ -27,7 +27,7 @@ async def send_sms_api(
     submit_sms: SubmitSmsService = dependency(ApplicationContainer.domain.submit_sms),
 ):
     """
-    Send sms API function. This is a POST REST endpoint that accepts requests that meet the criteria defined by the
+    Send SMS API. This is a POST REST endpoint that accepts requests that meet the criteria defined by the
     schema validation before sending a plain text sms
     :return: JSON response to client
     """
@@ -50,7 +50,8 @@ async def send_sms_api(
         logger.error(f"Failed to send sms to {payload} with error {e}")
         if e is AppException:
             return ApiResponse(
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to send SMS"
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                message="Failed to send SMS",
             )
         else:
             return ApiResponse(status=status.HTTP_400_BAD_REQUEST, message=f"{e}")
@@ -65,7 +66,9 @@ async def send_sms_api(
 @inject
 async def sms_callback_api(
     payload: SmsCallbackRequestDto,
-    submit_sms_callback: SubmitSmsCallbackService = dependency(ApplicationContainer.domain.submit_sms_callback),
+    submit_sms_callback: SubmitSmsCallbackService = dependency(
+        ApplicationContainer.domain.submit_sms_callback
+    ),
 ):
     """
     SMS callback API. This is a POST REST endpoint that accepts sms callback requests that is used to track the status
@@ -87,7 +90,8 @@ async def sms_callback_api(
         logger.error(f"Failed to handle sms callback {payload} with error {e}")
         if e is AppException:
             return ApiResponse(
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR, message="Failed to handle SMS Callback"
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                message="Failed to handle SMS Callback",
             )
         else:
             return ApiResponse(status=status.HTTP_400_BAD_REQUEST, message=f"{e}")

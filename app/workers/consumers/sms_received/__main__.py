@@ -12,11 +12,16 @@ from app.config.di.container import ApplicationContainer
 @inject
 def main(
     create_sms_svc: CreateSmsService = Provide[ApplicationContainer.domain.create_sms],
-    sms_received_consumer: SmsReceivedConsumer = Provide[ApplicationContainer.services.sms_received_consumer],
-    sms_submitted_producer: SmsSubmittedProducer = Provide[ApplicationContainer.services.sms_submitted_producer]
+    sms_received_consumer: SmsReceivedConsumer = Provide[
+        ApplicationContainer.services.sms_received_consumer
+    ],
+    sms_submitted_producer: SmsSubmittedProducer = Provide[
+        ApplicationContainer.services.sms_submitted_producer
+    ],
 ):
     """
-    Main entry point for the sms received consumer worker. This consumes SMS_RECEIVED message events and proceeds to
+    The Main entry point for the sms received consumer worker.
+    This consumes SMS_RECEIVED message events and proceeds to
     create the SMS record in the database.
     Args:
         create_sms_svc (CreateSmsService): service that handles creation of SMS records

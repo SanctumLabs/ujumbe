@@ -9,7 +9,7 @@ from app.infra.broker.kafka.producers import KafkaProducer
 from app.infra.broker.kafka.message import ProducerMessage
 from sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 import SmsStatus, SmsCallback as SmsCallbackMessage
 from sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 import SmsCallbackReceived
-from sanctumlabs.messageschema.transport.kafka.notifications.sms.v1.events_pb2 import SmsV1
+from sanctumlabs.messageschema.messages.notifications.sms.v1.events_pb2 import SmsV1
 
 
 class SmsCallbackReceivedProducer(Producer):

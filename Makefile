@@ -2,48 +2,40 @@
 # Setup commands
 ########################################################################################################################
 
-# Installs dependencies
-install:
+install: # Install dependencies
 	poetry install
 
 ########################################################################################################################
 # Run commands
 ########################################################################################################################
 
-# Runs application
-run:
+run: #run main application
 	python server/server.py
 
 # Runs the application with reload flag set
-run-reload:
+run-reload: #run application with reload enabled
 	uvicorn app:app --port 5000 --reload
 .PHONY: run-reload
 
-# Runs the sms received consumer application
-run-sms-received-consumer:
+run-sms-received-consumer: # run sms received consumer application
 	python app/workers/consumers/sms_received/__main__.py
 .PHONY: run-reload-sms-received-consumer
 
-# Runs the sms submitted consumer application
-run-sms-submitted-consumer:
+run-sms-submitted-consumer: # runs the sms submitted consumer application
 	python app/workers/consumers/sms_submitted/__main__.py
 .PHONY: run-reload-sms-submitted-consumer
 
-# Runs the sms sent consumer application
-run-sms-sent-consumer:
+run-sms-sent-consumer: # runs the sms sent consumer application
 	python app/workers/consumers/sms_sent/__main__.py
 .PHONY: run-reload-sms-sent-consumer
 
-# Runs SMS worker
-run-sms-worker:
+run-sms-worker: # runs SMS worker
 	celery -A app.worker.celery_app worker --events -l info -n ujumbe-sms-worker@%n --concurrency=5 -Q sms-queue
 
-# Runs SMS Error worker
-run-error-worker:
+run-error-worker: # Runs SMS Error worker
 	celery -A app.worker.celery_app worker --events -l info -n ujumbe-dlt-worker@%n --concurrency=5 -Q sms-error-queue
 
-# Runs Analytics worker
-run-analytics-worker:
+run-analytics-worker: # Runs Analytics worker
 	celery -A app.worker.celery_app worker --events -l info -n ujumbe-analytics-worker@%n --concurrency=5 -Q sms-analytics-queue
 
 ########################################################################################################################

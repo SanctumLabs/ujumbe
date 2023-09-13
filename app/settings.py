@@ -2,8 +2,8 @@
 Configurations for application. These are global variables that the app will use in its entire
 lifetime
 """
+from typing import Optional, AnyStr, Tuple
 from functools import lru_cache
-from typing import Optional, AnyStr
 from pydantic import BaseSettings
 
 from dotenv import load_dotenv
@@ -57,7 +57,9 @@ class DatabaseSettings(BaseSettings):
     db_driver: str = "psycopg2"
     db_logging_enabled: bool = False
     db_log_level: str = "INFO"
-    db_url: Optional[str] = f'{db_dialect}://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}'
+    db_url: Optional[
+        str
+    ] = f"{db_dialect}://{db_username}:{db_password}@{db_host}:{db_port}/{db_name}"
 
 
 # pylint: disable=too-few-public-methods
@@ -94,6 +96,21 @@ class SentrySettings(BaseSettings):
     sentry_enabled: bool = False
     sentry_traces_sample_rate: float = 0.5
     sentry_debug_enabled: bool = False
+    sentry_profile_rate: float = 0.0
+
+
+class CorsSettings(BaseSettings):
+    # CORS Configuration
+    cors_allow_origins: Tuple[str, ...] = [
+        "http://localhost:3000",
+        "http://burrito:3000",
+        "http://p.yoco.co.za:3000",
+        "https://portal.yoco.co.za",
+    ]  # type: ignore
+    cors_allow_origin_regex: Optional[str] = None
+    cors_allow_credentials: bool = True
+    cors_allow_headers: Tuple[str, ...] = ["x-auth-token", "userid"]  # type: ignore
+    cors_allow_methods: Tuple[str, ...] = ["GET"]  # type: ignore
 
 
 # pylint: disable=too-few-public-methods
@@ -113,6 +130,9 @@ class AppSettings(BaseSettings):
 
     result_backend: Optional[str] = "rpc://"
 
+    git_branch: Optional[str] = None
+    git_commit_sha: str = "dev"
+
     # security settings
     username: str = "ujumbe-user"
     password: str = "ujumbe-password"
@@ -121,6 +141,7 @@ class AppSettings(BaseSettings):
     kafka: KafkaSettings = KafkaSettings()
     database: DatabaseSettings = DatabaseSettings()
     twilio_sms_client: TwilioSmsClientSettings = TwilioSmsClientSettings()
+    cors: CorsSettings = CorsSettings()
 
 
 config = AppSettings()
@@ -128,6 +149,7 @@ sentry = SentrySettings()
 database_settings = DatabaseSettings()
 kafka_settings = KafkaSettings()
 twilio_sms_client_settings = TwilioSmsClientSettings()
+cors_settings = CorsSettings()
 
 
 @lru_cache()

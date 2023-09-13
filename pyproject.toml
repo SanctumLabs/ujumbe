@@ -27,7 +27,10 @@ psycopg2 = "^2.9.6"
 protobuf = "^4.22.3"
 jsonschema = "^4.17.3"
 tenacity = "^8.2.2"
-sanctumlabs-messageschema = { version = "^0.3.0", source = "sanctumlabs-gitlab-pypi-messageschema" }
+sanctumlabs-messageschema = "^0.9.0"
+sentry-sdk = {extras = ["opentelemetry"], version = "^1.31.0"}
+opentelemetry-exporter-prometheus = "^1.12.0rc1"
+opentelemetry-instrumentation-fastapi = "^0.41b0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.1.0"
@@ -48,11 +51,6 @@ types-protobuf = "^4.23.0.2"
 [[tool.poetry.source]]
 name = "PyPI"
 priority = "primary"
-
-[[tool.poetry.source]]
-name = "sanctumlabs-gitlab-pypi-messageschema"
-url = "https://gitlab.com/api/v4/projects/47231151/packages/pypi/simple/"
-priority = "supplemental"
 
 [tool.pytest.ini_options]
 addopts = [
