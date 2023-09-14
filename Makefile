@@ -133,21 +133,18 @@ migrate-revision:
 # DOCKER commands
 ########################################################################################################################
 
-start-docker:
+start-docker: # starts docker with all profiles set
 	COMPOSE_PROFILES=database,kafka,monitoring docker compose up
 .PHONY: start-docker
 
-# Start Kafka services
-start-kafka:
+start-kafka: # start Kafka services
 	docker compose --profile kafka up
 .PHONY: start-kafka
 
-# Start monitoring services
-start-monitoring:
+start-monitoring: # start monitoring services
 	docker compose --profile monitoring up
 .PHONY: start-monitoring
 
-# Start database services
-start-database:
+start-database: # start database services
 	docker compose --profile database up
 .PHONY: start-database
