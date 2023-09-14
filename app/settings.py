@@ -97,6 +97,7 @@ class SentrySettings(BaseSettings):
     sentry_traces_sample_rate: float = 0.5
     sentry_debug_enabled: bool = False
     sentry_profile_rate: float = 0.0
+    sentry_sample_rate: float = 0.25
 
 
 class CorsSettings(BaseSettings):
