@@ -3,17 +3,21 @@ SmsCallback Consumer Application Entry point
 """
 from dependency_injector.wiring import inject, Provide
 from app.infra.logger import log as logger
-from app.domain.sms.create_sms import CreateSmsService
-from app.services.sms_received_consumer import SmsReceivedConsumer
-from app.services.sms_submitted_producer import SmsSubmittedProducer
+from app.domain.services.sms.create_sms import CreateSmsService
+from app.adapters.broker.consumers.sms_received_consumer import SmsReceivedConsumer
+from app.adapters.broker.producers.sms_submitted_producer import SmsSubmittedProducer
 from app.config.di.container import ApplicationContainer
 
 
 @inject
 def main(
     create_sms_svc: CreateSmsService = Provide[ApplicationContainer.domain.create_sms],
-    sms_received_consumer: SmsReceivedConsumer = Provide[ApplicationContainer.services.sms_received_consumer],
-    sms_submitted_producer: SmsSubmittedProducer = Provide[ApplicationContainer.services.sms_submitted_producer]
+    sms_received_consumer: SmsReceivedConsumer = Provide[
+        ApplicationContainer.services.sms_received_consumer
+    ],
+    sms_submitted_producer: SmsSubmittedProducer = Provide[
+        ApplicationContainer.services.sms_submitted_producer
+    ],
 ):
     """
     Main entry point for the sms callback received consumer worker. This consumes SMS_RECEIVED message events and proceeds to

@@ -1,9 +1,9 @@
 from dependency_injector import containers, providers
-from app.domain.sms.submit_sms import SubmitSmsService
-from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService
-from app.domain.sms.create_sms import CreateSmsService
-from app.domain.sms.create_sms_callback import CreateSmsCallbackService
-from app.domain.sms.send_sms import SendSmsService
+from app.domain.services.sms.submit_sms import SubmitSmsService
+from app.domain.services.sms.submit_sms_callback import SubmitSmsCallbackService
+from app.domain.services.sms.create_sms import CreateSmsService
+from app.domain.services.sms.create_sms_callback import CreateSmsCallbackService
+from app.domain.services.sms.send_sms import SendSmsService
 
 
 class DomainContainer(containers.DeclarativeContainer):

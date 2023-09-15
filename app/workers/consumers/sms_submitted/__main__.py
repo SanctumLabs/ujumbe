@@ -3,17 +3,21 @@ SmsSubmitted Consumer Application Entry point
 """
 from dependency_injector.wiring import inject, Provide
 from app.infra.logger import log as logger
-from app.domain.sms.send_sms import SendSmsService
-from app.services.sms_submitted_consumer import SmsSubmittedConsumer
-from app.services.sms_sent_producer import SmsSentProducer
+from app.domain.services.sms.send_sms import SendSmsService
+from app.adapters.broker.consumers.sms_submitted_consumer import SmsSubmittedConsumer
+from app.adapters.broker.producers.sms_sent_producer import SmsSentProducer
 from app.config.di.container import ApplicationContainer
 
 
 @inject
 def main(
     send_sms_svc: SendSmsService = Provide[ApplicationContainer.domain.send_sms],
-    sms_submitted_consumer: SmsSubmittedConsumer = Provide[ApplicationContainer.services.sms_submitted_consumer],
-    sms_sent_producer: SmsSentProducer = Provide[ApplicationContainer.services.sms_sent_producer]
+    sms_submitted_consumer: SmsSubmittedConsumer = Provide[
+        ApplicationContainer.services.sms_submitted_consumer
+    ],
+    sms_sent_producer: SmsSentProducer = Provide[
+        ApplicationContainer.services.sms_sent_producer
+    ],
 ):
     """
     Main entry point for the sms submitted consumer worker. This consumes SMS_SUBMITTED message events and proceeds to

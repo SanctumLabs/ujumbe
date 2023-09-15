@@ -6,7 +6,10 @@ from app.domain.entities.sms_callback import SmsCallback
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.sms_status import SmsDeliveryStatus
 
-from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService, SubmitSmsCallbackException
+from app.domain.services.sms.submit_sms_callback import (
+    SubmitSmsCallbackService,
+    SubmitSmsCallbackException,
+)
 from app.core.infra.producer import Producer
 
 fake = Faker()
@@ -14,10 +17,11 @@ fake = Faker()
 
 @pytest.mark.unit
 class SubmitSmsCallbackServiceTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.mock_producer = mock.Mock(spec=Producer)
-        self.submit_sms_callback_service = SubmitSmsCallbackService(producer=self.mock_producer)
+        self.submit_sms_callback_service = SubmitSmsCallbackService(
+            producer=self.mock_producer
+        )
 
     def test_throws_exception_when_no_sms_callback_is_provided(self):
         """Test throws an exception when no sms callback is provided"""
@@ -34,8 +38,14 @@ class SubmitSmsCallbackServiceTestCase(unittest.TestCase):
         sms_status = SmsDeliveryStatus.SENT
         phone_number = PhoneNumber(value=phone)
 
-        sms_callback = SmsCallback(account_sid=account_sid, sender=phone_number, message_sid=message_sid,
-                                   message_status=message_status, sms_sid=sms_sid, sms_status=sms_status)
+        sms_callback = SmsCallback(
+            account_sid=account_sid,
+            sender=phone_number,
+            message_sid=message_sid,
+            message_status=message_status,
+            sms_sid=sms_sid,
+            sms_status=sms_status,
+        )
 
         self.mock_producer.publish_message.side_effect = Exception
 
@@ -54,8 +64,14 @@ class SubmitSmsCallbackServiceTestCase(unittest.TestCase):
         sms_status = SmsDeliveryStatus.SENT
         phone_number = PhoneNumber(value=phone)
 
-        sms_callback = SmsCallback(account_sid=account_sid, sender=phone_number, message_sid=message_sid,
-                                   message_status=message_status, sms_sid=sms_sid, sms_status=sms_status)
+        sms_callback = SmsCallback(
+            account_sid=account_sid,
+            sender=phone_number,
+            message_sid=message_sid,
+            message_status=message_status,
+            sms_sid=sms_sid,
+            sms_status=sms_status,
+        )
 
         self.mock_producer.publish_message.return_value = None
 
@@ -64,5 +80,5 @@ class SubmitSmsCallbackServiceTestCase(unittest.TestCase):
         self.mock_producer.publish_message.assert_called_with(sms_callback)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

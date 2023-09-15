@@ -76,3 +76,8 @@ class Repository(metaclass=ABCMeta):
         Returns: UniqueId
         """
         return UniqueId()
+
+    @property
+    def name(self) -> str:
+        """Name of the class, can be used as a log prefix or for tracing"""
+        return self.__class__.__name__

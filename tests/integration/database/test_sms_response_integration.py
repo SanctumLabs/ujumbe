@@ -8,7 +8,7 @@ from app.domain.entities.sms_response import SmsResponse
 from app.database.models.sms_model import Sms as SmsModel
 from app.database.models.sms_response_model import SmsResponse as SmsResponseModel
 from app.domain.entities.sms_status import SmsDeliveryStatus
-from app.domain.sms.exceptions import SmsNotFoundError
+from app.domain.services.exceptions import SmsNotFoundError
 
 from app.database.sms_response_repository import SmsResponseDatabaseRepository
 
@@ -35,7 +35,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             sms = SmsModel(
                 sender=sender_phone_number,
                 recipient=recipient_phone_number,
-                message=message_text
+                message=message_text,
             )
             session.add(sms)
             session.commit()
@@ -57,7 +57,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             sms = SmsModel(
                 sender=sender_phone_number,
                 recipient=recipient_phone_number,
-                message=message_text
+                message=message_text,
             )
             session.add(sms)
             session.commit()
@@ -83,12 +83,12 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             sms_one = SmsModel(
                 sender=sender_phone_number_one,
                 recipient=recipient_phone_number_one,
-                message=message_text_one
+                message=message_text_one,
             )
             sms_two = SmsModel(
                 sender=sender_phone_number_two,
                 recipient=recipient_phone_number_two,
-                message=message_text_two
+                message=message_text_two,
             )
 
             session.add(sms_one)
@@ -105,8 +105,16 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
         self.sms_response_repository.add(sms_response_two)
 
         with self.client.session_factory() as session:
-            actual_one = session.query(SmsResponseModel).filter_by(sid=sms_response_one.sid).first()
-            actual_two = session.query(SmsResponseModel).filter_by(sid=sms_response_two.sid).first()
+            actual_one = (
+                session.query(SmsResponseModel)
+                .filter_by(sid=sms_response_one.sid)
+                .first()
+            )
+            actual_two = (
+                session.query(SmsResponseModel)
+                .filter_by(sid=sms_response_two.sid)
+                .first()
+            )
 
             self.assertEqual(sms_response_one.account_sid, actual_one.account_sid)
             self.assertEqual(sms_response_one.sid, actual_one.sid)
@@ -116,15 +124,23 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             self.assertEqual(sms_response_one.price.price, actual_one.price)
             self.assertEqual(sms_response_one.price.currency, actual_one.currency)
             self.assertEqual(sms_response_one.status, actual_one.status)
-            self.assertEqual(sms_response_one.subresource_uris, actual_one.subresource_uris)
+            self.assertEqual(
+                sms_response_one.subresource_uris, actual_one.subresource_uris
+            )
             self.assertEqual(sms_response_one.uri, actual_one.uri)
-            self.assertEqual(sms_response_one.messaging_service_sid, actual_one.messaging_service_sid)
+            self.assertEqual(
+                sms_response_one.messaging_service_sid, actual_one.messaging_service_sid
+            )
             self.assertEqual(sms_response_one.error_code, actual_one.error_code)
             self.assertEqual(sms_response_one.error_message, actual_one.error_message)
             self.assertEqual("system", actual_one.updated_by)
-            self.assertEqual(sms_response_one.sms_date.date_created, actual_one.date_created)
+            self.assertEqual(
+                sms_response_one.sms_date.date_created, actual_one.date_created
+            )
             self.assertEqual(sms_response_one.sms_date.date_sent, actual_one.date_sent)
-            self.assertEqual(sms_response_one.sms_date.date_updated, actual_one.date_updated)
+            self.assertEqual(
+                sms_response_one.sms_date.date_updated, actual_one.date_updated
+            )
 
             self.assertEqual(sms_response_two.account_sid, actual_two.account_sid)
             self.assertEqual(sms_response_two.sid, actual_two.sid)
@@ -134,15 +150,23 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             self.assertEqual(sms_response_two.price.price, actual_two.price)
             self.assertEqual(sms_response_two.price.currency, actual_two.currency)
             self.assertEqual(sms_response_two.status, actual_two.status)
-            self.assertEqual(sms_response_two.subresource_uris, actual_two.subresource_uris)
+            self.assertEqual(
+                sms_response_two.subresource_uris, actual_two.subresource_uris
+            )
             self.assertEqual(sms_response_two.uri, actual_two.uri)
-            self.assertEqual(sms_response_two.messaging_service_sid, actual_two.messaging_service_sid)
+            self.assertEqual(
+                sms_response_two.messaging_service_sid, actual_two.messaging_service_sid
+            )
             self.assertEqual(sms_response_two.error_code, actual_two.error_code)
             self.assertEqual(sms_response_two.error_message, actual_two.error_message)
             self.assertEqual("system", actual_two.updated_by)
-            self.assertEqual(sms_response_two.sms_date.date_created, actual_two.date_created)
+            self.assertEqual(
+                sms_response_two.sms_date.date_created, actual_two.date_created
+            )
             self.assertEqual(sms_response_two.sms_date.date_sent, actual_two.date_sent)
-            self.assertEqual(sms_response_two.sms_date.date_updated, actual_two.date_updated)
+            self.assertEqual(
+                sms_response_two.sms_date.date_updated, actual_two.date_updated
+            )
 
     def test_get_by_id_returns_persisted_sms_response(self):
         """Test that repository can retrieve initially persisted SMS Response given its ID"""
@@ -155,7 +179,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             sms = SmsModel(
                 sender=sender_phone_number,
                 recipient=recipient_phone_number,
-                message=message_text
+                message=message_text,
             )
 
             session.add(sms)
@@ -185,7 +209,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
                 messaging_service_sid=sms_response.messaging_service_sid,
                 error_code=sms_response.error_code,
                 error_message=sms_response.error_message,
-                sms_id=sms.id
+                sms_id=sms.id,
             )
 
             session.add(sms_response_model)
@@ -204,14 +228,22 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
         self.assertEqual(sms_response.status, actual.status)
         self.assertEqual(sms_response.subresource_uris, actual.subresource_uris)
         self.assertEqual(sms_response.uri, actual.uri)
-        self.assertEqual(sms_response.messaging_service_sid, actual.messaging_service_sid)
+        self.assertEqual(
+            sms_response.messaging_service_sid, actual.messaging_service_sid
+        )
         self.assertEqual(sms_response.error_code, actual.error_code)
         self.assertEqual(sms_response.error_message, actual.error_message)
-        self.assertEqual(sms_response.sms_date.date_created, actual.sms_date.date_created)
+        self.assertEqual(
+            sms_response.sms_date.date_created, actual.sms_date.date_created
+        )
         self.assertEqual(sms_response.sms_date.date_sent, actual.sms_date.date_sent)
-        self.assertEqual(sms_response.sms_date.date_updated, actual.sms_date.date_updated)
+        self.assertEqual(
+            sms_response.sms_date.date_updated, actual.sms_date.date_updated
+        )
 
-    def test_get_by_id_throws_sms_not_found_exception_when_sms_response_does_not_exist(self):
+    def test_get_by_id_throws_sms_not_found_exception_when_sms_response_does_not_exist(
+        self,
+    ):
         """Test that repository throws SmsNotFoundError when SMS response with given ID can not be found"""
 
         sid = SmsResponse.next_id()
@@ -233,12 +265,12 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             sms_one = SmsModel(
                 sender=sender_phone_number_one,
                 recipient=recipient_phone_number_one,
-                message=message_text_one
+                message=message_text_one,
             )
             sms_two = SmsModel(
                 sender=sender_phone_number_two,
                 recipient=recipient_phone_number_two,
-                message=message_text_two
+                message=message_text_two,
             )
 
             session.add(sms_one)
@@ -270,7 +302,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
                 messaging_service_sid=sms_response_one.messaging_service_sid,
                 error_code=sms_response_one.error_code,
                 error_message=sms_response_one.error_message,
-                sms_id=sms_one.id
+                sms_id=sms_one.id,
             )
 
             sms_response_two_model = SmsResponseModel(
@@ -291,7 +323,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
                 messaging_service_sid=sms_response_two.messaging_service_sid,
                 error_code=sms_response_two.error_code,
                 error_message=sms_response_two.error_message,
-                sms_id=sms_two.id
+                sms_id=sms_two.id,
             )
 
             session.add(sms_response_one_model)
@@ -316,7 +348,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             sms = SmsModel(
                 sender=sender_phone_number,
                 recipient=recipient_phone_number,
-                message=message_text
+                message=message_text,
             )
 
             session.add(sms)
@@ -347,7 +379,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
                 messaging_service_sid=sms_response.messaging_service_sid,
                 error_code=sms_response.error_code,
                 error_message=sms_response.error_message,
-                sms_id=sms.id
+                sms_id=sms.id,
             )
 
             session.add(sms_response_model)
@@ -361,7 +393,11 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
         self.sms_response_repository.update(updated_sms_response)
 
         with self.client.session_factory() as session:
-            actual = session.query(SmsResponseModel).filter_by(identifier=sms_response.id.value).first()
+            actual = (
+                session.query(SmsResponseModel)
+                .filter_by(identifier=sms_response.id.value)
+                .first()
+            )
 
             self.assertEqual(status, actual.status)
 
@@ -390,7 +426,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
             sms = SmsModel(
                 sender=sender_phone_number,
                 recipient=recipient_phone_number,
-                message=message_text
+                message=message_text,
             )
 
             session.add(sms)
@@ -421,7 +457,7 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
                 messaging_service_sid=sms_response.messaging_service_sid,
                 error_code=sms_response.error_code,
                 error_message=sms_response.error_message,
-                sms_id=sms.id
+                sms_id=sms.id,
             )
 
             session.add(sms_response_model)
@@ -432,9 +468,13 @@ class SmsResponseIntegrationTestCases(BaseIntegrationTestCases):
         self.sms_response_repository.remove(sms_response)
 
         with self.client.session_factory() as session:
-            actual = session.query(SmsResponseModel).filter_by(identifier=sms_response.id.value).first()
+            actual = (
+                session.query(SmsResponseModel)
+                .filter_by(identifier=sms_response.id.value)
+                .first()
+            )
             self.assertIsNone(actual)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -4,8 +4,8 @@ SMS Response Database repository that handles CRUD operations on an SMS Response
 from typing import Iterator, Optional
 
 from app.domain.entities.sms_response import SmsResponse
-from app.domain.sms.sms_repository import SmsRepository
-from app.domain.sms.exceptions import SmsNotFoundError
+from app.domain.repositories.sms_repository import SmsRepository
+from app.domain.services.exceptions import SmsNotFoundError
 from app.infra.database.database_client import DatabaseClient
 from app.infra.logger import log as logger
 from app.database.models.sms_model import Sms as SmsModel

@@ -7,7 +7,11 @@ from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
 
-from app.domain.sms.create_sms import CreateSmsService, CreateSmsException, SmsRepository
+from app.domain.services.sms.create_sms import (
+    CreateSmsService,
+    CreateSmsException,
+    SmsRepository,
+)
 from app.core.infra.producer import Producer
 
 fake = Faker()
@@ -15,11 +19,12 @@ fake = Faker()
 
 @pytest.mark.unit
 class CreateSmsServiceTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.mock_producer = mock.Mock(spec=Producer)
         self.mock_sms_repository = mock.Mock(spec=SmsRepository)
-        self.create_sms_service = CreateSmsService(producer=self.mock_producer, repository=self.mock_sms_repository)
+        self.create_sms_service = CreateSmsService(
+            producer=self.mock_producer, repository=self.mock_sms_repository
+        )
 
     def test_throws_exception_when_no_sms_is_provided(self):
         """Test throws an exception when no sms is provided"""
@@ -39,7 +44,7 @@ class CreateSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_sms_repository.add.side_effect = Exception
@@ -63,7 +68,7 @@ class CreateSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_sms_repository.add.return_value = sms
@@ -88,7 +93,7 @@ class CreateSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_sms_repository.add.return_value = sms
@@ -100,5 +105,5 @@ class CreateSmsServiceTestCase(unittest.TestCase):
         self.mock_producer.publish_message.assert_called_with(sms)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

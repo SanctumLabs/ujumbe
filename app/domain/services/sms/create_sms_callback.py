@@ -2,8 +2,8 @@
 Use case to create an SMS callback
 """
 from app.domain.entities.sms_callback import SmsCallback
-from .sms_repository import SmsRepository
-from .exceptions import CreateSmsCallbackException
+from app.domain.repositories.sms_repository import SmsRepository
+from app.domain.services.exceptions import CreateSmsCallbackException
 from app.core.domain.services import Service
 
 

@@ -7,7 +7,7 @@ from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
 
-from app.domain.sms.submit_sms import SubmitSmsService, SubmitSmsException
+from app.domain.services.sms.submit_sms import SubmitSmsService, SubmitSmsException
 from app.core.infra.producer import Producer
 
 fake = Faker()
@@ -15,7 +15,6 @@ fake = Faker()
 
 @pytest.mark.unit
 class SubmitSmsServiceTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.mock_producer = mock.Mock(spec=Producer)
         self.submit_sms_service = SubmitSmsService(producer=self.mock_producer)
@@ -38,7 +37,7 @@ class SubmitSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_producer.publish_message.side_effect = Exception
@@ -61,7 +60,7 @@ class SubmitSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_producer.publish_message.return_value = None
@@ -71,5 +70,5 @@ class SubmitSmsServiceTestCase(unittest.TestCase):
         self.mock_producer.publish_message.assert_called_with(sms)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

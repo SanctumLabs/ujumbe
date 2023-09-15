@@ -8,7 +8,7 @@ from app.database.models.sms_model import Sms as SmsModel
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
-from app.domain.sms.exceptions import SmsNotFoundError
+from app.domain.services.exceptions import SmsNotFoundError
 
 from app.database.sms_repository import SmsDatabaseRepository
 
@@ -37,13 +37,15 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
             id=Sms.next_id(),
             sender=sender_phone,
             recipient=recipient_phone,
-            message=message
+            message=message,
         )
 
         self.sms_repository.add(sms)
 
         with self.client.session_factory() as session:
-            actual = session.query(SmsModel).filter_by(sender=sender_phone_number).first()
+            actual = (
+                session.query(SmsModel).filter_by(sender=sender_phone_number).first()
+            )
 
             self.assertEqual(sender_phone_number, actual.sender)
             self.assertEqual(recipient_phone_number, actual.recipient)
@@ -60,17 +62,9 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
         recipient_phone = PhoneNumber(value=recipient_phone_number)
         message = Message(value=message_text)
 
-        sms_one = Sms(
-            sender=sender_phone,
-            recipient=recipient_phone,
-            message=message
-        )
+        sms_one = Sms(sender=sender_phone, recipient=recipient_phone, message=message)
 
-        sms_two = Sms(
-            sender=sender_phone,
-            recipient=recipient_phone,
-            message=message
-        )
+        sms_two = Sms(sender=sender_phone, recipient=recipient_phone, message=message)
 
         with self.assertRaises(Exception):
             self.sms_repository.add(sms_one)
@@ -96,22 +90,30 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
             id=Sms.next_id(),
             sender=sender_phone_one,
             recipient=recipient_phone_one,
-            message=message_one
+            message=message_one,
         )
 
         sms_two = Sms(
             id=Sms.next_id(),
             sender=sender_phone_two,
             recipient=recipient_phone_two,
-            message=message_two
+            message=message_two,
         )
 
         self.sms_repository.add(sms_one)
         self.sms_repository.add(sms_two)
 
         with self.client.session_factory() as session:
-            actual_one = session.query(SmsModel).filter_by(sender=sender_phone_number_one).first()
-            actual_two = session.query(SmsModel).filter_by(sender=sender_phone_number_two).first()
+            actual_one = (
+                session.query(SmsModel)
+                .filter_by(sender=sender_phone_number_one)
+                .first()
+            )
+            actual_two = (
+                session.query(SmsModel)
+                .filter_by(sender=sender_phone_number_two)
+                .first()
+            )
 
             self.assertEqual(sender_phone_number_one, actual_one.sender)
             self.assertEqual(recipient_phone_number_one, actual_one.recipient)
@@ -135,18 +137,17 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
         message = Message(value=message_text)
 
         sms = Sms(
-            id=sid,
-            sender=sender_phone,
-            recipient=recipient_phone,
-            message=message
+            id=sid, sender=sender_phone, recipient=recipient_phone, message=message
         )
 
         with self.client.session_factory() as session:
-            sms_model = SmsModel(identifier=sms.id.value, sender=sms.sender.value,
-                                 recipient=sms.recipient.value,
-                                 message=sms.message.value,
-                                 status=sms.status
-                                 )
+            sms_model = SmsModel(
+                identifier=sms.id.value,
+                sender=sms.sender.value,
+                recipient=sms.recipient.value,
+                message=sms.message.value,
+                status=sms.status,
+            )
 
             session.add(sms_model)
             session.commit()
@@ -186,27 +187,31 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
             id=Sms.next_id(),
             sender=sender_phone_one,
             recipient=recipient_phone_one,
-            message=message_one
+            message=message_one,
         )
 
         sms_two = Sms(
             id=Sms.next_id(),
             sender=sender_phone_two,
             recipient=recipient_phone_two,
-            message=message_two
+            message=message_two,
         )
 
         with self.client.session_factory() as session:
-            sms_model_one = SmsModel(identifier=sms_one.id.value, sender=sms_one.sender.value,
-                                     recipient=sms_one.recipient.value,
-                                     message=sms_one.message.value,
-                                     status=sms_one.status
-                                     )
-            sms_model_two = SmsModel(identifier=sms_two.id.value, sender=sms_two.sender.value,
-                                     recipient=sms_two.recipient.value,
-                                     message=sms_two.message.value,
-                                     status=sms_two.status
-                                     )
+            sms_model_one = SmsModel(
+                identifier=sms_one.id.value,
+                sender=sms_one.sender.value,
+                recipient=sms_one.recipient.value,
+                message=sms_one.message.value,
+                status=sms_one.status,
+            )
+            sms_model_two = SmsModel(
+                identifier=sms_two.id.value,
+                sender=sms_two.sender.value,
+                recipient=sms_two.recipient.value,
+                message=sms_two.message.value,
+                status=sms_two.status,
+            )
 
             session.add(sms_model_one)
             session.add(sms_model_two)
@@ -229,10 +234,7 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
         message = Message(value=message_text)
 
         sms = Sms(
-            id=sid,
-            sender=sender_phone,
-            recipient=recipient_phone,
-            message=message
+            id=sid, sender=sender_phone, recipient=recipient_phone, message=message
         )
 
         status = SmsDeliveryStatus.SENT
@@ -241,15 +243,17 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
             sender=sender_phone,
             recipient=recipient_phone,
             message=message,
-            status=status
+            status=status,
         )
 
         with self.client.session_factory() as session:
-            sms_model = SmsModel(identifier=sms.id.value, sender=sms.sender.value,
-                                 recipient=sms.recipient.value,
-                                 message=sms.message.value,
-                                 status=sms.status
-                                 )
+            sms_model = SmsModel(
+                identifier=sms.id.value,
+                sender=sms.sender.value,
+                recipient=sms.recipient.value,
+                message=sms.message.value,
+                status=sms.status,
+            )
 
             session.add(sms_model)
             session.commit()
@@ -282,7 +286,7 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
             sender=sender_phone,
             recipient=recipient_phone,
             message=message,
-            status=status
+            status=status,
         )
 
         with self.assertRaises(SmsNotFoundError):
@@ -305,7 +309,7 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
             sender=sender_phone,
             recipient=recipient_phone,
             message=message,
-            status=status
+            status=status,
         )
 
         with self.assertRaises(SmsNotFoundError):
@@ -323,18 +327,17 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
         message = Message(value=message_text)
 
         sms = Sms(
-            id=sid,
-            sender=sender_phone,
-            recipient=recipient_phone,
-            message=message
+            id=sid, sender=sender_phone, recipient=recipient_phone, message=message
         )
 
         with self.client.session_factory() as session:
-            sms_model = SmsModel(identifier=sms.id.value, sender=sms.sender.value,
-                                 recipient=sms.recipient.value,
-                                 message=sms.message.value,
-                                 status=sms.status
-                                 )
+            sms_model = SmsModel(
+                identifier=sms.id.value,
+                sender=sms.sender.value,
+                recipient=sms.recipient.value,
+                message=sms.message.value,
+                status=sms.status,
+            )
 
             session.add(sms_model)
             session.commit()
@@ -346,5 +349,5 @@ class SmsIntegrationTestCases(BaseIntegrationTestCases):
             self.assertIsNone(actual)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

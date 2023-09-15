@@ -11,19 +11,25 @@ from app.domain.entities.sms_response import SmsResponse
 from app.domain.entities.sms_date import SmsDate
 from app.domain.entities.sms_price import SmsPrice
 
-from app.domain.sms.send_sms import SendSmsService, SendSmsException, SmsRepository, SmsService
+from app.domain.services.sms.send_sms import (
+    SendSmsService,
+    SendSmsException,
+    SmsRepository,
+    SmsService,
+)
 
 fake = Faker()
 
 
 @pytest.mark.unit
 class SendSmsServiceTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.mock_sms_service = mock.Mock(spec=SmsService)
         self.mock_sms_response_repository = mock.Mock(spec=SmsRepository)
-        self.create_sms_service = SendSmsService(sms_service=self.mock_sms_service,
-                                                 sms_response_repository=self.mock_sms_response_repository)
+        self.create_sms_service = SendSmsService(
+            sms_service=self.mock_sms_service,
+            sms_response_repository=self.mock_sms_response_repository,
+        )
 
     def test_throws_exception_when_no_sms_is_provided(self):
         """Test throws an exception when no sms is provided"""
@@ -43,7 +49,7 @@ class SendSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_sms_service.send.side_effect = Exception
@@ -88,19 +94,14 @@ class SendSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         sms_date = SmsDate(
-            date_sent=date_sent,
-            date_updated=date_updated,
-            date_created=date_created
+            date_sent=date_sent, date_updated=date_updated, date_created=date_created
         )
 
-        sms_price = SmsPrice(
-            price=price,
-            currency=currency
-        )
+        sms_price = SmsPrice(price=price, currency=currency)
 
         sms_type = SmsType(direction)
 
@@ -118,7 +119,7 @@ class SendSmsServiceTestCase(unittest.TestCase):
             uri=uri,
             messaging_service_sid=messaging_service_sid,
             error_code=error_code,
-            error_message=error_message
+            error_message=error_message,
         )
 
         self.mock_sms_service.send.return_value = sms_response
@@ -160,19 +161,14 @@ class SendSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         sms_date = SmsDate(
-            date_sent=date_sent,
-            date_updated=date_updated,
-            date_created=date_created
+            date_sent=date_sent, date_updated=date_updated, date_created=date_created
         )
 
-        sms_price = SmsPrice(
-            price=price,
-            currency=currency
-        )
+        sms_price = SmsPrice(price=price, currency=currency)
 
         sms_type = SmsType(direction)
 
@@ -190,7 +186,7 @@ class SendSmsServiceTestCase(unittest.TestCase):
             uri=uri,
             messaging_service_sid=messaging_service_sid,
             error_code=error_code,
-            error_message=error_message
+            error_message=error_message,
         )
 
         self.mock_sms_service.send.return_value = sms_response
@@ -202,5 +198,5 @@ class SendSmsServiceTestCase(unittest.TestCase):
         self.mock_sms_response_repository.add.assert_called_with(sms_response)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

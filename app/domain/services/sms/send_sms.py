@@ -3,8 +3,8 @@ Use case to send out an SMS
 """
 from app.domain.entities.sms import Sms
 from app.core.infra.sms_service import SmsService
-from .sms_repository import SmsRepository
-from .exceptions import SendSmsException
+from app.domain.repositories.sms_repository import SmsRepository
+from app.domain.services.exceptions import SendSmsException
 from app.core.domain.services import Service
 
 

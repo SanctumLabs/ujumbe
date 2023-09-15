@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 from faker import Faker
 from app.domain.entities.sms import Sms
-from app.services.sms_sent_producer import SmsSentProducer
+from app.adapters.broker.producers.sms_sent_producer import SmsSentProducer
 from app.infra.broker.kafka.producers import KafkaProducer
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
@@ -14,11 +14,12 @@ fake = Faker()
 
 @pytest.mark.unit
 class SmsSentProducerTestCases(unittest.TestCase):
-
     def setUp(self) -> None:
         self.topic = "test_topic"
         self.mock_kafka_producer = Mock(spec=KafkaProducer)
-        self.sms_sent_producer = SmsSentProducer(topic=self.topic, kafka_producer=self.mock_kafka_producer)
+        self.sms_sent_producer = SmsSentProducer(
+            topic=self.topic, kafka_producer=self.mock_kafka_producer
+        )
 
     def test_throws_exception_when_there_is_an_error_producing_message(self):
         """Should throw exception if kafka client fails to produce message"""
@@ -33,10 +34,12 @@ class SmsSentProducerTestCases(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
-        self.mock_kafka_producer.produce.side_effect = Exception("Failed to publish message")
+        self.mock_kafka_producer.produce.side_effect = Exception(
+            "Failed to publish message"
+        )
 
         with self.assertRaises(Exception):
             self.sms_sent_producer.publish_message(mock_sms)
@@ -57,7 +60,7 @@ class SmsSentProducerTestCases(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.sms_sent_producer.publish_message(mock_sms)
@@ -66,5 +69,5 @@ class SmsSentProducerTestCases(unittest.TestCase):
         self.mock_kafka_producer.produce.assert_called_once()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,12 +1,16 @@
 from dependency_injector import containers, providers
-from app.services.sms_received_producer import SmsReceivedProducer
-from app.services.sms_received_consumer import SmsReceivedConsumer
-from app.services.sms_submitted_producer import SmsSubmittedProducer
-from app.services.sms_submitted_consumer import SmsSubmittedConsumer
-from app.services.sms_callback_received_producer import SmsCallbackReceivedProducer
-from app.services.sms_callback_received_consumer import SmsCallbackReceivedConsumer
-from app.services.sms_sent_producer import SmsSentProducer
-from app.services.sms_service import UjumbeSmsService
+from app.adapters.broker.producers.sms_received_producer import SmsReceivedProducer
+from app.adapters.broker.consumers.sms_received_consumer import SmsReceivedConsumer
+from app.adapters.broker.producers.sms_submitted_producer import SmsSubmittedProducer
+from app.adapters.broker.consumers.sms_submitted_consumer import SmsSubmittedConsumer
+from app.adapters.broker.producers.sms_callback_received_producer import (
+    SmsCallbackReceivedProducer,
+)
+from app.adapters.broker.consumers.sms_callback_received_consumer import (
+    SmsCallbackReceivedConsumer,
+)
+from app.adapters.broker.producers.sms_sent_producer import SmsSentProducer
+from app.adapters.sms_svc.sms_service import UjumbeSmsService
 from app.settings import KafkaSettings
 
 
@@ -26,7 +30,7 @@ class ServicesContainer(containers.DeclarativeContainer):
     # Sms Received
     sms_received_consumer = providers.Factory(
         SmsReceivedConsumer,
-        kafka_consumer=kafka_container.sms_received_protobuf_consumer
+        kafka_consumer=kafka_container.sms_received_protobuf_consumer,
     )
 
     sms_received_producer = providers.Factory(
@@ -40,7 +44,7 @@ class ServicesContainer(containers.DeclarativeContainer):
     # consumer
     sms_callback_received_consumer = providers.Factory(
         SmsCallbackReceivedProducer,
-        kafka_consumer=kafka_container.sms_callback_received_protobuf_consumer
+        kafka_consumer=kafka_container.sms_callback_received_protobuf_consumer,
     )
 
     # producer
@@ -53,7 +57,7 @@ class ServicesContainer(containers.DeclarativeContainer):
     # Sms Submitted
     sms_submitted_consumer = providers.Factory(
         SmsSubmittedConsumer,
-        kafka_consumer=kafka_container.sms_submitted_protobuf_consumer
+        kafka_consumer=kafka_container.sms_submitted_protobuf_consumer,
     )
 
     sms_submitted_producer = providers.Factory(

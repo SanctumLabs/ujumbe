@@ -9,8 +9,8 @@ from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
 from app.domain.entities.sms import Sms
-from app.domain.sms.create_sms import CreateSmsService
-from app.services.sms_received_consumer import SmsReceivedConsumer
+from app.domain.services.sms.create_sms import CreateSmsService
+from app.adapters.broker.consumers.sms_received_consumer import SmsReceivedConsumer
 from app.workers.consumers.sms_received.__main__ import main
 
 fake = Faker()
@@ -18,15 +18,18 @@ fake = Faker()
 
 @pytest.mark.unit
 class SmsReceivedConsumerWorkerTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.mock_create_sms_svc = Mock(spec=CreateSmsService)
         self.mock_sms_received_consumer = Mock(spec=SmsReceivedConsumer)
-        self.worker = main(create_sms_svc=self.mock_create_sms_svc,
-                           sms_received_consumer=self.mock_sms_received_consumer)
+        self.worker = main(
+            create_sms_svc=self.mock_create_sms_svc,
+            sms_received_consumer=self.mock_sms_received_consumer,
+        )
 
-    @unittest.skip("This test passes, what has not been yet explored is how to exit it successfully, "
-                   "as the system under test runs forever")
+    @unittest.skip(
+        "This test passes, what has not been yet explored is how to exit it successfully, "
+        "as the system under test runs forever"
+    )
     def test_creates_sms_when_received_from_consumer(self):
         """Should create an SMS record when received from consumer"""
         sender_phone = "+254700000000"
@@ -40,7 +43,7 @@ class SmsReceivedConsumerWorkerTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_sms_received_consumer.consume.return_value = mock_sms
@@ -55,5 +58,5 @@ class SmsReceivedConsumerWorkerTestCase(unittest.TestCase):
         self.mock_create_sms_svc.execute.assert_called_with(mock_sms)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

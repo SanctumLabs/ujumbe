@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import Mock
 import pytest
 from . import BaseTestSmsApi
-from app.domain.sms.submit_sms import SubmitSmsService
-from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService
+from app.domain.services.sms.submit_sms import SubmitSmsService
+from app.domain.services.sms.submit_sms_callback import SubmitSmsCallbackService
 
 
 @pytest.mark.unit
@@ -55,7 +55,7 @@ class TestSmsApi(BaseTestSmsApi):
                 self.send_sms_url,
                 json=dict(
                     message="Rocket Schematics!",
-                )
+                ),
             )
 
             response_json = response.json()
@@ -68,12 +68,7 @@ class TestSmsApi(BaseTestSmsApi):
     def test_throws_400_with_missing_message_required_field_in_body(self):
         """Test sms api throws 400 with missing message in JSON body"""
         with self.test_client as ac:
-            response = ac.post(
-                self.send_sms_url,
-                json=dict(
-                    recipient="+254700000000"
-                )
-            )
+            response = ac.post(self.send_sms_url, json=dict(recipient="+254700000000"))
 
             response_json = response.json()
             data = response_json.get("data")
@@ -86,11 +81,7 @@ class TestSmsApi(BaseTestSmsApi):
         """Test sms api throws 400 with an invalid length of message in JSON body"""
         with self.test_client as ac:
             response = ac.post(
-                self.send_sms_url,
-                json=dict(
-                    recipient="+254700000000",
-                    message=""
-                )
+                self.send_sms_url, json=dict(recipient="+254700000000", message="")
             )
 
             json = response.json()
@@ -111,8 +102,8 @@ class TestSmsApi(BaseTestSmsApi):
                     self.send_sms_url,
                     json=dict(
                         recipient="+254700000000",
-                        message="Let us build a rocket to the Moon"
-                    )
+                        message="Let us build a rocket to the Moon",
+                    ),
                 )
 
             response_json = response.json()
@@ -133,8 +124,8 @@ class TestSmsApi(BaseTestSmsApi):
                     self.send_sms_url,
                     json=dict(
                         recipient="+254700000000",
-                        message="Let us build a rocket to the Moon"
-                    )
+                        message="Let us build a rocket to the Moon",
+                    ),
                 )
 
             response_json = response.json()
@@ -142,5 +133,5 @@ class TestSmsApi(BaseTestSmsApi):
             self.assertEqual(error_message, message)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

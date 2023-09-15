@@ -6,7 +6,7 @@ callback
 from app.domain.entities.sms_callback import SmsCallback
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
-from .exceptions import SubmitSmsCallbackException
+from app.domain.services.exceptions import SubmitSmsCallbackException
 from app.core.domain.services import Service
 
 
@@ -28,5 +28,7 @@ class SubmitSmsCallbackService(Service):
             # TODO: add retry to handle failures. max of 3
             self.producer.publish_message(callback)
         except Exception as e:
-            logger.error(f"{self.name}> Failed to submit sms callback because of {e}", e)
+            logger.error(
+                f"{self.name}> Failed to submit sms callback because of {e}", e
+            )
             raise SubmitSmsCallbackException("Failed to submit sms callback")

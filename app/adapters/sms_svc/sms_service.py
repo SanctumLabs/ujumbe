@@ -10,7 +10,7 @@ from app.domain.entities.sms_type import SmsType
 from app.domain.entities.sms_status import SmsDeliveryStatus
 from app.infra.sms.sms_client import SmsClient
 from app.core.infra.sms_service import SmsService
-from .exceptions import SmsSendingException
+from app.adapters.exceptions import SmsSendingException
 
 
 class UjumbeSmsService(SmsService):

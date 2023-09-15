@@ -5,7 +5,7 @@ from faker import Faker
 import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
 import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
 from app.domain.entities.sms import Sms
-from app.services.sms_received_consumer import SmsReceivedConsumer
+from app.adapters.broker.consumers.sms_received_consumer import SmsReceivedConsumer
 from app.infra.broker.kafka.consumers import KafkaConsumer
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
@@ -16,15 +16,18 @@ fake = Faker()
 
 @pytest.mark.unit
 class SmsReceivedConsumerTestCases(unittest.TestCase):
-
     def setUp(self) -> None:
         self.topic = "test_topic"
         self.mock_kafka_consumer = Mock(spec=KafkaConsumer)
-        self.sms_received_consumer = SmsReceivedConsumer(kafka_consumer=self.mock_kafka_consumer)
+        self.sms_received_consumer = SmsReceivedConsumer(
+            kafka_consumer=self.mock_kafka_consumer
+        )
 
     def test_throws_exception_when_there_is_an_error_consuming_message(self):
         """Should throw exception if kafka client fails to consume message"""
-        self.mock_kafka_consumer.consume.side_effect = Exception("Failed to consume message")
+        self.mock_kafka_consumer.consume.side_effect = Exception(
+            "Failed to consume message"
+        )
 
         with self.assertRaises(Exception):
             self.sms_received_consumer.consume()
@@ -45,7 +48,7 @@ class SmsReceivedConsumerTestCases(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         data = sms_data.Sms(
@@ -53,7 +56,7 @@ class SmsReceivedConsumerTestCases(unittest.TestCase):
             sender=mock_sms.sender.value,
             recipient=mock_sms.recipient.value,
             message=mock_sms.message.value,
-            status=sms_data.SmsStatus.PENDING
+            status=sms_data.SmsStatus.PENDING,
         )
 
         event = events.SmsReceived(sms=data)
@@ -67,7 +70,9 @@ class SmsReceivedConsumerTestCases(unittest.TestCase):
         self.mock_kafka_consumer.consume.assert_called()
         self.mock_kafka_consumer.consume.assert_called_once()
 
-    def test_successfully_consume_message_and_return_none_if_no_message_is_available(self):
+    def test_successfully_consume_message_and_return_none_if_no_message_is_available(
+        self,
+    ):
         """Should successfully return None if no message exists using with Kafka client with no exception thrown"""
         self.mock_kafka_consumer.consume.return_value = None
 
@@ -89,7 +94,9 @@ class SmsReceivedConsumerTestCases(unittest.TestCase):
 
     def test_throw_exception_when_calling_close_raises_exception_(self):
         """Should throw exception when calling close on kafka consumer client raises an exception"""
-        self.mock_kafka_consumer.close.side_effect = Exception("failed to close consumer connection")
+        self.mock_kafka_consumer.close.side_effect = Exception(
+            "failed to close consumer connection"
+        )
 
         with self.assertRaises(Exception):
             self.sms_received_consumer.close()
@@ -98,5 +105,5 @@ class SmsReceivedConsumerTestCases(unittest.TestCase):
         self.mock_kafka_consumer.close.assert_called_once()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -4,8 +4,8 @@ from dependency_injector.wiring import inject
 from opentelemetry import trace
 from app.infra.logger import log as logger
 from app.core.domain.exceptions import AppException
-from app.domain.sms.submit_sms import SubmitSmsService
-from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService
+from app.domain.services.sms.submit_sms import SubmitSmsService
+from app.domain.services.sms.submit_sms_callback import SubmitSmsCallbackService
 from app.config.di.dependency import dependency
 from app.domain.entities.sms import Sms
 from app.domain.entities.sms_callback import SmsCallback
@@ -51,7 +51,8 @@ async def send_sms_api(
 
             sms = Sms.from_dict(data)
 
-            submit_sms.execute(sms)
+            with tracer.start_span(f"{tracer_name}.submit_sms"):
+                submit_sms.execute(sms)
 
             return ApiResponse(
                 status=status.HTTP_200_OK, message="Sms sent out successfully"

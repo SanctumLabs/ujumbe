@@ -6,8 +6,8 @@ from app.domain.entities.sms import Sms
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
-from app.services.sms_service import UjumbeSmsService, SmsClient
-from app.services.exceptions import SmsSendingException
+from app.adapters.sms_svc.sms_service import UjumbeSmsService, SmsClient
+from app.adapters.exceptions import SmsSendingException
 from app.infra.sms.dto import SmsResponseDto
 
 fake = Faker()
@@ -32,7 +32,7 @@ class UjumbeSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
         self.mock_sms_client.send.side_effect = Exception
@@ -58,21 +58,31 @@ class UjumbeSmsServiceTestCase(unittest.TestCase):
             sender=sender,
             recipient=recipient,
             message=message,
-            status=SmsDeliveryStatus.PENDING
+            status=SmsDeliveryStatus.PENDING,
         )
 
-        mock_sms_response = SmsResponseDto(account_sid=fake.uuid4(), api_version=fake.date(),
-                                           body=message_text,
-                                           date_created=date_created, date_sent=date_sent,
-                                           date_updated=date_updated, direction="outbound-api",
-                                           error_code=None, error_message=None,
-                                           from_=sender_phone, messaging_service_sid=fake.uuid4(),
-                                           num_media="0", num_segments="1",
-                                           price=None,
-                                           price_unit=None, sid=fake.uuid4(), status="sent",
-                                           subresource_uris={
-                                               "media": ""
-                                           }, to=recipient_phone, uri="")
+        mock_sms_response = SmsResponseDto(
+            account_sid=fake.uuid4(),
+            api_version=fake.date(),
+            body=message_text,
+            date_created=date_created,
+            date_sent=date_sent,
+            date_updated=date_updated,
+            direction="outbound-api",
+            error_code=None,
+            error_message=None,
+            from_=sender_phone,
+            messaging_service_sid=fake.uuid4(),
+            num_media="0",
+            num_segments="1",
+            price=None,
+            price_unit=None,
+            sid=fake.uuid4(),
+            status="sent",
+            subresource_uris={"media": ""},
+            to=recipient_phone,
+            uri="",
+        )
 
         self.mock_sms_client.send.return_value = mock_sms_response
 
@@ -81,7 +91,9 @@ class UjumbeSmsServiceTestCase(unittest.TestCase):
         self.assertEqual(mock_sms_response.account_sid, actual.account_sid)
         self.assertEqual(mock_sms_response.error_code, actual.error_code)
         self.assertEqual(mock_sms_response.error_message, actual.error_message)
-        self.assertEqual(mock_sms_response.messaging_service_sid, actual.messaging_service_sid)
+        self.assertEqual(
+            mock_sms_response.messaging_service_sid, actual.messaging_service_sid
+        )
         self.assertEqual(int(mock_sms_response.num_media), int(actual.num_media))
         self.assertEqual(int(mock_sms_response.num_segments), int(actual.num_segments))
         self.assertEqual(mock_sms_response.subresource_uris, actual.subresource_uris)
@@ -90,5 +102,5 @@ class UjumbeSmsServiceTestCase(unittest.TestCase):
         self.mock_sms_client.send.assert_called_with(mock_sms)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

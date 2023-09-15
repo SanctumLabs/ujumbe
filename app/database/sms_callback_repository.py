@@ -4,8 +4,11 @@ SMS Callback Database repository that handles CRUD operations on an SMS Callback
 from typing import Iterator, Optional
 
 from app.domain.entities.sms_callback import SmsCallback
-from app.domain.sms.sms_repository import SmsRepository
-from app.domain.sms.exceptions import SmsResponseNotFoundError, SmsCallbackNotFoundError
+from app.domain.repositories.sms_repository import SmsRepository
+from app.domain.services.exceptions import (
+    SmsResponseNotFoundError,
+    SmsCallbackNotFoundError,
+)
 from app.infra.database.database_client import DatabaseClient
 from app.infra.logger import log as logger
 from app.database.models.sms_response_model import SmsResponse as SmsResponseModel
@@ -29,9 +32,11 @@ class SmsCallbackDatabaseRepository(SmsRepository):
         try:
             with self.session_factory() as session:
                 # check if we already have this sms callback in the database
-                existing_sms_callback = session.query(SmsCallbackModel) \
-                    .filter(SmsCallbackModel.message_sid == entity.message_sid) \
+                existing_sms_callback = (
+                    session.query(SmsCallbackModel)
+                    .filter(SmsCallbackModel.message_sid == entity.message_sid)
                     .first()
+                )
 
                 if existing_sms_callback is not None:
                     # We only update the status(es), we don't want to update other metadata as at this point we already
@@ -66,7 +71,10 @@ class SmsCallbackDatabaseRepository(SmsRepository):
 
                 return entity
         except Exception as exc:
-            logger.error(f"{self.name}> Failed to persist sms callback {entity}. Error: {exc}", exc)
+            logger.error(
+                f"{self.name}> Failed to persist sms callback {entity}. Error: {exc}",
+                exc,
+            )
             raise exc
 
     def get_by_id(self, sid: str) -> SmsCallback:

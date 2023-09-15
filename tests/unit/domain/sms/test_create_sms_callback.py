@@ -6,18 +6,22 @@ from app.domain.entities.sms_callback import SmsCallback
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.sms_status import SmsDeliveryStatus
 
-from app.domain.sms.create_sms_callback import CreateSmsCallbackService, CreateSmsCallbackException
-from app.domain.sms.sms_repository import SmsRepository
+from app.domain.services.sms.create_sms_callback import (
+    CreateSmsCallbackService,
+    CreateSmsCallbackException,
+)
+from app.domain.repositories.sms_repository import SmsRepository
 
 fake = Faker()
 
 
 @pytest.mark.unit
 class CreateSmsCallbackServiceTestCase(unittest.TestCase):
-
     def setUp(self) -> None:
         self.mock_repository = mock.Mock(spec=SmsRepository)
-        self.create_sms_callback_service = CreateSmsCallbackService(repository=self.mock_repository)
+        self.create_sms_callback_service = CreateSmsCallbackService(
+            repository=self.mock_repository
+        )
 
     def test_throws_exception_when_no_sms_callback_is_provided(self):
         """Test throws an exception when no sms callback is provided"""
@@ -34,8 +38,14 @@ class CreateSmsCallbackServiceTestCase(unittest.TestCase):
         sms_status = SmsDeliveryStatus.SENT
         phone_number = PhoneNumber(value=phone)
 
-        sms_callback = SmsCallback(account_sid=account_sid, sender=phone_number, message_sid=message_sid,
-                                   message_status=message_status, sms_sid=sms_sid, sms_status=sms_status)
+        sms_callback = SmsCallback(
+            account_sid=account_sid,
+            sender=phone_number,
+            message_sid=message_sid,
+            message_status=message_status,
+            sms_sid=sms_sid,
+            sms_status=sms_status,
+        )
 
         self.mock_repository.add.side_effect = Exception
 
@@ -54,8 +64,14 @@ class CreateSmsCallbackServiceTestCase(unittest.TestCase):
         sms_status = SmsDeliveryStatus.SENT
         phone_number = PhoneNumber(value=phone)
 
-        sms_callback = SmsCallback(account_sid=account_sid, sender=phone_number, message_sid=message_sid,
-                                   message_status=message_status, sms_sid=sms_sid, sms_status=sms_status)
+        sms_callback = SmsCallback(
+            account_sid=account_sid,
+            sender=phone_number,
+            message_sid=message_sid,
+            message_status=message_status,
+            sms_sid=sms_sid,
+            sms_status=sms_status,
+        )
 
         self.mock_repository.add.return_value = None
 
@@ -64,5 +80,5 @@ class CreateSmsCallbackServiceTestCase(unittest.TestCase):
         self.mock_repository.add.assert_called_with(sms_callback)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

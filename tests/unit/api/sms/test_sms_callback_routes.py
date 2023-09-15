@@ -3,7 +3,7 @@ from unittest.mock import Mock
 import pytest
 from faker import Faker
 from . import BaseTestSmsApi
-from app.domain.sms.submit_sms_callback import SubmitSmsCallbackService
+from app.domain.services.sms.submit_sms_callback import SubmitSmsCallbackService
 
 fake = Faker()
 
@@ -60,7 +60,7 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                     MessageStatus="sent",
                     SmsSid=fake.uuid4(),
                     SmsStatus="sent",
-                )
+                ),
             )
 
             response_json = response.json()
@@ -81,7 +81,7 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                     MessageStatus="sent",
                     SmsSid=fake.uuid4(),
                     SmsStatus="sent",
-                )
+                ),
             )
 
             response_json = response.json()
@@ -102,7 +102,7 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                     MessageStatus="sent",
                     SmsSid=fake.uuid4(),
                     SmsStatus="sent",
-                )
+                ),
             )
 
             response_json = response.json()
@@ -123,7 +123,7 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                     MessageSid=fake.uuid4(),
                     SmsSid=fake.uuid4(),
                     SmsStatus="sent",
-                )
+                ),
             )
 
             response_json = response.json()
@@ -144,7 +144,7 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                     MessageSid=fake.uuid4(),
                     MessageStatus="sent",
                     SmsStatus="sent",
-                )
+                ),
             )
 
             response_json = response.json()
@@ -165,7 +165,7 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                     MessageStatus="sent",
                     MessageSid=fake.uuid4(),
                     SmsSid=fake.uuid4(),
-                )
+                ),
             )
 
             response_json = response.json()
@@ -186,7 +186,9 @@ class TestSmsCallbackApi(BaseTestSmsApi):
         sms_sid = fake.uuid4()
         sms_status = "sent"
 
-        with self.app.container.domain.submit_sms_callback.override(self.mock_submit_sms_callback_service):
+        with self.app.container.domain.submit_sms_callback.override(
+            self.mock_submit_sms_callback_service
+        ):
             with self.test_client as ac:
                 response = ac.post(
                     url=self.callback_url,
@@ -196,8 +198,8 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                         MessageSid=message_sid,
                         MessageStatus=message_status,
                         SmsSid=sms_sid,
-                        SmsStatus=sms_status
-                    )
+                        SmsStatus=sms_status,
+                    ),
                 )
 
             response_json = response.json()
@@ -212,7 +214,9 @@ class TestSmsCallbackApi(BaseTestSmsApi):
     def test_returns_500_with_valid_json_body_but_submit_callback_service_fails(self):
         """Test API returns 500 with valid JSON body but failure from submit sms callback service"""
         error_message = "Failed to handle sms callback"
-        self.mock_submit_sms_callback_service.execute.side_effect = Exception(error_message)
+        self.mock_submit_sms_callback_service.execute.side_effect = Exception(
+            error_message
+        )
 
         account_sid = fake.uuid4()
         from_ = "+254720000000"
@@ -221,7 +225,9 @@ class TestSmsCallbackApi(BaseTestSmsApi):
         sms_sid = fake.uuid4()
         sms_status = "sent"
 
-        with self.app.container.domain.submit_sms_callback.override(self.mock_submit_sms_callback_service):
+        with self.app.container.domain.submit_sms_callback.override(
+            self.mock_submit_sms_callback_service
+        ):
             with self.test_client as ac:
                 response = ac.post(
                     url=self.callback_url,
@@ -231,8 +237,8 @@ class TestSmsCallbackApi(BaseTestSmsApi):
                         MessageSid=message_sid,
                         MessageStatus=message_status,
                         SmsSid=sms_sid,
-                        SmsStatus=sms_status
-                    )
+                        SmsStatus=sms_status,
+                    ),
                 )
 
             response_json = response.json()
@@ -241,5 +247,5 @@ class TestSmsCallbackApi(BaseTestSmsApi):
             self.assertEqual(error_message, message)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
