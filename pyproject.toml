@@ -6,7 +6,7 @@ authors = ["BrianLusina <12752833+BrianLusina@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.11"
 fastapi = "^0.92.0"
 uvicorn = { extras = ["stadard"], version = "^0.20.0" }
 celery = { extras = ["redis"], version = "^5.2.7" }
