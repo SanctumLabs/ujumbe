@@ -22,20 +22,21 @@ class ServicesContainer(containers.DeclarativeContainer):
     """
 
     gateways = providers.DependenciesContainer()
-    kafka_container = providers.DependenciesContainer()
+    event_stream_container = providers.DependenciesContainer()
 
     kafka_config = providers.Configuration(pydantic_settings=[KafkaSettings()])
-    kafka_config.from_pydantic(KafkaSettings())
+    # TODO: load from env
+    # kafka_config.from_pydantic(KafkaSettings())
 
     # Sms Received
     sms_received_consumer = providers.Factory(
         SmsReceivedConsumer,
-        kafka_consumer=kafka_container.sms_received_protobuf_consumer,
+        kafka_consumer=event_stream_container.sms_received_protobuf_consumer,
     )
 
     sms_received_producer = providers.Factory(
         SmsReceivedProducer,
-        kafka_producer=kafka_container.sms_received_protobuf_producer,
+        event_stream=event_stream_container.kafka_event_stream,
         topic=kafka_config.sms_received_topic(),
     )
 
@@ -44,25 +45,25 @@ class ServicesContainer(containers.DeclarativeContainer):
     # consumer
     sms_callback_received_consumer = providers.Factory(
         SmsCallbackReceivedProducer,
-        kafka_consumer=kafka_container.sms_callback_received_protobuf_consumer,
+        kafka_consumer=event_stream_container.sms_callback_received_protobuf_consumer,
     )
 
     # producer
     sms_callback_received_producer = providers.Factory(
         SmsCallbackReceivedConsumer,
-        kafka_producer=kafka_container.sms_callback_received_protobuf_producer,
+        kafka_producer=event_stream_container.sms_callback_received_protobuf_producer,
         topic=kafka_config.sms_callback_received_topic(),
     )
 
     # Sms Submitted
     sms_submitted_consumer = providers.Factory(
         SmsSubmittedConsumer,
-        kafka_consumer=kafka_container.sms_submitted_protobuf_consumer,
+        kafka_consumer=event_stream_container.sms_submitted_protobuf_consumer,
     )
 
     sms_submitted_producer = providers.Factory(
         SmsSubmittedProducer,
-        kafka_producer=kafka_container.sms_submitted_protobuf_producer,
+        kafka_producer=event_stream_container.sms_submitted_protobuf_producer,
         topic=kafka_config.sms_submitted_topic(),
     )
 
@@ -70,7 +71,7 @@ class ServicesContainer(containers.DeclarativeContainer):
 
     sms_sent_producer = providers.Factory(
         SmsSentProducer,
-        kafka_producer=kafka_container.sms_sent_protobuf_producer,
+        kafka_producer=event_stream_container.sms_sent_protobuf_producer,
         topic=kafka_config.sms_sent_topic(),
     )
 

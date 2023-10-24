@@ -47,7 +47,7 @@ class SmsReceivedProducerIntegrationTestCase(BaseKafkaIntegrationTestCase):
         )
 
         self.sms_received_producer = SmsReceivedProducer(
-            topic=self.topic, kafka_producer=self.kafka_producer
+            topic=self.topic, event_stream=self.kafka_producer
         )
 
     @unittest.skip(

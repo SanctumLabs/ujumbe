@@ -1,10 +1,11 @@
+from typing import ClassVar
 from dataclasses import dataclass, field
 from .unique_id import UniqueId
 
 
 @dataclass(frozen=True, kw_only=True)
 class Entity:
-    id: UniqueId = field(hash=True, default_factory=UniqueId.next_id)
+    id: ClassVar[UniqueId] = field(hash=True)
 
     @classmethod
     def next_id(cls) -> UniqueId:

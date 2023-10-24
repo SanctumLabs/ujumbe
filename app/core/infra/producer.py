@@ -6,7 +6,7 @@ class Producer(metaclass=ABCMeta):
     """A generic producer that can emits events/messages"""
 
     @abstractmethod
-    def publish_message(self, message: Any):
+    async def publish_message(self, message: Any):
         """
         Publishes a message to a broker
         Args:

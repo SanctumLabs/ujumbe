@@ -3,7 +3,7 @@ DTO objects for SMS endpoint
 """
 from typing import List
 
-from pydantic import BaseModel, validator
+from pydantic import field_validator, BaseModel
 
 
 class SmsRequestDto(BaseModel):
@@ -11,11 +11,12 @@ class SmsRequestDto(BaseModel):
     SMS Request Payload DTO
     """
 
-    sender: str | None
+    sender: str | None = None
     recipient: str
     message: str
 
-    @validator("message")
+    @field_validator("message")
+    @classmethod
     def message_must_be_valid(cls, m: str):
         """
         Validates message
@@ -41,7 +42,8 @@ class BulkSmsRequestDto(BaseModel):
     recipients: List[str]
     message: str
 
-    @validator("message")
+    @field_validator("message")
+    @classmethod
     def message_must_be_valid(cls, m: str):
         """
         Validates message

@@ -48,7 +48,7 @@ class SmsReceivedConsumerIntegrationTestCase(BaseKafkaIntegrationTestCase):
         )
 
         self.sms_received_producer = SmsReceivedProducer(
-            topic=self.topic, kafka_producer=self.kafka_producer
+            topic=self.topic, event_stream=self.kafka_producer
         )
         self.sms_received_consumer = SmsReceivedConsumer(
             kafka_consumer=self.kafka_consumer

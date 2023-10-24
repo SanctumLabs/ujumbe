@@ -6,7 +6,6 @@ import uvicorn.logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
-import app.api.sms.routes
 from app.api.sms.routes import router as sms_router
 from app.api.monitoring.routes import router as monitoring_router
 from app.config.di.container import ApplicationContainer
@@ -17,6 +16,7 @@ from app.infra.telemetry.sentry import initialize_sentry
 from app.infra.telemetry.otel.metrics import initialize_metrics
 from app.infra.telemetry.otel.traces import initialize_traces
 from app.infra.telemetry.prometheus import setup_prometheus_client
+import app.api.sms.routes
 from .settings import get_config
 
 logging.root.setLevel(logging.INFO)

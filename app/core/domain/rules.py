@@ -1,11 +1,9 @@
-from pydantic import BaseModel
+from pydantic import ConfigDict, BaseModel
 
 
 class BusinessRule(BaseModel):
     """This is a base class for implementing domain rules"""
-
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     # This is an error message that broken rule reports back
     __message: str = "Business rule is broken"

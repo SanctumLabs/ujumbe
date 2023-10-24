@@ -10,10 +10,12 @@ class GatewaysContainer(containers.DeclarativeContainer):
     """
 
     db_config = providers.Configuration(pydantic_settings=[DatabaseSettings()])
-    db_config.from_pydantic(DatabaseSettings())
+    # TODO: load settings from env directly
+    # db_config.from_pydantic(settings=DatabaseSettings())
 
     twilio_sms_config = providers.Configuration(pydantic_settings=[TwilioSmsClientSettings()])
-    twilio_sms_config.from_pydantic(TwilioSmsClientSettings())
+    # TODO: load settings from env directly
+    # twilio_sms_config.from_pydantic(TwilioSmsClientSettings())
 
     database_client = providers.Singleton(
         DatabaseClient,

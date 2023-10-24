@@ -2,7 +2,7 @@
 Base Data Transfer Objects
 """
 from typing import Generic, TypeVar, Optional
-from pydantic.generics import GenericModel
+from pydantic import BaseModel, ConfigDict
 
 DataT = TypeVar("DataT")
 
@@ -23,7 +23,7 @@ class ApiError(Exception):
 
 
 # pylint: disable=too-few-public-methods
-class ApiResponse(GenericModel, Generic[DataT]):
+class ApiResponse(BaseModel, Generic[DataT]):
     """
     Represents a successful ApiResponse sent back to a client
     """
@@ -31,13 +31,7 @@ class ApiResponse(GenericModel, Generic[DataT]):
     status: int = 200
     data: Optional[DataT]
     message: Optional[str] = None
-
-    class Config:
-        """
-        ApiResponse Config
-        """
-
-        schema_extra = {"example": {"status": 200}}
+    model_config = ConfigDict(json_schema_extra={"example": {"status": 200}})
 
 
 # pylint: disable=too-few-public-methods
@@ -47,10 +41,4 @@ class BadRequest(ApiResponse):
     """
 
     status: int = 400
-
-    class Config:
-        """
-        BadRequest Config
-        """
-
-        schema_extra = {"example": {"status": 400, "message": "Invalid JSON"}}
+    model_config = ConfigDict(json_schema_extra={"example": {"status": 400, "message": "Invalid JSON"}})

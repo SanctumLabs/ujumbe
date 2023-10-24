@@ -2,9 +2,9 @@
 SMS Entity that represents an SMS in the system.
 """
 
-from typing import Dict, Optional
+from typing import Dict, Optional, ClassVar
 from pydantic import BaseModel
-from app.core.domain.entities.entity import Entity
+from app.core.domain.entities.entity import Entity, UniqueId
 from .message import Message
 from .phone_number import PhoneNumber
 from .sms_status import SmsDeliveryStatus
@@ -17,7 +17,7 @@ class Sms(BaseModel, Entity):
     to the system's default
     """
 
-    id = Entity.next_id()
+    id: ClassVar[UniqueId] = Entity.next_id()
     recipient: PhoneNumber
     message: Message
     sender: Optional[PhoneNumber] = None
