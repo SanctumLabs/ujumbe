@@ -2,10 +2,10 @@ from opentelemetry import trace
 from opentelemetry.propagate import set_global_textmap
 from opentelemetry.sdk.trace import TracerProvider
 from sentry_sdk.integrations.opentelemetry import SentryPropagator, SentrySpanProcessor
-from app.settings import get_config
+from app.settings import get_settings
 from app.infra.logger import log as logger
 
-_settings = get_config()
+_settings = get_settings()
 
 
 def initialize_traces():

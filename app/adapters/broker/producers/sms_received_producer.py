@@ -18,10 +18,10 @@ class SmsReceivedProducer(Producer):
 
     def __init__(self, topic: str, event_stream: AsyncEventStream):
         """
-        Creates an instance of an sms received producer with a topic to send events to and a KafkaProducer client to
+        Creates an instance of an SMS received producer with a topic to send events to and a KafkaProducer client to
         use to send events.
         Args:
-            topic (str): Topic to send message to.
+            topic (str): Topic to send messages to.
             event_stream (AsyncEventStream): Kafka Producer client to use
         """
         self.topic = topic

@@ -2,10 +2,10 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.exporter.prometheus import PrometheusMetricReader
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry import metrics
-from app.settings import get_config
+from app.settings import get_settings
 from app.infra.logger import log as logger
 
-_settings = get_config()
+_settings = get_settings()
 
 
 def initialize_metrics():

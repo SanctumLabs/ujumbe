@@ -153,8 +153,19 @@ cors_settings = CorsSettings()
 
 
 @lru_cache()
-def get_config():
+def get_settings() -> AppSettings:
     """
     This is wrapped with lru_cache to ensure we don't continuously read from .env file on restarts
     """
+    load_dotenv()
     return AppSettings()
+
+
+@lru_cache()
+def get_kafka_settings() -> KafkaSettings:
+    """Returns Kafka settings
+    Returns:
+        KafkaSettings: Kafka settings
+    """
+    load_dotenv()
+    return KafkaSettings()

@@ -2,10 +2,10 @@ import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 from sentry_sdk.integrations.starlette import StarletteIntegration
 from sentry_sdk.integrations.loguru import LoguruIntegration
-from app.settings import get_config
+from app.settings import get_settings
 from app.infra.logger import log as logger
 
-_settings = get_config()
+_settings = get_settings()
 
 
 def _traces_sampler(sampling_context):

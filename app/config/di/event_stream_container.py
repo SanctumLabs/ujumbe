@@ -1,14 +1,10 @@
 """
 Kafka DI container
 """
-from typing import cast
 
 from dependency_injector import containers, providers
 import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
-from eventmsg_adaptor.config.kafka import KafkaConfig, KafkaSchemaRegistryConfig, KafkaSecurityProtocolConfig
-from eventmsg_adaptor.event_streams import AsyncEventStream
-from eventmsg_adaptor import factory
-from eventmsg_adaptor.config import Config, AdapterConfigs
+from eventmsg_adaptor.config.kafka import KafkaSchemaRegistryConfig
 
 from app.infra.broker.kafka.config import KafkaProducerConfig, KafkaConsumerConfig
 from app.infra.broker.kafka.producers.simple_producer import KafkaSimpleProducer
@@ -17,30 +13,15 @@ from app.infra.broker.kafka.consumers.proto_consumer import KafkaProtoConsumer
 from app.infra.broker.kafka.serializers.protobuf_serializer import KafkaProtobufSerializer
 from app.infra.broker.kafka.deserializers.protobuf_deserializer import KafkaProtobufDeserializer
 from app.infra.broker.kafka.registry import KafkaRegistry
-from app.settings import KafkaSettings
 
 
 class EventStreamContainer(containers.DeclarativeContainer):
     """
     Dependency Injector container for event adapter
     """
-    kafka_config = providers.Configuration(pydantic_settings=[KafkaSettings()])
+    kafka_config = providers.Configuration()
     # TODO: load from env
     # kafka_config.from_pydantic(KafkaSettings())
-
-    config = Config(
-        service_name="ujumbe",
-        default_adapter="kafka",
-        adapters=AdapterConfigs(
-            kafka=KafkaConfig(
-                # bootstrap_servers=[kafka_config.kafka_bootstrap_servers()],
-                # schema_registy=KafkaSchemaRegistryConfig(
-                #     schema_registry_url=kafka_config.kafka_schema_registry()
-                # )
-            )
-        )
-    )
-    kafka_event_stream = cast(AsyncEventStream, factory(config, adapter_name="aiokafka"))
 
     schema_registry = providers.Singleton(
         KafkaRegistry,

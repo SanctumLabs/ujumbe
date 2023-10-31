@@ -2,7 +2,7 @@ import unittest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from app import app
-from app.settings import AppSettings, get_config, SentrySettings
+from app.settings import AppSettings, get_settings, SentrySettings
 
 base_url = "http://ujumbe-test-server"
 
@@ -13,7 +13,7 @@ class BaseTestCase(unittest.TestCase):
     """
 
     def setUp(self):
-        app.dependency_overrides[get_config] = self._get_settings_override()
+        app.dependency_overrides[get_settings] = self._get_settings_override()
         self.app = app
         self.test_client = TestClient(app=app, base_url=base_url)
         self.async_client = AsyncClient(app=app, base_url=base_url)

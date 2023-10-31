@@ -1,5 +1,5 @@
 from dependency_injector import containers, providers
-from .gateways_container import GatewaysContainer
+from .infra_container import InfraContainer
 from .event_stream_container import EventStreamContainer
 from .services_container import ServicesContainer
 from .repository_container import RepositoryContainer
@@ -11,12 +11,12 @@ class ApplicationContainer(containers.DeclarativeContainer):
     Application container wiring all dependencies together
     """
 
-    kafka = providers.Container(EventStreamContainer)
+    event_stream = providers.Container(EventStreamContainer)
 
-    gateways = providers.Container(GatewaysContainer)
+    infra = providers.Container(InfraContainer)
 
-    services = providers.Container(ServicesContainer, gateways=gateways, kafka_container=kafka)
+    services = providers.Container(ServicesContainer, infra=infra, event_stream=event_stream)
 
-    repository = providers.Container(RepositoryContainer, gateways=gateways)
+    repository = providers.Container(RepositoryContainer, gateways=infra)
 
     domain = providers.Container(DomainContainer, services=services, repository=repository)

@@ -17,7 +17,7 @@ from app.infra.telemetry.otel.metrics import initialize_metrics
 from app.infra.telemetry.otel.traces import initialize_traces
 from app.infra.telemetry.prometheus import setup_prometheus_client
 import app.api.sms.routes
-from .settings import get_config
+from .settings import get_settings
 
 logging.root.setLevel(logging.INFO)
 console_formatter = uvicorn.logging.ColourizedFormatter(
@@ -27,7 +27,7 @@ root = logging.getLogger()
 for handler in root.handlers:
     handler.setFormatter(console_formatter)
 
-_settings = get_config()
+_settings = get_settings()
 
 # initialize sentry
 initialize_sentry()

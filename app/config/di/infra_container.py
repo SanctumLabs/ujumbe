@@ -4,16 +4,16 @@ from app.infra.sms.sms_client import SmsClient, SmsClientParams
 from app.settings import DatabaseSettings, TwilioSmsClientSettings
 
 
-class GatewaysContainer(containers.DeclarativeContainer):
+class InfraContainer(containers.DeclarativeContainer):
     """
     Dependency Injector container for Gateway services or 3rd party services used in the application
     """
 
-    db_config = providers.Configuration(pydantic_settings=[DatabaseSettings()])
+    db_config = providers.Configuration()
     # TODO: load settings from env directly
     # db_config.from_pydantic(settings=DatabaseSettings())
 
-    twilio_sms_config = providers.Configuration(pydantic_settings=[TwilioSmsClientSettings()])
+    twilio_sms_config = providers.Configuration()
     # TODO: load settings from env directly
     # twilio_sms_config.from_pydantic(TwilioSmsClientSettings())
 
