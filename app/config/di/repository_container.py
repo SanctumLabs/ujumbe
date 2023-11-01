@@ -11,16 +11,16 @@ class RepositoryContainer(containers.DeclarativeContainer):
     see https://github.com/ets-labs/python-dependency-injector for more details
     """
 
-    gateways = providers.DependenciesContainer()
+    infra = providers.DependenciesContainer()
 
     sms_repository = providers.Factory(
-        SmsDatabaseRepository, db_client=gateways.database_client
+        SmsDatabaseRepository, db_client=infra.database_client
     )
 
     sms_response_repository = providers.Factory(
-        SmsResponseDatabaseRepository, db_client=gateways.database_client
+        SmsResponseDatabaseRepository, db_client=infra.database_client
     )
 
     sms_callback_repository = providers.Factory(
-        SmsCallbackDatabaseRepository, db_client=gateways.database_client
+        SmsCallbackDatabaseRepository, db_client=infra.database_client
     )

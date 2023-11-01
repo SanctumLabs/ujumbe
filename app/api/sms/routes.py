@@ -52,7 +52,7 @@ async def send_sms_api(
             sms = Sms.from_dict(data)
 
             with tracer.start_span(f"{tracer_name}.submit_sms"):
-                submit_sms.execute(sms)
+                await submit_sms.execute(sms)
 
             return ApiResponse(
                 status=status.HTTP_200_OK, message="Sms sent out successfully"

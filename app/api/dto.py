@@ -29,7 +29,7 @@ class ApiResponse(BaseModel, Generic[DataT]):
     """
 
     status: int = 200
-    data: Optional[DataT]
+    data: Optional[DataT] = None
     message: Optional[str] = None
     model_config = ConfigDict(json_schema_extra={"example": {"status": 200}})
 

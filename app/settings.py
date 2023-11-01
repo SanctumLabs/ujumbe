@@ -68,6 +68,7 @@ class KafkaSettings(BaseSettings):
     """
 
     kafka_schema_registry: str = "http://localhost:8081"
+    kafka_schema_registry_user_info: Optional[str] = "username:password"
 
     kafka_bootstrap_servers: str = "localhost:9091"
     kafka_security_protocol: str = "ssl"
@@ -80,6 +81,9 @@ class KafkaSettings(BaseSettings):
 
     sms_submitted_topic: str = "sms_submitted_topic"
     sms_submitted_group_id: str = "sms_submitted_group_id"
+
+    sms_callback_received_topic: str = "sms_callback_received_topic"
+    sms_callback_received_group_id: str = "sms_callback_received_group_id"
 
     sms_sent_topic: str = "sms_sent_topic"
     sms_sent_group_id: str = "sms_sent_group_id"
@@ -169,3 +173,23 @@ def get_kafka_settings() -> KafkaSettings:
     """
     load_dotenv()
     return KafkaSettings()
+
+
+@lru_cache()
+def get_db_settings() -> DatabaseSettings:
+    """Returns database settings
+    Returns:
+        DatabaseSettings: database settings
+    """
+    load_dotenv()
+    return DatabaseSettings()
+
+
+@lru_cache()
+def get_twilio_settings() -> TwilioSmsClientSettings:
+    """Returns twilio settings
+    Returns:
+        TwilioSmsClientSettings: twilio settings
+    """
+    load_dotenv()
+    return TwilioSmsClientSettings()

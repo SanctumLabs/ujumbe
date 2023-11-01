@@ -17,7 +17,7 @@ class SubmitSmsService(Service):
         self.producer = producer
 
     @tracer.start_as_current_span("execute")
-    def execute(self, sms: Sms):
+    async def execute(self, sms: Sms):
         """Handles validation logic before submitting an Sms, then emits an event that is handled by another part of the
         domain
         Args:
@@ -26,7 +26,7 @@ class SubmitSmsService(Service):
         if not sms:
             raise SubmitSmsException("Invalid sms request provided")
         try:
-            self.producer.publish_message(sms)
+            await self.producer.publish_message(sms)
         except Exception as e:
             logger.error(f"SubmitSmsService> Failed to submit sms. Err: {e}", e)
             raise SubmitSmsException("Failed to submit sms")

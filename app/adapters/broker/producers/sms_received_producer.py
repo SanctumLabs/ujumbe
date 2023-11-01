@@ -2,13 +2,14 @@
 Sms Received Producer to handle sending SMS Received message events to broker
 """
 from tenacity import retry, stop_after_attempt, stop_after_delay, wait_exponential
-import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
-import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
+from sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 import Sms as SmsData
+from sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 import SmsReceived
+from sanctumlabs.messageschema.messages.notifications.sms.v1.events_pb2 import SmsV1
 from eventmsg_adaptor.event_streams import AsyncEventStream
 
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
-from app.domain.entities.sms import Sms
+from app.domain.entities.sms import Sms as SmsEntity
 
 
 class SmsReceivedProducer(Producer):
@@ -32,16 +33,20 @@ class SmsReceivedProducer(Producer):
         stop=(stop_after_attempt(3) | stop_after_delay(10)),
         wait=wait_exponential(multiplier=1, min=3, max=5),
     )
-    async def publish_message(self, sms: Sms):
+    async def publish_message(self, sms: SmsEntity):
         try:
-            data = sms_data.Sms(
-                id=sms.id.value,
-                sender=sms.sender.value,
-                recipient=sms.recipient.value,
-                message=sms.message.value,
+            event = SmsReceived(
+                sms=SmsData(
+                    id=sms.id.value,
+                    sender=sms.sender.value,
+                    recipient=sms.recipient.value,
+                    message=sms.message.value
+                )
             )
-            event = events.SmsReceived(sms=data)
-            await self.event_stream.publish(destination=self.topic, event_body=event)
+            data = SmsV1(
+                sms_received=event
+            )
+            await self.event_stream.publish(destination=self.topic, event_body=data)
         except Exception as e:
             logger.error(f"{self.producer_name}> Failed to publish message Err: {e}")
             raise e
