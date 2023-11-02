@@ -1,5 +1,6 @@
 from dependency_injector import containers, providers
 from .infra_container import InfraContainer
+from .event_producer_container import EventProducerContainer
 from .services_container import ServicesContainer
 from .repository_container import RepositoryContainer
 from .domain_container import DomainContainer
@@ -16,4 +17,6 @@ class ApplicationContainer(containers.DeclarativeContainer):
 
     services = providers.Container(ServicesContainer, infra=infra)
 
-    domain = providers.Container(DomainContainer, services=services, repository=repository)
+    event_producers = providers.Container(EventProducerContainer, infra=infra)
+
+    domain = providers.Container(DomainContainer, services=services, producers=event_producers, repository=repository)

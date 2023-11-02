@@ -1,13 +1,16 @@
 """
 Sms Submitted Producer to handle sending SMS Submitted message events to broker
 """
-import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
-import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
+
+from sanctumlabs.messageschema.messages.notifications.sms.v1.events_pb2 import SmsV1 as SmsV1EventBody
+from sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 import SmsSubmitted as SmsSubmittedEvent
+from sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 import SmsStatus, Sms as SmsPayload
+
+from eventmsg_adaptor.event_streams import AsyncEventStream
+
 from app.core.infra.producer import Producer
 from app.infra.logger import log as logger
-from app.domain.entities.sms import Sms
-from app.infra.broker.kafka.producers import KafkaProducer
-from app.infra.broker.kafka.message import ProducerMessage
+from app.domain.entities.sms import Sms as SmsEntity
 
 
 class SmsSubmittedProducer(Producer):
@@ -15,29 +18,30 @@ class SmsSubmittedProducer(Producer):
     SMS Submitted Producer handle producing SmsSubmitted events using a Kafka producer to Kafka Broker Cluster
     """
 
-    def __init__(self, topic: str, kafka_producer: KafkaProducer):
+    def __init__(self, topic: str, async_event_stream: AsyncEventStream):
         """
         Creates an instance of an sms submitted producer with a topic to send events to and a KafkaProducer client to
         use to send events.
         Args:
-            topic (str): Topic to send message to
-            kafka_producer (KafkaProducer): Kafka Producer client to use
+            topic (str): Topic to send the message to.
+            async_event_stream (AsyncEventStream): Event Producer client to use
         """
         self.topic = topic
-        self.kafka_producer = kafka_producer
+        self.event_client = async_event_stream
 
-    def publish_message(self, sms: Sms):
+    async def publish_message(self, sms: SmsEntity):
         try:
-            data = sms_data.Sms(
-                id=sms.id.value,
-                sender=sms.sender.value,
-                recipient=sms.recipient.value,
-                message=sms.message.value,
-                status=sms_data.SmsStatus.PENDING
+            event = SmsSubmittedEvent(
+                sms=SmsPayload(
+                    id=sms.id.value,
+                    sender=sms.sender.value,
+                    recipient=sms.recipient.value,
+                    message=sms.message.value,
+                    status=SmsStatus.PENDING
+                )
             )
-            event = events.SmsSubmitted(sms=data)
-            message = ProducerMessage(topic=self.topic, value=event)
-            self.kafka_producer.produce(message=message)
+            event_body = SmsV1EventBody(sms_submitted=event)
+            await self.event_client.publish(self.topic, event_body=event_body)
         except Exception as e:
             logger.error(f"{self.producer_name}> Failed to publish message Err: {e}")
             raise e

@@ -97,7 +97,7 @@ async def sms_callback_api(
         try:
             callback = SmsCallback.from_dict(payload.dict())
 
-            submit_sms_callback.execute(callback)
+            await submit_sms_callback.execute(callback)
 
             return ApiResponse(
                 status=status.HTTP_202_ACCEPTED,

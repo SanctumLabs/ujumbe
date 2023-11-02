@@ -18,7 +18,7 @@ class SmsSubmittedProducerTestCases(unittest.TestCase):
         self.topic = "test_topic"
         self.mock_kafka_producer = Mock(spec=KafkaProducer)
         self.sms_submitted_producer = SmsSubmittedProducer(
-            topic=self.topic, kafka_producer=self.mock_kafka_producer
+            topic=self.topic, async_event_stream=self.mock_kafka_producer
         )
 
     def test_throws_exception_when_there_is_an_error_producing_message(self):

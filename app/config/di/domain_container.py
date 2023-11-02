@@ -14,19 +14,20 @@ class DomainContainer(containers.DeclarativeContainer):
     """
 
     services = providers.DependenciesContainer()
+    producers = providers.DependenciesContainer()
     repository = providers.DependenciesContainer()
 
     submit_sms = providers.Factory(
-        SubmitSmsService, producer=services.sms_received_producer
+        SubmitSmsService, producer=producers.sms_received_producer
     )
 
     submit_sms_callback = providers.Factory(
-        SubmitSmsCallbackService, producer=services.sms_callback_received_producer
+        SubmitSmsCallbackService, producer=producers.sms_callback_received_producer
     )
 
     create_sms = providers.Factory(
         CreateSmsService,
-        producer=services.sms_submitted_producer,
+        producer=producers.sms_submitted_producer,
         repository=repository.sms_repository,
     )
 

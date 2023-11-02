@@ -3,6 +3,7 @@ Sms Delivery status contains the state of the sms delivery
 """
 from enum import Enum
 import inflection
+from sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 import SmsStatus
 
 
 class SmsDeliveryStatus(Enum):
@@ -32,3 +33,12 @@ class SmsDeliveryStatus(Enum):
             if member.value == value:
                 return member
         return cls.UNKNOWN
+
+    def to_proto(self) -> SmsStatus:
+        """Converts this enum to protobuf enum
+        Returns:
+            SmsStatus: protobuf enum
+        """
+        descriptor = SmsStatus.DESCRIPTOR
+        proto_value = descriptor.values_by_name[self.value]
+        return proto_value
