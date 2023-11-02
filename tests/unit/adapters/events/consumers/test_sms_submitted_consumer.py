@@ -5,7 +5,7 @@ from faker import Faker
 import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
 import sanctumlabs.messageschema.events.notifications.sms.v1.data_pb2 as sms_data
 from app.domain.entities.sms import Sms
-from app.adapters.broker.consumers.sms_submitted_consumer import SmsSubmittedConsumer
+from app.adapters.events.consumers.sms_submitted_consumer import SmsSubmittedConsumer
 from app.infra.broker.kafka.consumers import KafkaConsumer
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message

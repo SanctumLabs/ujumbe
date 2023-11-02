@@ -2,8 +2,11 @@ import unittest
 import pytest
 from faker import Faker
 import sanctumlabs.messageschema.events.notifications.sms.v1.events_pb2 as events
+from eventmsg_adaptor.event_streams import AsyncEventStream
+
 from app.domain.entities.sms import Sms
-from app.adapters.broker.producers.sms_received_producer import SmsReceivedProducer
+from app.adapters.events.producers.sms_received_producer import SmsReceivedProducer
+from app.adapters.events.consumers.sms_received_consumer import SmsReceivedConsumer
 from app.domain.entities.phone_number import PhoneNumber
 from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
@@ -17,13 +20,13 @@ from app.infra.broker.kafka.producers.proto_producer import KafkaProtoProducer
 from app.infra.broker.kafka.consumers.proto_consumer import KafkaProtoConsumer
 from app.infra.broker.kafka.config import KafkaConsumerConfig
 
-from . import BaseKafkaIntegrationTestCase
+from tests.integration.adapters import BaseKafkaIntegrationTestCase
 
 fake = Faker()
 
 
 @pytest.mark.integration
-class SmsReceivedProducerIntegrationTestCase(BaseKafkaIntegrationTestCase):
+class SmsReceivedConsumerIntegrationTestCase(BaseKafkaIntegrationTestCase):
     def setUp(self) -> None:
         super().setUp()
         self.topic = "test_topic"
@@ -49,12 +52,15 @@ class SmsReceivedProducerIntegrationTestCase(BaseKafkaIntegrationTestCase):
         self.sms_received_producer = SmsReceivedProducer(
             topic=self.topic, event_stream=self.kafka_producer
         )
+        self.sms_received_consumer = SmsReceivedConsumer(
+            kafka_consumer=self.kafka_consumer
+        )
 
     @unittest.skip(
         "Kafka Schema registry is failing to connect to Kafka broker. This needs to be resolved or mocked"
     )
-    def test_produces_a_message_to_kafka(self):
-        """Should successfully publish a message to a topic on Kafka"""
+    def test_consumes_a_produced_message_from_kafka(self):
+        """Should successfully consume a published message from a topic in Kafka"""
         sender_phone = "+254700000000"
         sender = PhoneNumber(value=sender_phone)
         recipient_phone = "+254700000000"
@@ -71,6 +77,7 @@ class SmsReceivedProducerIntegrationTestCase(BaseKafkaIntegrationTestCase):
 
         self.sms_received_producer.publish_message(mock_sms)
 
+        # consume the message
         actual_message = self.kafka_consumer.consume()
         self.assertIsNotNone(actual_message)
 

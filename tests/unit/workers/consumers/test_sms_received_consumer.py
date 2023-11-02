@@ -10,7 +10,7 @@ from app.domain.entities.message import Message
 from app.domain.entities.sms_status import SmsDeliveryStatus
 from app.domain.entities.sms import Sms
 from app.domain.services.sms.create_sms import CreateSmsService
-from app.adapters.broker.consumers.sms_received_consumer import SmsReceivedConsumer
+from app.adapters.events.consumers.sms_received_consumer import SmsReceivedConsumer
 from app.workers.consumers.sms_received.__main__ import main
 
 fake = Faker()

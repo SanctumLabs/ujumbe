@@ -1,8 +1,8 @@
 from dependency_injector import containers, providers
-from app.adapters.broker.producers.sms_received_producer import SmsReceivedProducer
-from app.adapters.broker.producers.sms_submitted_producer import SmsSubmittedProducer
-from app.adapters.broker.producers.sms_sent_producer import SmsSentProducer
-from app.adapters.broker.producers.sms_callback_received_producer import SmsCallbackReceivedProducer
+from app.adapters.events.producers.sms_received_producer import SmsReceivedProducer
+from app.adapters.events.producers.sms_submitted_producer import SmsSubmittedProducer
+from app.adapters.events.producers.sms_sent_producer import SmsSentProducer
+from app.adapters.events.producers.sms_callback_received_producer import SmsCallbackReceivedProducer
 
 from app.settings import get_kafka_settings
 

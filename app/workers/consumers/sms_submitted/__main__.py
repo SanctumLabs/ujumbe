@@ -4,8 +4,8 @@ SmsSubmitted Consumer Application Entry point
 from dependency_injector.wiring import inject, Provide
 from app.infra.logger import log as logger
 from app.domain.services.sms.send_sms import SendSmsService
-from app.adapters.broker.consumers.sms_submitted_consumer import SmsSubmittedConsumer
-from app.adapters.broker.producers.sms_sent_producer import SmsSentProducer
+from app.adapters.events.consumers.sms_submitted_consumer import SmsSubmittedConsumer
+from app.adapters.events.producers.sms_sent_producer import SmsSentProducer
 from app.config.di.container import ApplicationContainer
 
 
