@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.92.0"
+fastapi = "^0.109.1"
 uvicorn = {extras = ["stadard"], version = "^0.20.0"}
 celery = {extras = ["redis"], version = "^5.2.7"}
 python-dotenv = "^1.0.0"
