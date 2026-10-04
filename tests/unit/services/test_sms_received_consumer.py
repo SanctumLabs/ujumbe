@@ -78,6 +78,20 @@ class SmsReceivedConsumerTestCases(unittest.TestCase):
         self.mock_kafka_consumer.consume.assert_called()
         self.mock_kafka_consumer.consume.assert_called_once()
 
+    def test_consumes_message_without_sender(self):
+        """Provider-managed sender information may be absent from the event."""
+        data = sms_data.Sms(
+            id=Sms.next_id().value,
+            recipient="+254700000000",
+            message="Hello without an explicit sender",
+            status=sms_data.SmsStatus.PENDING,
+        )
+        self.mock_kafka_consumer.consume.return_value = events.SmsReceived(sms=data)
+
+        actual = self.sms_received_consumer.consume()
+
+        self.assertIsNone(actual.sender)
+
     def test_successfully_call_close_consumer_exception_(self):
         """Should successfully close kafka consumer client without exceptions"""
         self.mock_kafka_consumer.close.return_value = None
