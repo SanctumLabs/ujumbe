@@ -28,13 +28,16 @@ class SmsSentProducer(Producer):
 
     def publish_message(self, sms: Sms):
         try:
-            data = sms_data.Sms(
+            data_attributes = dict(
                 id=sms.id.value,
-                sender=sms.sender.value,
                 recipient=sms.recipient.value,
                 message=sms.message.value,
                 status=sms_data.SmsStatus.SENT
             )
+            if sms.sender:
+                data_attributes["sender"] = sms.sender.value
+
+            data = sms_data.Sms(**data_attributes)
             event = sms_submitted_event.SmsSent(sms=data)
             message = ProducerMessage(topic=self.topic, value=event)
             self.kafka_producer.produce(message=message)

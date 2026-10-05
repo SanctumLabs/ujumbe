@@ -27,7 +27,7 @@ class Sms(BaseModel):
             name="sms_sender_recipient_message_constraint",
         ),
     )
-    sender = Column(String, name="sender", nullable=False)
+    sender = Column(String, name="sender", nullable=True)
     recipient = Column(String, name="recipient", nullable=False)
     message = Column(String, name="message", nullable=False)
     status = Column(
