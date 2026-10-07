@@ -1,5 +1,5 @@
 > **Status: Proposed. Discovery output dated 2026-10-07; not accepted architecture.** Describes the code as inspected on that date and a proposal for its replacement. Decisions are tracked in the ADR index and open-question log.
-
+>
 > **Superseded or added points (maintainer decisions, 2026-10-07; see niosys `docs/platform/18-decision-log.md`).**
 > 1. **Ambiguous outcomes (section 6, ADR on exactly-once):** the rule "only if the provider confirms nothing was created is a new attempt made" is replaced. A missed message is worse than a duplicate: reconcile by lookup; if the provider cannot confirm by the deadline, **resend, capped and counted**, with an alert on the resend rate. Still no failover before reconciliation (issue #93 amended).
 > 2. **Broker:** Kafka stays the production broker, behind a **broker port** so RabbitMQ or another broker can be configured (issue #111).
@@ -75,7 +75,7 @@ Notes: unique `(tenant_id, idempotency_key)` replaces `(sender, recipient, messa
 
 ## 4. Contracts (transport-agnostic)
 
-One logical contract, three bindings: Kafka (protobuf + schema registry, with `buf breaking` as a CI gate), REST/JSON (`/v1`, same field names, protobuf JSON mapping), gRPC (same `.proto` service). Envelope fields are identical on all transports; on REST they travel as headers/body, on Kafka as message headers + value.
+One logical contract, three bindings: Kafka (protobuf + schema registry, with `buf breaking` as a CI gate), REST/JSON (`/v1`; the canonical field names are the snake_case names used in the examples below. The default ProtoJSON mapping emits lowerCamelCase, so serializers must preserve proto field names, for example `preserving_proto_field_name=True` in Python, and parsers should accept both spellings), gRPC (same `.proto` service). Envelope fields are identical on all transports; on REST they travel as headers/body, on Kafka as message headers + value.
 
 ### 4.1 Inbound command: `SendMessage` (REST `POST /v1/messages`, gRPC `MessagingService.Send`, Kafka topic `sms.commands.v1`)
 ```
@@ -126,6 +126,7 @@ PII rule: events carry `recipient_hash`, not the number; callers that need it al
 | PROVIDER_TRANSIENT | PROVIDER_TIMEOUT, PROVIDER_UNAVAILABLE, PROVIDER_THROTTLED | n/a | n/a | yes (budgeted) |
 | EXPIRED | VALIDITY_EXPIRED | n/a | n/a | no |
 | INTERNAL | INTERNAL | 500 | INTERNAL | yes |
+
 Each adapter maps provider codes (e.g. Twilio 21610 -> RECIPIENT_OPTED_OUT, 21211 -> INVALID_RECIPIENT, 30003 -> NUMBER_UNREACHABLE, 30007 -> CARRIER_FILTERED, 429 -> PROVIDER_THROTTLED) with a golden-file test.
 
 ### 4.5 Provider ingress (not part of the platform contract)
@@ -145,14 +146,16 @@ States and rank (a transition is allowed only to a higher rank, or sideways with
 | 90 | DELIVERED | handset receipt (terminal) |
 | 90 | UNDELIVERED / FAILED / REJECTED / EXPIRED / CANCELED | terminal failures (carrier or provider) |
 | 95 | UNKNOWN_FINAL | no terminal report within SLA; reconciler gave up (terminal, flagged) |
+
 Rules: `DELIVERED` after `SENT`-regression events is idempotent; a terminal failure followed by `DELIVERED` (rare carrier behaviour) is accepted once and flagged `late_correction`. Provider statuses map via adapter tables (`queued->SUBMITTED`, `sent->SENT`, `delivered->DELIVERED`, `undelivered->UNDELIVERED`, `failed->FAILED`, unknown -> recorded, no state change). `READ` and `RECEIVING` are not delivery states (RCS/inbound): drop from the outbound enum.
+
 Protobuf: first value `STATE_UNSPECIFIED = 0`. Persist as text with a check constraint so new states do not need `ALTER TYPE`.
 
 ## 6. Idempotency, retries, DLQ, ordering
 
 - **At the edge**: `(tenant_id, idempotency_key)` unique; same key and same `request_hash` returns the original; transaction writes message+outbox atomically. A client retry after timeout can never double-send.
 - **Outbox -> Kafka**: at-least-once; key = `message_id` for events, `route_key` (= `provider_account|country|traffic_class`) for `sms.dispatch.v1` so per-route rate limiting is local to a partition owner; ordering of events per message is guaranteed by key `message_id` on `sms.events.v1`.
-- **Dispatch exactly-once effect**: the conditional `QUEUED -> SENDING` update with lease is the claim; duplicate dispatch events lose the claim and are acked. The provider call carries `client_ref = message_id:attempt_no` (and the provider's idempotency token when supported). Provider outcomes: (a) accepted -> `SUBMITTED`; (b) definite reject -> terminal; (c) transient error before acceptance (connect error, 5xx before body, 429) -> schedule retry; (d) **ambiguous** (read timeout, connection reset after write) -> state stays `SENDING`, reconciler calls `lookup(client_ref)`; only if the provider confirms nothing was created is a new attempt made. No failover on ambiguity.
+- **Dispatch exactly-once effect**: the conditional `QUEUED -> SENDING` update with lease is the claim; duplicate dispatch events lose the claim and are acked. The provider call carries `client_ref = message_id:attempt_no` (and the provider's idempotency token when supported). Provider outcomes: (a) accepted -> `SUBMITTED`; (b) definite reject -> terminal; (c) transient error before acceptance (connect error, 5xx before body, 429) -> schedule retry; (d) **ambiguous** (read timeout, connection reset after write) -> state stays `SENDING`, reconciler calls `lookup(client_ref)`; if the provider confirms nothing was created, a new attempt is made; if it cannot confirm by the reconcile deadline, the message is **resent, capped and counted, with an alert** (decision D6: a missed message is worse than a duplicate), and only within validity (`expires_at`, optional). No failover before reconciliation.
 - **Retries**: attempt budget per class (OTP: 2 attempts within validity; transactional: 5 over 1 h; marketing: 3 over 6 h), exponential backoff with full jitter via delay topics (`sms.dispatch.retry.{1m,5m,30m}`) or `not_before` on the message, never `time.sleep` in a consumer.
 - **Consumer acks**: commit offset only after the transaction that records the outcome; poison/deserialization errors go to `sms.dlq.v1` with headers (original topic/partition/offset, error, attempt count) after bounded retries; DLQ is alerting + replay tooling, not a silent sink. Disable auto-commit, `enable.auto.offset.store=false`, cooperative-sticky assignor, commit on revoke (this subsumes #69).
 - **Producers**: `acks=all`, `enable.idempotence=true`, bounded `delivery.timeout.ms`, delivery result surfaced to the caller of the publish function (the relay); no producer calls on the request path.

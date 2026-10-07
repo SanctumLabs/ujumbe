@@ -162,4 +162,4 @@ producer delivery blindness and event-loop blocking (UJU-012), provider timeouts
 opt-out and compliance (UJU-020/021), state machine (UJU-023), migration safety and schema (UJU-024/025), stub-mode defaults (UJU-026), deployment artefacts (UJU-027), CI and test-suite repair (UJU-028/029), provider routing/failover/credentials (UJU-033), observability (UJU-016).
 
 **Process observations (for the orchestrator, no action taken):** the repo has branch protection on `develop` but its only workflow has failed on every push since at least run #146 while Dependabot merges continued; PR bots rate-limited on #75, so it has had no automated review; PR template checkboxes are ticked in both PRs without being true;
-issues have no labels so none of the repository's triage tooling applies.
+issues had no labels at review time, so none of the repository's triage tooling applied (a snapshot: labels and epic parents were applied on 2026-10-07).
