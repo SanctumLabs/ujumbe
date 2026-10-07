@@ -62,3 +62,13 @@ Labels used: `severity:P0..P3`, `type:*`, `area:*`, `phase:0..5` (created on fir
 | #73 | UJU-007 | Phase 0 (extended by #82, #83, #107) |
 
 Findings without their own issue: UJU-001 to UJU-007 (existing issues), UJU-032 (carried by #71).
+
+## Added on 2026-10-07 after maintainer input
+
+| # | Epic | Title | Sev | Type |
+|---|---|---|---|---|
+| 111 | #78 | Introduce a broker port with Kafka as the default binding and other brokers pluggable by configuration | P2 | tech-debt |
+| 112 | #81 | Package ujumbe as a self-contained, configuration-driven deployable unit | P2 | feature |
+
+Existing issues #67 to #73 now carry labels and parents: #67 (P1, bug, domain, phase 1) and #68 (P0, reliability, pipeline, phase 1) and #69 (P0, reliability, kafka, phase 1) under #77; #70 (P0, reliability, pipeline, phase 2) under #78; #71 (P1, feature, provider, phase 3) under #79; #72 (P2, tech-debt, provider, phase 4) under #80; #73 (P1, testing, build, phase 0) under #76.
+Comment added on #93 (resend after reconcile deadline, D6). Reviews posted on PRs #74, #75, #11.

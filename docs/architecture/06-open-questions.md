@@ -1,5 +1,7 @@
 > **Status: Proposed. Discovery output dated 2026-10-07; not accepted architecture.** Describes the code as inspected on that date and a proposal for its replacement. Decisions are tracked in the ADR index and open-question log.
 
+> **Answered on 2026-10-07:** Q-UJU-02 the REST API is not reachable outside the cluster (but must become a standalone deployable unit; #112). Q-UJU-01 broker is Kafka and services stay broker-pluggable (#111); REST remains the baseline. Q-UJU-08 and Q-UJU-10 remain open.
+
 # ujumbe: open questions for a human
 
 Numbering `Q-UJU-NN`. "Default" is what I will assume if nobody answers.

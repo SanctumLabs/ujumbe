@@ -3,7 +3,7 @@
 # ujumbe: phased cleanup plan
 
 Sizes: S <= 2 days, M <= 1.5 weeks, L > 1.5 weeks (one engineer). Risk is risk of regression or rollout harm.
-Existing issues #67-#73 are placed in phases but not re-parented (they stay unparented; epics reference them).
+Existing issues #67-#73 are placed in phases and, as of 2026-10-07, labelled and attached as sub-issues of their phase epics (#67 to #69 under #77, #70 under #78, #71 under #79, #72 under #80, #73 under #76). Not split: #70 and #72 still need decomposition.
 Ordering principle: you cannot verify fixes without a working build (phase 0); you cannot build reliability on top of lost or duplicated messages (phase 1); idempotent pipeline before lifecycle features (phase 2 before 3); provider abstraction last because it is the biggest change and the others make it safer (phase 4).
 
 ## Phase 0: Restore a trustworthy build, CI and test baseline

@@ -1,5 +1,11 @@
 > **Status: Proposed. Discovery output dated 2026-10-07; not accepted architecture.** Describes the code as inspected on that date and a proposal for its replacement. Decisions are tracked in the ADR index and open-question log.
 
+> **Superseded or added points (maintainer decisions, 2026-10-07; see niosys `docs/platform/18-decision-log.md`).**
+> 1. **Ambiguous outcomes (section 6, ADR on exactly-once):** the rule "only if the provider confirms nothing was created is a new attempt made" is replaced. A missed message is worse than a duplicate: reconcile by lookup; if the provider cannot confirm by the deadline, **resend, capped and counted**, with an alert on the resend rate. Still no failover before reconciliation (issue #93 amended).
+> 2. **Broker:** Kafka stays the production broker, behind a **broker port** so RabbitMQ or another broker can be configured (issue #111).
+> 3. **Deployability:** ujumbe must be deployable as a self-contained unit, configured entirely by environment, with no dependency on other platform services (issue #112, ADR P-16).
+> 4. **Exposure:** the REST API is internal-only today, so unauthenticated access (#91) stays P1.
+
 # ujumbe: target design
 
 Scope: the SMS channel gateway in the notification platform (niosys orchestrates, ujumbe sends SMS, barua-pepe sends email). This design builds on, and does not replace, the intent of open issues #67-#73; where it differs it says so.
