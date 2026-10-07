@@ -42,7 +42,7 @@ Options: Twilio only for now; Twilio + one regional aggregator; multi-provider l
 Default: Twilio + one regional aggregator (failover first, least-cost later).
 
 **Q-UJU-08 Is the Python/FastAPI stack fixed, and which Python version is the target?**
-Why: #73 offers either capping or upgrading; Python 3.10 is end of life this month; pydantic v1 cannot run on 3.14. A rewrite (Go/Kotlin) would change phase 4 and 5 plans.
+Why: #73 offers either capping or upgrading; Python 3.10 reached end of life on 2026-10-01; pydantic v1 cannot run on 3.14. A rewrite (Go/Kotlin) would change phase 4 and 5 plans.
 Options: stay on Python 3.12 (recommended), 3.13 after dependency upgrades, or rewrite.
 Default: Python 3.12 now, upgrade pydantic/SQLAlchemy/Twilio in phase 5.
 
