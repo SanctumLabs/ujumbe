@@ -5,6 +5,7 @@
 > 2. **Broker:** Kafka stays the production broker, behind a **broker port** so RabbitMQ or another broker can be configured (issue #111).
 > 3. **Deployability:** ujumbe must be deployable as a self-contained unit, configured entirely by environment, with no dependency on other platform services (issue #112, ADR P-16).
 > 4. **Exposure:** the REST API is internal-only today, so unauthenticated access (#91) stays P1.
+> 5. **Optional validity bound (proposed, not final):** no new attempt after `expires_at`; resend-after-unknown only within validity; `EXPIRED` is terminal and alerted; OTP-class default 5 minutes, general default to be ratified (comment on #93).
 
 # ujumbe: target design
 
