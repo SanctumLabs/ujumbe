@@ -66,7 +66,7 @@ Is it meaningful? Partly. Good: value-object validation, mapper round trips, pro
 ## 7. Test data and fixtures standards
 
 - Builders (`SmsBuilder`, `SendCommandBuilder`) with explicit defaults and `.with_*` overrides; no shared mutable module-level objects (the `create_mock_sms_response(sms_identifier=fake.uuid4())` default argument is evaluated once at import).
-- Phone numbers: use only reserved/test ranges (Twilio magic numbers, `+1555...`) in live-provider tests. Numbers such as `+254700000000` are not guaranteed unreachable, so keep them in one `fixtures/numbers.py` for fake-provider tests only; a sentinel pair (`+15005550006`, body `PII-SENTINEL-BODY-xyz`) used by the log-scan test.
+- Phone numbers: use only the NANPA fictional, non-working range (`+1<NPA>555-01xx`) in tests that use live-provider credentials. Use Twilio magic numbers only with Twilio test credentials; those credentials do not connect to real phone numbers. Numbers such as `+254700000000` are not guaranteed unreachable, so keep them in one `fixtures/numbers.py` for fake-provider tests only; a sentinel pair (`+15005550006`, body `PII-SENTINEL-BODY-xyz`) used by the log-scan test.
 - Provider payloads: recorded real (sanitized) responses stored as JSON under `tests/fixtures/providers/<provider>/`, each with a header describing capture date and API version; refreshed by a script; every mapper test runs against them (this alone would have exposed UJU-009).
 - Time: injectable clock; no `sleep` in tests (tenacity waits patched or retry delegated to outbox/delay topics).
 - DB: one fixture creates schema through Alembic, per-test transaction rollback or truncate; no `create_all`.
