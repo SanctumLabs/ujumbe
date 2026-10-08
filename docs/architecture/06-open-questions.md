@@ -2,6 +2,8 @@
 >
 > **Answered on 2026-10-07:** Q-UJU-02 the REST API is not reachable outside the cluster (but must become a standalone deployable unit; #112). Q-UJU-01 broker is Kafka and services stay broker-pluggable (#111); REST remains the baseline. Q-UJU-08 and Q-UJU-10 remain open.
 
+> **Answered on 2026-10-08:** the pipeline platform is GitHub Actions with the repository mirrored to GitLab and Bitbucket, so pipelines are needed there (#113; I found no mirroring workflow in this repository, only `lint.yml`). The maintainer is the only engineer for all services, and the 2026-12-31 platform milestone is shadow-capable niosys (`niosys/docs/platform/16-roadmap.md` section 0), so ujumbe's rebuild phases (#78 onward) are 2027 work; only the small P0/P1 fixes are expected before then. Validity defaults decided: 24 h general, 5 min for declared OTP, expiry optional (affects #93, #100).
+
 # ujumbe: open questions for a human
 
 Numbering `Q-UJU-NN`. "Default" is what I will assume if nobody answers.
