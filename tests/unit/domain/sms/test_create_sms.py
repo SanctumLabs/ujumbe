@@ -73,7 +73,7 @@ class CreateSmsServiceTestCase(unittest.TestCase):
             self.create_sms_service.execute(sms=sms)
 
         self.mock_sms_repository.add.assert_called_with(sms)
-        self.mock_producer.publish_message.assert_called_with(sms)
+        self.mock_producer.publish_message.assert_called_once_with(sms)
 
     def test_no_exception_is_thrown_and_sms_message_is_published(self):
         """Test no exception is thrown & sms is successfully created & published"""
