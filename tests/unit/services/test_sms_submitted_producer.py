@@ -65,6 +65,19 @@ class SmsSubmittedProducerTestCases(unittest.TestCase):
         self.mock_kafka_producer.produce.assert_called()
         self.mock_kafka_producer.produce.assert_called_once()
 
+    def test_successfully_publishes_message_without_sender(self):
+        """Submission events preserve an absent explicit sender."""
+        sms = Sms(
+            recipient=PhoneNumber(value="+254700000000"),
+            message=Message(value="Hello without an explicit sender"),
+            status=SmsDeliveryStatus.PENDING,
+        )
+
+        self.sms_submitted_producer.publish_message(sms)
+
+        produced_message = self.mock_kafka_producer.produce.call_args.kwargs["message"]
+        self.assertFalse(produced_message.value.sms.HasField("sender"))
+
 
 if __name__ == '__main__':
     unittest.main()
