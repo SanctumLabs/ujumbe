@@ -36,7 +36,7 @@ class SmsSubmittedConsumer(Consumer):
                 data = self.message.sms
 
                 sms_id = UniqueId(data.id)
-                sender = PhoneNumber(data.sender)
+                sender = PhoneNumber(data.sender) if data.sender else None
                 recipient = PhoneNumber(data.recipient)
                 message = Message(data.message)
 

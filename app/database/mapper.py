@@ -24,7 +24,7 @@ def map_sms_model_to_entity(model: SmsModel) -> Sms:
     """
     sms_id = UniqueId(value=model.identifier)
     sender_phone_number = model.sender
-    sender = PhoneNumber(value=sender_phone_number)
+    sender = PhoneNumber(value=sender_phone_number) if sender_phone_number else None
 
     recipient_phone_number = model.recipient
     recipient = PhoneNumber(value=recipient_phone_number)
@@ -59,7 +59,7 @@ def map_sms_entity_to_model(entity: Sms) -> SmsModel:
     """
     return SmsModel(
         identifier=entity.id.value,
-        sender=entity.sender.value,
+        sender=entity.sender.value if entity.sender else None,
         recipient=entity.recipient.value,
         message=entity.message.value,
         status=entity.status,
